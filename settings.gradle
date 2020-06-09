@@ -1,0 +1,4 @@
+rootProject.name="backpack-elasticsearch"
+include ':backpack-elasticsearch-app'
+include ':backpack-elasticsearch-consumer-app'
+include ':backpack-elasticsearch-service'

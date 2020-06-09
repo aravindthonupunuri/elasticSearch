@@ -1,0 +1,38 @@
+sourceSets {
+    main
+    testUnit {
+        groovy {
+            srcDir { "src/test/unit/groovy" }
+            compileClasspath += main.output + test.output
+            runtimeClasspath += main.output + test.output
+        }
+        resources.srcDir "src/test/unit/resources"
+    }
+}
+
+configurations {
+    testUnitCompile.extendsFrom testCompile
+    testUnitImplementation.extendsFrom testImplementation
+    testUnitRuntime.extendsFrom testRuntime
+}
+
+task testUnit(type: Test) {
+    testClassesDirs = sourceSets.testUnit.output.classesDirs
+    classpath = sourceSets.testUnit.runtimeClasspath
+}
+
+tasks.withType(Test) {
+    testLogging {
+        events "passed", "skipped", "failed", "standardError", "standard_out", "standard_error"
+    }
+}
+
+test {
+    dependsOn testUnit
+}
+
+cleanTest {
+    dependsOn cleanTestUnit
+}
+
+compileTestGroovy.classpath += files(compileTestKotlin.destinationDir)

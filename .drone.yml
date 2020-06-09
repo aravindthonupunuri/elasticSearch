@@ -1,0 +1,164 @@
+services:
+  zookeeper:
+    image: 'wurstmeister/zookeeper:3.4.6'
+    ports:
+      - '2181:2181'
+  kafka:
+    image: 'wurstmeister/kafka:2.12-2.3.0'
+    ports:
+      - '9092:9092'
+    environment:
+      - KAFKA_ADVERTISED_HOST_NAME=kafka
+      - KAFKA_ADVERTISE_HOST_PORT=9092
+      - 'KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181'
+      - 'KAFKA_CREATE_TOPICS=lists-msg-bus:1:1,lists-dlq:1:1'
+pipeline:
+  restore_cache:
+    image: 'docker.target.com/drone/drone-s3-cache:2'
+    pull: true
+    restore: true
+    secrets:
+      - cache_s3_server
+      - cache_s3_access_key
+      - cache_s3_secret_key
+      - cache_s3_ca_cert
+
+  publish-config-backpack-elasticsearch-dev:
+    when:
+      event: [push]
+      branch: master
+    image: 'docker.target.com/app/lists/alpine-bash-curl-ssl:1.0.5'
+    secrets:
+      - TAP_API_TOKEN
+      - backpack_elasticsearch_app_private_key_dev
+      - backpack_elasticsearch_consumer_app_private_key_dev
+    commands:
+      - 'tap_api_token=$TAP_API_TOKEN app_private_key=$BACKPACK_ELASTICSEARCH_APP_PRIVATE_KEY_DEV ./backpack-elasticsearch-app/scripts/config_deploy_manager.sh conf.dev.0.0'
+      - 'tap_api_token=$TAP_API_TOKEN app_private_key=$BACKPACK_ELASTICSEARCH_CONSUMER_APP_PRIVATE_KEY_DEV ./backpack-elasticsearch-consumer-app/scripts/config_deploy_manager.sh conf.dev.0.0'
+
+  publish-config-backpack-elasticsearch-stage:
+    when:
+      event: tag
+      ref: 'refs/tags/conf.stage.backpackelasticsearch.*'
+      branch: master
+    image: 'docker.target.com/app/lists/alpine-bash-curl-ssl:1.0.5'
+    secrets:
+      - TAP_API_TOKEN
+      - backpack_elasticsearch_app_private_key_stage
+      - backpack_elasticsearch_consumer_app_private_key_stage
+    commands:
+      - 'tap_api_token=$TAP_API_TOKEN app_private_key=$BACKPACK_ELASTICSEARCH_APP_PRIVATE_KEY_STAGE ./backpack-elasticsearch-app/scripts/config_deploy_manager.sh ${DRONE_TAG}'
+      - 'tap_api_token=$TAP_API_TOKEN app_private_key=$BACKPACK_ELASTICSEARCH_CONSUMER_APP_PRIVATE_KEY_STAGE ./backpack-elasticsearch-consumer-app/scripts/config_deploy_manager.sh ${DRONE_TAG}'
+
+  build:
+    when:
+      event: [pull_request, push, tag]
+    image: 'docker.target.com/tap/alpine-openjdk11-build:latest'
+    environment:
+      JAVA_TOOL_OPTIONS: '-Xmx4000M'
+      GRADLE_USER_HOME: .gradle
+      GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.workers.max=1 -Dorg.gradle.parallel=false'
+      KAFKA_BOOTSTRAP_SERVERS: 'kafka:9092'
+    commands:
+      - './gradlew build distTar'
+
+  rebuild_cache:
+    image: 'docker.target.com/drone/drone-s3-cache:2'
+    rebuild: true
+    secrets:
+      - cache_s3_server
+      - cache_s3_access_key
+      - cache_s3_secret_key
+      - cache_s3_ca_cert
+    mount:
+      - .gradle
+
+  flush_cache:
+    image: 'docker.target.com/drone/drone-s3-cache:2'
+    secrets:
+      - cache_s3_server
+      - cache_s3_access_key
+      - cache_s3_secret_key
+      - cache_s3_ca_cert
+    flush: true
+    flush_age: 14
+
+  publish-docker-backpackelasticsearch-app-dev:
+    image: plugins/docker
+    group: devimggroup
+    registry: docker.target.com
+    repo: docker.target.com/app/backpack-elasticsearch/backpack-elasticsearch-app
+    dockerfile: ./backpack-elasticsearch-app/Dockerfile
+    tags:
+      - 'b${DRONE_BUILD_NUMBER}-${DRONE_COMMIT:0:8}'
+      - latest
+    when:
+      event: [push]
+      branch: master
+    secrets:
+      - {source: artifactory_username, target: plugin_username}
+      - {source: artifactory_password, target: plugin_password}
+
+  publish-docker-backpack-elasticsearch-app-stage:
+    image: 'plugins/docker:latest'
+    group: stgimggroup
+    registry: docker.target.com
+    repo: docker.target.com/app/backpack-elasticsearch/backpack-elasticsearch-app
+    dockerfile: ./backpack-elasticsearch-app/Dockerfile
+    tags: 'rc.${DRONE_TAG:24}'
+    when:
+      event: tag
+      branch: master
+      ref: 'refs/tags/conf.stage.backpackelasticsearch.*'
+    secrets:
+      - {source: artifactory_username, target: plugin_username}
+      - {source: artifactory_password, target: plugin_password}
+
+  publish-docker-backpack-elasticsearch-consumer-app-dev:
+    image: plugins/docker
+    group: devimggroup
+    registry: docker.target.com
+    repo: docker.target.com/app/backpack-elasticsearch/backpack-elasticsearch-consumer-app
+    dockerfile: ./backpack-elasticsearch-consumer-app/Dockerfile
+    tags:
+      - 'b${DRONE_BUILD_NUMBER}-${DRONE_COMMIT:0:8}'
+      - latest
+    when:
+      event: [push]
+      branch: master
+    secrets:
+      - {source: artifactory_username, target: plugin_username}
+      - {source: artifactory_password, target: plugin_password}
+
+  publish-docker-backpack-elasticsearch-consumer-app-stage:
+    image: 'plugins/docker:latest'
+    group: stgimggroup
+    registry: docker.target.com
+    repo: docker.target.com/app/backpack-elasticsearch/backpack-elasticsearch-consumer-app
+    dockerfile: ./backpack-elasticsearch-consumer-app/Dockerfile
+    tags: 'rc.${DRONE_TAG:24}'
+    when:
+      event: tag
+      branch: master
+      ref: 'refs/tags/conf.stage.backpackelasticsearch.*'
+    secrets:
+      - {source: artifactory_username, target: plugin_username}
+      - {source: artifactory_password, target: plugin_password}
+
+secrets:
+  cache_s3_server:
+    path: secret/shared/drone/prod-secrets/cache_s3_server
+  cache_s3_access_key:
+    path: secret/shared/drone/prod-secrets/cache_s3_access_key
+  cache_s3_secret_key:
+    path: secret/shared/drone/prod-secrets/cache_s3_secret_key
+  cache_s3_ca_cert:
+    path: secret/shared/drone/prod-secrets/cache_s3_ca_cert
+  backpack_elasticsearch_app_private_key_dev:
+    path: secret/repo/Registry-Modernization/backpack-elasticsearch/backpackelasticsearch-privkey-dev
+  backpack_elasticsearch_app_private_key_stage:
+    path: secret/repo/Registry-Modernization/backpack-elasticsearch/backpackelasticsearch-privkey-stage
+  backpack_elasticsearch_consumer_app_private_key_dev:
+    path: secret/repo/Registry-Modernization/backpack-elasticsearch/backpackelasticsearchconsumer-privkey-dev
+  backpack_elasticsearch_consumer_app_private_key_stage:
+    path: secret/repo/Registry-Modernization/backpack-elasticsearch/backpackelasticsearchconsumer-privkey-stage
