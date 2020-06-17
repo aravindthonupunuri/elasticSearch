@@ -36,11 +36,5 @@
         <Logger name="com.tgt.lists.micronaut.test" level="INFO" additivity="false">
             <AppenderRef ref="Console"/>
         </Logger>
-        <Logger name="io.micronaut.data.query" level="INFO" additivity="false">
-            <AppenderRef ref="Console"/>
-        </Logger>
-        <Logger name="com.tgt.lists.micronaut:micronaut-jdbc" level="INFO" additivity="false">
-            <AppenderRef ref="Console"/>
-        </Logger>
     </Loggers>
 </Configuration>

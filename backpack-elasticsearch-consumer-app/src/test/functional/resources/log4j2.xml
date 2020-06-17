@@ -21,9 +21,6 @@
         <Logger name="com.tgt.lists.micronaut.persistence" level="DEBUG" additivity="false">
             <AppenderRef ref="Console"/>
         </Logger>
-        <Logger name="com.tgt.lists.api.persistence" level="DEBUG" additivity="false">
-            <AppenderRef ref="Console"/>
-        </Logger>
         <Logger name="com.tgt.lists.msgbus" level="DEBUG" additivity="false">
             <AppenderRef ref="Console"/>
         </Logger>
@@ -40,9 +37,6 @@
             <AppenderRef ref="Console"/>
         </Logger>
         <Logger name="com.tgt.lists.micronaut.test" level="INFO" additivity="false">
-            <AppenderRef ref="Console"/>
-        </Logger>
-        <Logger name="io.micronaut.data.query" level="INFO" additivity="false">
             <AppenderRef ref="Console"/>
         </Logger>
         <Logger name="io.micronaut.tracing" level="INFO" additivity="false">

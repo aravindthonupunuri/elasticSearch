@@ -3,13 +3,6 @@ micronaut:
     name: lists-kafka-consumer
   server:
     port: ${server-port:33000}
-  http:
-    services:
-      carts-api:
-        urls:
-          - http://localhost:${server-port:33000}
-        pool:
-          enabled: false
 
 resilience4j:
   circuitbreaker:
@@ -18,10 +11,6 @@ resilience4j:
     sliding-window-type: TIME_BASED       # possible values TIME_BASED or COUNT_BASED (default: COUNT_BASED)
     sliding-window-size: 100               # seconds for TIME_BASED, request-count for COUNT_BASED (default: 100)
     minimum-number-of-calls: 10            # min calls required (per sliding window period) before cb calculates error rate (default: 10)
-
-jdbc-stmt-timeout:
-  serverStatementTimeoutMillis: 250  # for server side statement timeout
-  statementQueryTimeoutSeconds: 1    # for client side statement timeout
 
 jackson:
   property-naming-strategy: "SNAKE_CASE"
@@ -94,10 +83,6 @@ msgbus:
     dlq-max-event-retry-count: 3
     dlq-consumer-batch-size: 10
 
-cart:
-  client:
-    refresh-cycle-sec: 999999999
-
 api-key: "testkey"
 
 filter:
@@ -113,23 +98,8 @@ filter:
       oauth-filter: 701
       oauth-key-filter: 700
 
-list:
-  list-type: SHOPPING
-  max-count: 50
-  max-pending-item-count: 3
-  max-completed-items-count: 3
-  abandon-after-duration-in-days: 730 # It is two years duration
-  redsky-batch-size: 28
-  features.two-carts: true
-  features.dedupe: true
-  features.sort-position: true
-  features.fixed-default-list: false
-
-sic:
-  batch-size: 3
-
 mockfilter:
-  paths: /carts/v4.*,/zipkin,/testserver/auth/oauth/v2/token,/storeItemPlacements,/ssa/cwlservice/api/v16/.*
+  paths: /zipkin,/testserver/auth/oauth/v2/token
 
 tracing:
   zipkin:
