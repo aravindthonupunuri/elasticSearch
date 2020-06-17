@@ -57,6 +57,8 @@ allprojects {
         implementation "io.micronaut.configuration:micronaut-hibernate-validator"
         implementation "javax.annotation:javax.annotation-api"
 
+        implementation "io.micronaut.configuration:micronaut-elasticsearch"
+
         implementation "com.tgt.lists:lists-lib:1.0.41"
         implementation "com.tgt.lists:lists-components:1.128.11"
 

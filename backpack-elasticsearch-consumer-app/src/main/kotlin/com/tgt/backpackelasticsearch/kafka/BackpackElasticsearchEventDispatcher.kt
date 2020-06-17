@@ -1,9 +1,11 @@
-package com.tgt.backpackelasticsearch
+package com.tgt.backpackelasticsearch.kafka
 
-import com.tgt.backpackregistry.kafka.handler.CreateRegistryNotifyEventHandler
-import com.tgt.backpackregistry.kafka.handler.DeleteRegistryNotifyEventHandler
+import com.tgt.backpackelasticsearch.kafka.handler.CreateRegistryNotifyEventHandler
+import com.tgt.backpackelasticsearch.kafka.handler.DeleteRegistryNotifyEventHandler
+import com.tgt.backpackelasticsearch.kafka.handler.UpdateRegistryNotifyEventHandler
 import com.tgt.lists.lib.kafka.model.CreateListNotifyEvent
 import com.tgt.lists.lib.kafka.model.DeleteListNotifyEvent
+import com.tgt.lists.lib.kafka.model.UpdateListNotifyEvent
 import com.tgt.lists.msgbus.ApplicationDataObject
 import com.tgt.lists.msgbus.EventDispatcher
 import com.tgt.lists.msgbus.ExecutionId
@@ -18,6 +20,7 @@ import javax.inject.Singleton
 @Singleton
 open class BackpackElasticsearchEventDispatcher(
     @Inject val createRegistryNotifyEventHandler: CreateRegistryNotifyEventHandler,
+    @Inject val updateRegistryNotifyEventHandler: UpdateRegistryNotifyEventHandler,
     @Inject val deleteRegistryNotifyEventHandler: DeleteRegistryNotifyEventHandler,
     @Value("\${msgbus.source}") val source: String
 ) : EventDispatcher {
@@ -35,6 +38,10 @@ open class BackpackElasticsearchEventDispatcher(
                     CreateListNotifyEvent.getEventType() -> {
                         val createListNotifyEvent = CreateListNotifyEvent.deserialize(data)
                         Triple("guest_${createListNotifyEvent.guestId}", ExecutionSerialization.ID_SERIALIZATION, createListNotifyEvent)
+                    }
+                    UpdateListNotifyEvent.getEventType() -> {
+                        val updateListNotifyEvent = UpdateListNotifyEvent.deserialize(data)
+                        Triple("lists_${updateListNotifyEvent.listId}", ExecutionSerialization.ID_SERIALIZATION, updateListNotifyEvent)
                     }
                     DeleteListNotifyEvent.getEventType() -> {
                         val deleteListNotifyEvent = DeleteListNotifyEvent.deserialize(data)
@@ -56,6 +63,12 @@ open class BackpackElasticsearchEventDispatcher(
                     val createListNotifyEvent = data as CreateListNotifyEvent
                     logger.info { "Got CreateList Event: $createListNotifyEvent" }
                     return createRegistryNotifyEventHandler.handleCreateRegistryNotifyEvent(createListNotifyEvent, eventHeaders, isPoisonEvent)
+                }
+                UpdateListNotifyEvent.getEventType() -> {
+                    // always use transformValue to convert raw data to concrete type
+                    val updateListNotifyEvent = data as UpdateListNotifyEvent
+                    logger.info { "Got UpdateList Event: $updateListNotifyEvent" }
+                    return updateRegistryNotifyEventHandler.handleUpdateRegistryNotifyEvent(updateListNotifyEvent, eventHeaders, isPoisonEvent)
                 }
                 DeleteListNotifyEvent.getEventType() -> {
                     // always use transformValue to convert raw data to concrete type
