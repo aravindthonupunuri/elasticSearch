@@ -45,5 +45,8 @@
         <Logger name="org.apache.kafka.clients" level="ERROR" additivity="false">
             <AppenderRef ref="Console"/>
         </Logger>
+        <Logger name="io.micronaut.configuration.elasticsearch" level="DEBUG" additivity="false">
+            <AppenderRef ref="Console"/>
+        </Logger>
     </Loggers>
 </Configuration>

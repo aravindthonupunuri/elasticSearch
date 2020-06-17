@@ -1,15 +1,27 @@
 micronaut:
   application:
     name: backpack-elasticsearch-app
-  server:
-    host: localhost
-    port: 8080
-    idle-timeout: 2000ms
 
   metrics:
     binders:
       web:
         enabled: false # we are using our own binder via our custom micronaut-metrics lib
+
+elasticsearch:
+  httpHosts: ${esaas-primary-url} # same as esaas.primary.httpHosts
+  request:
+    default:
+      connection-request-timeout: 200   # millis, default: 1s
+      connect-timeout: 10000            # millis, default: 30s
+
+esaas:
+  nuidUser: ${esaas-nuid}
+  nuidPassword: ${esaas-password}
+  use-fallback: true
+  primary:
+    httpHosts: ${esaas-primary-url}
+  backup:
+    httpHosts: ${esaas-backup-url}
 
 lists:
   metrics:
@@ -43,6 +55,15 @@ logging:
     filter:
       path: /lists/**
 
+api:
+  oauth:
+    url: https://oauth.iam.perf.target.com
+    client-id: ${id2-client-id}
+    client-secret: ${id2-client-secret}
+    nuid-username: ${id2-nuid-username}
+    nuid-password: ${id2-nuid-password}
+    id2-refresh-mins: ${id2-refresh-minutes}
+
 resilience4j:
   circuitbreaker:
     failure-rate-threshold: 50            # failure rate threshold in percentage (default: 50)
@@ -50,6 +71,24 @@ resilience4j:
     sliding-window-type: TIME_BASED       # possible values TIME_BASED or COUNT_BASED (default: COUNT_BASED)
     sliding-window-size: 100               # seconds for TIME_BASED, request-count for COUNT_BASED (default: 100)
     minimum-number-of-calls: 10            # min calls required (per sliding window period) before cb calculates error rate (default: 10)
+
+backends:
+  primary:
+    circuit-breaker:
+      enabled: true
+      failure-rate-threshold: 50            # failure rate threshold in percentage
+      wait-duration-secs-in-open-state: 1   # time cb waits before transitioning from open to half-open
+      sliding-window-type: TIME_BASED       # possible values TIME_BASED or COUNT_BASED
+      sliding-window-size: 5                # seconds for TIME_BASED, request-count for COUNT_BASED
+      minimum-number-of-calls: 2            # min calls required (per sliding window period) before cb calculates error rate.
+  backup:
+    circuit-breaker:
+      enabled: true
+      failure-rate-threshold: 50            # failure rate threshold in percentage
+      wait-duration-secs-in-open-state: 1   # time cb waits before transitioning from open to half-open
+      sliding-window-type: TIME_BASED       # possible values TIME_BASED or COUNT_BASED
+      sliding-window-size: 5                # seconds for TIME_BASED, request-count for COUNT_BASED
+      minimum-number-of-calls: 2            # min calls required (per sliding window period) before cb calculates error rate.
 
 tracing:
   zipkin:

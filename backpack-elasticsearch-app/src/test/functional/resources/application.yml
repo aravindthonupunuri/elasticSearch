@@ -1,8 +1,8 @@
 micronaut:
   application:
-    name: lists-kafka-consumer
+    name: backpack-registry-app
   server:
-    port: ${server-port:33000}
+    port: ${server-port:32000}
 
 elasticsearch:
   httpHosts: "http://localhost:9200,http://127.0.0.2:9200" # same as esaas.primary.httpHosts
@@ -19,6 +19,49 @@ esaas:
     httpHosts: "http://localhost:9200,http://127.0.0.2:9200"
   backup:
     httpHosts: "http://localhost:9200,http://127.0.0.2:9200"
+
+jackson:
+  property-naming-strategy: "SNAKE_CASE"
+
+api:
+  oauth:
+    filter-path: /**
+    url: http://localhost:${server-port:32000}/testserver
+    client-id: "test_ropc"
+    client-secret: "test"
+    nuid-username: "testsecret"
+    nuid-password: "MLRw04}testpwd"
+
+endpoints:
+  prometheus:
+    sensitive: false
+
+filter:
+  server:
+    order:
+      mdc-filter: 50
+      lists-brave-tracing-server-filter: 100
+      list-authorization-filter: 200
+      sanitizing-filter: 300
+  client:
+    order:
+      lists-brave-tracing-client-filter: 900
+      metrics-filter: 850
+      resilience-client-filter: 800
+      oauth-filter: 701
+      oauth-key-filter: 700
+
+logging:
+  mdc:
+    enabled: true
+    keys:
+      - profile_id
+      - x-api-id
+    filter:
+      path: /registry/**
+
+mockfilter:
+  paths: /registries_search/.*,/zipkin,/testserver/auth/oauth/v2/token,/
 
 resilience4j:
   circuitbreaker:
@@ -46,17 +89,30 @@ backends:
       sliding-window-size: 5                # seconds for TIME_BASED, request-count for COUNT_BASED
       minimum-number-of-calls: 2            # min calls required (per sliding window period) before cb calculates error rate.
 
-jackson:
-  property-naming-strategy: "SNAKE_CASE"
+tracing:
+  zipkin:
+    enabled: true
+    excluded-paths: /health
+    http:
+      url: http://localhost:${server-port:32000}/zipkin
+
+api-key: "testkey"
+
+components:
+  server:
+    list-authorization-filter:
+      base-uri: /registries/v2
 
 kafka:
+  embedded:
+    enabled: false
   consumers:
-    lists-msg-bus-kafkapp-consumer:
+    lists-msg-bus-apiapp-consumer:
       key:
         deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value:
         deserializer: org.apache.kafka.common.serialization.ByteArrayDeserializer
-    lists-dlq-kafkapp-consumer:
+    lists-dlq-apiapp-consumer:
       key:
         deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value:
@@ -76,71 +132,26 @@ kafka:
                 connection: 1
         block:
           ms: 2_000
-  embedded:
-    enabled: true
-
-components:
-  server:
-    list-authorization-filter:
-      enabled: false
-    sanitizing-filter:
-      enabled: false
-
-#  ssl:
-#    keystore:
-#      location: /path/to/client.keystore.p12
-#      password: secret
-#    truststore:
-#      location: /path/to/client.truststore.jks
-#      password: secret
-#      type: PKCS12
-#  security:
-#    protocol: ssl
 
 msgbus:
-  source: lists-api-consumer-app
+  source: backpack-registry
   kafka:
     consumer:
-      enabled: true
+      enabled: false
     producer:
       enabled: true
     dlqconsumer:
-      enabled: true
+      enabled: false
     dlqproducer:
       enabled: true
     topic: lists-msg-bus
-    consumer-group: lists-msg-bus-kafkapp-consumer
+    consumer-group: lists-msg-bus-apiapp-consumer
     consumer-batch-size: 10
     dlq-topic: lists-dlq
-    dlq-consumer-group: lists-dlq-kafkapp-consumer
+    dlq-consumer-group: lists-dlq-apiapp-consumer
     dlq-event-retry-interval-secs: 1
-    dlq-max-event-retry-count: 3
+    dlq-max-event-retry-count: 2
     dlq-consumer-batch-size: 10
 
-api-key: "testkey"
 
-filter:
-  server:
-    order:
-      lists-brave-tracing-server-filter: 100
-      lists-traceid-filter: 101
-      list-authorization-filter: 200
-  client:
-    order:
-      lists-brave-tracing-client-filter: 900
-      resilience-client-filter: 800
-      oauth-filter: 701
-      oauth-key-filter: 700
-
-mockfilter:
-  paths: /zipkin,/testserver/auth/oauth/v2/token
-
-tracing:
-  zipkin:
-    enabled: true
-    excluded-paths: /health
-    sampler:
-      probability: 1
-    http:
-      url: http://localhost:9411/zipkin
 
