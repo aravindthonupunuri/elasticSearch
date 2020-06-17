@@ -48,20 +48,20 @@ api:
     id2-refresh-mins: ${id2-refresh-minutes}
 
 elasticsearch:
-  httpHosts: "http://localhost:9200,http://127.0.0.2:9200" # same as esaas.primary.httpHosts
+  httpHosts: ${esaas-primary-url} # same as esaas.primary.httpHosts
   request:
     default:
       connection-request-timeout: 200   # millis, default: 1s
       connect-timeout: 10000            # millis, default: 30s
 
 esaas:
-  nuidUser: user
-  nuidPassword: password
+  nuidUser: ${esaas-nuid}
+  nuidPassword: ${esaas-password}
   use-fallback: true
   primary:
-    httpHosts: "http://localhost:9200,http://127.0.0.2:9200"
+    httpHosts: ${esaas-primary-url}
   backup:
-    httpHosts: "http://localhost:9200,http://127.0.0.2:9200"
+    httpHosts: ${esaas-backup-url}
 
 resilience4j:
   circuitbreaker:
@@ -127,19 +127,19 @@ kafka:
 #  security:
 #    protocol: ssl
   consumers:
-    lists-msg-bus-consumer:
+    backpack-elasticsearch-msg-bus-consumer:
       key:
         deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value:
         deserializer: org.apache.kafka.common.serialization.ByteArrayDeserializer
-    lists-dlq-consumer:
+    backpack-elasticsearch-dlq-consumer:
       key:
         deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value:
         deserializer: org.apache.kafka.common.serialization.ByteArrayDeserializer
   producers:
     # default is a Jackson based JSON serializer for key/value
-    lists-msg-bus-producer:
+    backpack-elasticsearch-msg-bus-producer:
       retries: 3
       retry:
         backoff:
