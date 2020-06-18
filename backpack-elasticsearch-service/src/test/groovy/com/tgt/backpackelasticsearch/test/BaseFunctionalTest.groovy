@@ -42,9 +42,6 @@ class BaseFunctionalTest extends Specification implements TestPropertyProvider {
 
     MockServer mockServer
 
-    @Value('${list.list-type}')
-    String listType
-
     def setup() {
         mockServer = Mock(MockServer)
         mockServer.post({ path -> path.contains("/auth/oauth/v2/token") }, _, _) >> [status: 200, body: DataProvider.getTokenResponse()]

@@ -10,6 +10,7 @@ elasticsearch:
     default:
       connection-request-timeout: 200   # millis, default: 1s
       connect-timeout: 10000            # millis, default: 30s
+  index: registry
 
 esaas:
   nuidUser: user
@@ -100,6 +101,7 @@ components:
 
 msgbus:
   source: lists-api-consumer-app
+  dlq_source: backpackelasticsearch_dlq
   kafka:
     consumer:
       enabled: true
@@ -145,3 +147,6 @@ tracing:
     http:
       url: http://localhost:9411/zipkin
 
+kafka-sources:
+  allow:
+    - backpackelasticsearch_dlq
