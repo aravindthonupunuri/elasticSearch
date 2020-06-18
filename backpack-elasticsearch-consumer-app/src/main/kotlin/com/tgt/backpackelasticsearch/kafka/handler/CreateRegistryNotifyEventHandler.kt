@@ -8,6 +8,7 @@ import com.tgt.backpackelasticsearch.util.RecipientType
 import com.tgt.lists.lib.kafka.model.CreateListNotifyEvent
 import com.tgt.lists.msgbus.event.EventHeaderFactory
 import com.tgt.lists.msgbus.event.EventHeaders
+import com.tgt.lists.msgbus.event.EventProcessingResult
 import mu.KotlinLogging
 import reactor.core.publisher.Mono
 import javax.inject.Inject
@@ -24,7 +25,7 @@ class CreateRegistryNotifyEventHandler(
         createRegistryNotifyEvent: CreateListNotifyEvent,
         eventHeaders: EventHeaders,
         isPoisonEvent: Boolean
-    ): Mono<Triple<Boolean, EventHeaders, Any>> {
+    ): Mono<EventProcessingResult> {
         val registryMetaData = RegistryMetaDataTO.getRegistryMetadata(createRegistryNotifyEvent.userMetaData)
         return createRegistryService.saveRegistry(RegistryData(registryId = createRegistryNotifyEvent.listId,
             registryTitle = createRegistryNotifyEvent.listTitle,
@@ -43,11 +44,11 @@ class CreateRegistryNotifyEventHandler(
             .map {
                 if (it.v1() != null && it.v1().id == createRegistryNotifyEvent.listId.toString() &&
                     it.v2() != null && it.v2().id == createRegistryNotifyEvent.listId.toString()) {
-                    Triple(true, eventHeaders, createRegistryNotifyEvent)
+                    EventProcessingResult(true, eventHeaders, createRegistryNotifyEvent)
                 } else {
                     val message = "Exception while saving registry data into elastic search from handleCreateRegistryNotifyEvent: $it"
                     logger.error(message, it)
-                    Triple(false,
+                    EventProcessingResult(false,
                         eventHeaderFactory.nextRetryHeaders(eventHeaders = eventHeaders, errorCode = 500, errorMsg = message).copy(source = ELASTIC_SEARCH_BASEPATH),
                         createRegistryNotifyEvent)
                 }

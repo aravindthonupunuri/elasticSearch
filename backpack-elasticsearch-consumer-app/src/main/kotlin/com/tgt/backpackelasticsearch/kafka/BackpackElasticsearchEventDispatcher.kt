@@ -7,10 +7,11 @@ import com.tgt.backpackelasticsearch.util.BackpackElasticsearchConstants.BACKPAC
 import com.tgt.lists.lib.kafka.model.CreateListNotifyEvent
 import com.tgt.lists.lib.kafka.model.DeleteListNotifyEvent
 import com.tgt.lists.lib.kafka.model.UpdateListNotifyEvent
-import com.tgt.lists.msgbus.ApplicationDataObject
 import com.tgt.lists.msgbus.EventDispatcher
-import com.tgt.lists.msgbus.ExecutionId
+import com.tgt.lists.msgbus.event.DeadEventTransformedValue
 import com.tgt.lists.msgbus.event.EventHeaders
+import com.tgt.lists.msgbus.event.EventProcessingResult
+import com.tgt.lists.msgbus.event.EventTransformedValue
 import com.tgt.lists.msgbus.execution.ExecutionSerialization
 import io.micronaut.context.annotation.Value
 import mu.KotlinLogging
@@ -32,21 +33,21 @@ open class BackpackElasticsearchEventDispatcher(
      * Transform ByteArray data to a concrete type based on event type header
      * It is also used by msgbus framework during dql publish exception handling
      */
-    override fun transformValue(eventHeaders: EventHeaders, data: ByteArray): Triple<ExecutionId?, ExecutionSerialization, ApplicationDataObject>? {
+    override fun transformValue(eventHeaders: EventHeaders, data: ByteArray): EventTransformedValue? {
         when (eventHeaders.source) {
             source -> {
                 return when (eventHeaders.eventType) {
                     CreateListNotifyEvent.getEventType() -> {
                         val createListNotifyEvent = CreateListNotifyEvent.deserialize(data)
-                        Triple("guest_${createListNotifyEvent.guestId}", ExecutionSerialization.ID_SERIALIZATION, createListNotifyEvent)
+                        EventTransformedValue("guest_${createListNotifyEvent.guestId}", ExecutionSerialization.ID_SERIALIZATION, createListNotifyEvent)
                     }
                     UpdateListNotifyEvent.getEventType() -> {
                         val updateListNotifyEvent = UpdateListNotifyEvent.deserialize(data)
-                        Triple("lists_${updateListNotifyEvent.listId}", ExecutionSerialization.ID_SERIALIZATION, updateListNotifyEvent)
+                        EventTransformedValue("lists_${updateListNotifyEvent.listId}", ExecutionSerialization.ID_SERIALIZATION, updateListNotifyEvent)
                     }
                     DeleteListNotifyEvent.getEventType() -> {
                         val deleteListNotifyEvent = DeleteListNotifyEvent.deserialize(data)
-                        Triple("guest_${deleteListNotifyEvent.guestId}", ExecutionSerialization.ID_SERIALIZATION, deleteListNotifyEvent)
+                        EventTransformedValue("guest_${deleteListNotifyEvent.guestId}", ExecutionSerialization.ID_SERIALIZATION, deleteListNotifyEvent)
                     }
                     else -> null
                 }
@@ -55,7 +56,7 @@ open class BackpackElasticsearchEventDispatcher(
         return null
     }
 
-    override fun dispatchEvent(eventHeaders: EventHeaders, data: Any, isPoisonEvent: Boolean): Mono<Triple<Boolean, EventHeaders, Any>> {
+    override fun dispatchEvent(eventHeaders: EventHeaders, data: Any, isPoisonEvent: Boolean): Mono<EventProcessingResult> {
         // Check for both the source:
         // 1. Generic messages created for the common list bus
         // 2. Failed messages and are retried as part of DLQ process
@@ -84,7 +85,7 @@ open class BackpackElasticsearchEventDispatcher(
         }
 
         logger.debug { "Unhandled eventType: ${eventHeaders.eventType}" }
-        return Mono.just(Triple(true, eventHeaders, data))
+        return Mono.just(EventProcessingResult(true, eventHeaders, data))
     }
 
     /**
@@ -99,7 +100,7 @@ open class BackpackElasticsearchEventDispatcher(
      *                          ExecutionSerialization - type of serialization processing required for this event
      *                          Mono<Void> - dead event processing lambda to be run
      */
-    override fun handleDlqDeadEvent(eventHeaders: EventHeaders, data: ByteArray): Triple<ExecutionId?, ExecutionSerialization, Mono<Void>>? {
+    override fun handleDlqDeadEvent(eventHeaders: EventHeaders, data: ByteArray): DeadEventTransformedValue? {
         return null
     }
 }

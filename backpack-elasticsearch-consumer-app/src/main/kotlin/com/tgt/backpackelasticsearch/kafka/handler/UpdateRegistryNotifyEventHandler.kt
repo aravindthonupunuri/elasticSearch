@@ -8,6 +8,7 @@ import com.tgt.backpackelasticsearch.util.RecipientType
 import com.tgt.lists.lib.kafka.model.UpdateListNotifyEvent
 import com.tgt.lists.msgbus.event.EventHeaderFactory
 import com.tgt.lists.msgbus.event.EventHeaders
+import com.tgt.lists.msgbus.event.EventProcessingResult
 import mu.KotlinLogging
 import reactor.core.publisher.Mono
 import javax.inject.Inject
@@ -24,7 +25,7 @@ class UpdateRegistryNotifyEventHandler(
         updateRegistryNotifyEvent: UpdateListNotifyEvent,
         eventHeaders: EventHeaders,
         isPoisonEvent: Boolean
-    ): Mono<Triple<Boolean, EventHeaders, Any>> {
+    ): Mono<EventProcessingResult> {
         val registryMetaData = RegistryMetaDataTO.getRegistryMetadata(updateRegistryNotifyEvent.userMetaData)
         return updateRegistryService.updateRegistry(RegistryData(registryId = updateRegistryNotifyEvent.listId,
             registryTitle = updateRegistryNotifyEvent.listTitle,
@@ -43,11 +44,11 @@ class UpdateRegistryNotifyEventHandler(
             .map {
             if (it.v1() != null && it.v1().id == updateRegistryNotifyEvent.listId.toString() &&
                 it.v2() != null && it.v2().id == updateRegistryNotifyEvent.listId.toString()) {
-                Triple(true, eventHeaders, updateRegistryNotifyEvent)
+                EventProcessingResult(true, eventHeaders, updateRegistryNotifyEvent)
             } else {
                 val message = "Exception while updating registry data into elastic search from handleCreateRegistryNotifyEvent: $it"
                 logger.error(message, it)
-                Triple(false,
+                EventProcessingResult(false,
                     eventHeaderFactory.nextRetryHeaders(eventHeaders = eventHeaders, errorCode = 500, errorMsg = message).copy(source = BackpackElasticsearchConstants.ELASTIC_SEARCH_BASEPATH),
                     updateRegistryNotifyEvent)
             }
