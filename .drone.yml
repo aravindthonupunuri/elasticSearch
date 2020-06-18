@@ -35,6 +35,8 @@ pipeline:
       event: [push]
       branch: master
     image: 'docker.target.com/app/lists/alpine-bash-curl-ssl:1.0.5'
+    environment:
+      CICD_MODE: 'true'
     secrets:
       - TAP_API_TOKEN
       - backpack_elasticsearch_app_private_key_dev
@@ -49,6 +51,8 @@ pipeline:
       ref: 'refs/tags/conf.stage.backpackelasticsearch.*'
       branch: master
     image: 'docker.target.com/app/lists/alpine-bash-curl-ssl:1.0.5'
+    environment:
+      CICD_MODE: 'true'
     secrets:
       - TAP_API_TOKEN
       - backpack_elasticsearch_app_private_key_stage
@@ -124,6 +128,8 @@ pipeline:
 
   publish-docker-backpack-elasticsearch-consumer-app-dev:
     image: plugins/docker
+    environment:
+      CICD_MODE: 'true'
     group: devimggroup
     registry: docker.target.com
     repo: docker.target.com/app/backpack-elasticsearch/backpack-elasticsearch-consumer-app
@@ -140,6 +146,8 @@ pipeline:
 
   publish-docker-backpack-elasticsearch-consumer-app-stage:
     image: 'plugins/docker:latest'
+    environment:
+      CICD_MODE: 'true'
     group: stgimggroup
     registry: docker.target.com
     repo: docker.target.com/app/backpack-elasticsearch/backpack-elasticsearch-consumer-app
