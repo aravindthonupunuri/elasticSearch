@@ -70,6 +70,7 @@ resilience4j:
     sliding-window-type: TIME_BASED       # possible values TIME_BASED or COUNT_BASED (default: COUNT_BASED)
     sliding-window-size: 100               # seconds for TIME_BASED, request-count for COUNT_BASED (default: 100)
     minimum-number-of-calls: 10            # min calls required (per sliding window period) before cb calculates error rate (default: 10)
+    permitted-number-of-calls-in-half-open-state: 1 # Number of permitted calls when the CircuitBreaker is half open.
 
 backends:
   primary:
