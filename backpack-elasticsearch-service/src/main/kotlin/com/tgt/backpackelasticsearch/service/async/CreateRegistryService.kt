@@ -3,12 +3,14 @@ package com.tgt.backpackelasticsearch.service.async
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.tgt.backpackelasticsearch.transport.RegistryData
 import com.tgt.lists.micronaut.elastic.ElasticCallExecutor
+import com.tgt.lists.micronaut.elastic.ElasticClientManager
 import com.tgt.lists.micronaut.elastic.ListenerArgs
-import mu.KotlinLogging
+import io.micronaut.context.annotation.Value
 import org.elasticsearch.action.index.IndexRequest
 import org.elasticsearch.action.index.IndexResponse
 import org.elasticsearch.client.RequestOptions
 import org.elasticsearch.client.RestHighLevelClient
+import org.elasticsearch.common.collect.Tuple
 import org.elasticsearch.common.xcontent.XContentType
 import reactor.core.publisher.Mono
 import javax.inject.Inject
@@ -16,30 +18,32 @@ import javax.inject.Singleton
 
 @Singleton
 class CreateRegistryService(
-    @Inject private val elasticCallExecutor: ElasticCallExecutor
+    @Inject private val elasticCallExecutor: ElasticCallExecutor,
+    @Inject private val elasticClientManager: ElasticClientManager,
+    @Value("\${elasticsearch.index}") private val registryIndex: String
 ) {
-    private val logger = KotlinLogging.logger { CreateRegistryService::class.java.name }
 
     val mapper = ObjectMapper()
 
-    val ES_LIST_INDEX = "backpackregistry" // TODO Pick this from config
-
-    fun saveRegistry(registryData: RegistryData): Mono<IndexResponse> {
+    fun saveRegistry(registryData: RegistryData): Mono<Tuple<IndexResponse, IndexResponse>> {
 
         val json = mapper.writeValueAsString(registryData)
 
-        val indexRequest = IndexRequest(ES_LIST_INDEX)
+        val indexRequest = IndexRequest(registryIndex)
             .timeout("1s")
             .id(registryData.registryId.toString())
             .source(json, XContentType.JSON)
 
-        return elasticCallExecutor.executeWithFallback(executionId = "saveRegistry", stmtBlock = saveElastic(indexRequest))
+        // Copy data into primary and backup client to ensure both are in sync
+        return elasticCallExecutor.execute("saveRegistry", elasticClientManager.primaryClient, saveToElasticsearch(indexRequest))
+            .zipWith(elasticClientManager.backupClient?.let { elasticCallExecutor.execute("saveRegistry", it, saveToElasticsearch(indexRequest)) })
+            .map { Tuple(it.t1, it.t2) }
     }
 
-    private fun saveElastic(indexRequest: IndexRequest?): (RestHighLevelClient, ListenerArgs<IndexResponse>) -> Unit {
+    private fun saveToElasticsearch(indexRequest: IndexRequest?): (RestHighLevelClient, ListenerArgs<IndexResponse>) -> Unit {
         return { client: RestHighLevelClient, listenerArgs: ListenerArgs<IndexResponse> ->
             client.indexAsync(indexRequest, RequestOptions.DEFAULT,
-                ElasticCallExecutor.listenerToSink(elasticCallExecutor, listenerArgs, "saveRegistry", "/$ES_LIST_INDEX/_doc"))
+                ElasticCallExecutor.listenerToSink(elasticCallExecutor, listenerArgs, "saveRegistry", "/$registryIndex/_doc"))
         }
     }
 }

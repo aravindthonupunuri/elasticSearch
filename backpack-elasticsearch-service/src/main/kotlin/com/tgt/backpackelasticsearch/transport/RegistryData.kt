@@ -7,7 +7,7 @@ data class RegistryData(
     val registryId: UUID?,
     val registryTitle: String?,
     val registryType: RegistryType?,
-    val registryStatus: String?, // TODO How is this status of the registry updated in elastic seach?
+    val registryStatus: String?, // TODO Make sense to hold this data in elastic search at all
     val registrantFirstName: String?,
     val registrantLastName: String?,
     val coregistrantFirstName: String?,

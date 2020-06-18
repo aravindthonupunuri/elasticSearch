@@ -3,6 +3,7 @@ package com.tgt.backpackelasticsearch.kafka
 import com.tgt.backpackelasticsearch.kafka.handler.CreateRegistryNotifyEventHandler
 import com.tgt.backpackelasticsearch.kafka.handler.DeleteRegistryNotifyEventHandler
 import com.tgt.backpackelasticsearch.kafka.handler.UpdateRegistryNotifyEventHandler
+import com.tgt.backpackelasticsearch.util.BackpackElasticsearchConstants.BACKPACK_ELASTIC_SOURCE
 import com.tgt.lists.lib.kafka.model.CreateListNotifyEvent
 import com.tgt.lists.lib.kafka.model.DeleteListNotifyEvent
 import com.tgt.lists.lib.kafka.model.UpdateListNotifyEvent
@@ -55,7 +56,10 @@ open class BackpackElasticsearchEventDispatcher(
     }
 
     override fun dispatchEvent(eventHeaders: EventHeaders, data: Any, isPoisonEvent: Boolean): Mono<Triple<Boolean, EventHeaders, Any>> {
-        if (eventHeaders.source == source) {
+        // Check for both the source:
+        // 1. Generic messages created for the common list bus
+        // 2. Failed messages and are retried as part of DLQ process
+        if (eventHeaders.source == source || eventHeaders.source == BACKPACK_ELASTIC_SOURCE) {
             // handle following events only from configured source
             when (eventHeaders.eventType) {
                 CreateListNotifyEvent.getEventType() -> {

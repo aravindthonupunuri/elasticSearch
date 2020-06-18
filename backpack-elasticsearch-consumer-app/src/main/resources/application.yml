@@ -48,6 +48,7 @@ api:
     id2-refresh-mins: ${id2-refresh-minutes}
 
 elasticsearch:
+  index: ${esaas-index}
   httpHosts: ${esaas-primary-url} # same as esaas.primary.httpHosts
   request:
     default:

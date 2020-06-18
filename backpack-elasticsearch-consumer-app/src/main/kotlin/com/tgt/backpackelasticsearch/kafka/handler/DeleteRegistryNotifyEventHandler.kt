@@ -1,6 +1,7 @@
 package com.tgt.backpackelasticsearch.kafka.handler
 
 import com.tgt.backpackelasticsearch.service.async.DeleteRegistryService
+import com.tgt.backpackelasticsearch.util.BackpackElasticsearchConstants
 import com.tgt.lists.lib.kafka.model.DeleteListNotifyEvent
 import com.tgt.lists.msgbus.event.EventHeaderFactory
 import com.tgt.lists.msgbus.event.EventHeaders
@@ -23,12 +24,15 @@ class DeleteRegistryNotifyEventHandler(
     ): Mono<Triple<Boolean, EventHeaders, Any>> {
         return deleteRegistryService.deleteRegistry(deleteRegistryNotifyEvent.listId)
             .map {
-                if (it != null && it.id == deleteRegistryNotifyEvent.listId.toString()) {
+                if (it.v1() != null && it.v1().id == deleteRegistryNotifyEvent.listId.toString() &&
+                    it.v2() != null && it.v2().id == deleteRegistryNotifyEvent.listId.toString()) {
                     Triple(true, eventHeaders, deleteRegistryNotifyEvent)
                 } else {
-                    val message = "Exception while updating registry data into elastic search from handleDeleteRegistryNotifyEvent: $it"
+                    val message = "Exception while deleting registry data of elastic search from handleDeleteRegistryNotifyEvent: $it"
                     logger.error(message, it)
-                    Triple(false, eventHeaderFactory.nextRetryHeaders(eventHeaders = eventHeaders, errorCode = 500, errorMsg = message), deleteRegistryNotifyEvent)
+                    Triple(false,
+                        eventHeaderFactory.nextRetryHeaders(eventHeaders = eventHeaders, errorCode = 500, errorMsg = message).copy(source = BackpackElasticsearchConstants.ELASTIC_SEARCH_BASEPATH),
+                        deleteRegistryNotifyEvent)
                 }
             }
     }

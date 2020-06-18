@@ -1,12 +1,14 @@
 package com.tgt.backpackelasticsearch.service.async
 
 import com.tgt.lists.micronaut.elastic.ElasticCallExecutor
+import com.tgt.lists.micronaut.elastic.ElasticClientManager
 import com.tgt.lists.micronaut.elastic.ListenerArgs
-import mu.KotlinLogging
+import io.micronaut.context.annotation.Value
 import org.elasticsearch.action.delete.DeleteRequest
 import org.elasticsearch.action.delete.DeleteResponse
 import org.elasticsearch.client.RequestOptions
 import org.elasticsearch.client.RestHighLevelClient
+import org.elasticsearch.common.collect.Tuple
 import reactor.core.publisher.Mono
 import java.util.*
 import javax.inject.Inject
@@ -14,25 +16,26 @@ import javax.inject.Singleton
 
 @Singleton
 class DeleteRegistryService(
-    @Inject private val elasticCallExecutor: ElasticCallExecutor
+    @Inject private val elasticCallExecutor: ElasticCallExecutor,
+    @Inject private val elasticClientManager: ElasticClientManager,
+    @Value("\${elasticsearch.index}") private val registryIndex: String
 ) {
-    private val logger = KotlinLogging.logger { CreateRegistryService::class.java.name }
 
-    val ES_LIST_INDEX = "backpackregistry" // TODO Pick this from config
-
-    fun deleteRegistry(registryId: UUID?): Mono<DeleteResponse> {
-        val indexRequest = DeleteRequest(ES_LIST_INDEX)
+    fun deleteRegistry(registryId: UUID?): Mono<Tuple<DeleteResponse, DeleteResponse>> {
+        val indexRequest = DeleteRequest(registryIndex)
             .timeout("1s")
             .id(registryId.toString())
 
-        return elasticCallExecutor.executeWithFallback(executionId = "deleteRegistry",
-            stmtBlock = saveElastic(indexRequest))
+        // Delete data from primary and backup client to ensure both are in sync
+        return elasticCallExecutor.execute("deleteRegistry", elasticClientManager.primaryClient, deleteFromElasticsearch(indexRequest))
+            .zipWith(elasticClientManager.backupClient?.let { elasticCallExecutor.execute("deleteRegistry", it, deleteFromElasticsearch(indexRequest)) })
+            .map { Tuple(it.t1, it.t2) }
     }
 
-    private fun saveElastic(indexRequest: DeleteRequest?): (RestHighLevelClient, ListenerArgs<DeleteResponse>) -> Unit {
+    private fun deleteFromElasticsearch(indexRequest: DeleteRequest?): (RestHighLevelClient, ListenerArgs<DeleteResponse>) -> Unit {
         return { client: RestHighLevelClient, listenerArgs: ListenerArgs<DeleteResponse> ->
             client.deleteAsync(indexRequest, RequestOptions.DEFAULT,
-                ElasticCallExecutor.listenerToSink(elasticCallExecutor, listenerArgs, "deleteRegistry", "/$ES_LIST_INDEX/_doc"))
+                ElasticCallExecutor.listenerToSink(elasticCallExecutor, listenerArgs, "deleteRegistry", "/$registryIndex/_doc"))
         }
     }
 }
