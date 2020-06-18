@@ -3,12 +3,12 @@ package com.tgt.backpackelasticsearch.kafka.handler
 import com.tgt.backpackelasticsearch.service.async.UpdateRegistryService
 import com.tgt.backpackelasticsearch.transport.RegistryData
 import com.tgt.backpackelasticsearch.transport.RegistryMetaDataTO
-import com.tgt.backpackelasticsearch.util.BackpackElasticsearchConstants
 import com.tgt.backpackelasticsearch.util.RecipientType
 import com.tgt.lists.lib.kafka.model.UpdateListNotifyEvent
 import com.tgt.lists.msgbus.event.EventHeaderFactory
 import com.tgt.lists.msgbus.event.EventHeaders
 import com.tgt.lists.msgbus.event.EventProcessingResult
+import io.micronaut.context.annotation.Value
 import mu.KotlinLogging
 import reactor.core.publisher.Mono
 import javax.inject.Inject
@@ -17,7 +17,8 @@ import javax.inject.Singleton
 @Singleton
 class UpdateRegistryNotifyEventHandler(
     @Inject val updateRegistryService: UpdateRegistryService,
-    @Inject private val eventHeaderFactory: EventHeaderFactory
+    @Inject private val eventHeaderFactory: EventHeaderFactory,
+    @Value("\${msgbus.dlq_source}") val dlqSource: String
 ) {
     private val logger = KotlinLogging.logger { UpdateRegistryNotifyEventHandler::class.java.name }
 
@@ -49,7 +50,7 @@ class UpdateRegistryNotifyEventHandler(
                 val message = "Exception while updating registry data into elastic search from handleCreateRegistryNotifyEvent: $it"
                 logger.error(message, it)
                 EventProcessingResult(false,
-                    eventHeaderFactory.nextRetryHeaders(eventHeaders = eventHeaders, errorCode = 500, errorMsg = message).copy(source = BackpackElasticsearchConstants.ELASTIC_SEARCH_BASEPATH),
+                    eventHeaderFactory.nextRetryHeaders(eventHeaders = eventHeaders, errorCode = 500, errorMsg = message).copy(source = dlqSource),
                     updateRegistryNotifyEvent)
             }
         }

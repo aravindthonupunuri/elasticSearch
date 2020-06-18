@@ -3,7 +3,6 @@ package com.tgt.backpackelasticsearch.kafka
 import com.tgt.backpackelasticsearch.kafka.handler.CreateRegistryNotifyEventHandler
 import com.tgt.backpackelasticsearch.kafka.handler.DeleteRegistryNotifyEventHandler
 import com.tgt.backpackelasticsearch.kafka.handler.UpdateRegistryNotifyEventHandler
-import com.tgt.backpackelasticsearch.util.BackpackElasticsearchConstants.BACKPACK_ELASTIC_SOURCE
 import com.tgt.lists.lib.kafka.model.CreateListNotifyEvent
 import com.tgt.lists.lib.kafka.model.DeleteListNotifyEvent
 import com.tgt.lists.lib.kafka.model.UpdateListNotifyEvent
@@ -24,7 +23,9 @@ open class BackpackElasticsearchEventDispatcher(
     @Inject val createRegistryNotifyEventHandler: CreateRegistryNotifyEventHandler,
     @Inject val updateRegistryNotifyEventHandler: UpdateRegistryNotifyEventHandler,
     @Inject val deleteRegistryNotifyEventHandler: DeleteRegistryNotifyEventHandler,
-    @Value("\${msgbus.source}") val source: String
+    @Value("\${msgbus.source}") val source: String,
+    @Value("\${msgbus.dlq_source}") val dlqSource: String,
+    @Value("\${kafka-sources.allow}") val allowesSources: Set<String>
 ) : EventDispatcher {
 
     private val logger = KotlinLogging.logger {}
@@ -60,7 +61,7 @@ open class BackpackElasticsearchEventDispatcher(
         // Check for both the source:
         // 1. Generic messages created for the common list bus
         // 2. Failed messages and are retried as part of DLQ process
-        if (eventHeaders.source == source || eventHeaders.source == BACKPACK_ELASTIC_SOURCE) {
+        if (eventHeaders.source == source || eventHeaders.source == dlqSource || allowesSources.contains(eventHeaders.source)) {
             // handle following events only from configured source
             when (eventHeaders.eventType) {
                 CreateListNotifyEvent.getEventType() -> {

@@ -157,6 +157,7 @@ kafka:
 
 msgbus:
   source: backpackelasticsearch
+  dlq_source: backpackelasticsearch_dlq
   kafka:
     consumer:
       enabled: true
@@ -174,6 +175,10 @@ msgbus:
     dlq-event-retry-interval-secs: 1
     dlq-max-event-retry-count: 2
     dlq-consumer-batch-size: 10
+
+kafka-sources:
+  allow:
+    - backpack-registry
 
 endpoints:
   health:

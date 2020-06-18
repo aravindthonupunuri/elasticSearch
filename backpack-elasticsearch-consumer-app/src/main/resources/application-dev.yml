@@ -129,6 +129,7 @@ kafka:
 
 msgbus:
   source: backpackelasticsearch
+  dlq_source: backpackelasticsearch_dlq
   kafka:
     consumer:
       enabled: true
