@@ -36,7 +36,7 @@ class GetRegistryService(
             .from(0)
             .size(5) // default=10
             .timeout(TimeValue(10, TimeUnit.SECONDS))
-        return elasticCallExecutor.executeWithFallback(executionId = "searchListByName", stmtBlock = saveElastic(searchRequest))
+        return elasticCallExecutor.executeWithFallback(executionId = "searchListByName", stmtBlock = queryElastic(searchRequest))
             .map {
                 val searchResponse = it
                 val hits = searchResponse.getHits()
@@ -48,7 +48,7 @@ class GetRegistryService(
             }
     }
 
-    private fun saveElastic(indexRequest: SearchRequest?): (RestHighLevelClient, ListenerArgs<SearchResponse>) -> Unit {
+    private fun queryElastic(indexRequest: SearchRequest?): (RestHighLevelClient, ListenerArgs<SearchResponse>) -> Unit {
         return { client: RestHighLevelClient, listenerArgs: ListenerArgs<SearchResponse> ->
             client.searchAsync(indexRequest, RequestOptions.DEFAULT,
                 ElasticCallExecutor.listenerToSink(elasticCallExecutor, listenerArgs, "searchListByName", "/$registryIndex/_doc"))

@@ -24,7 +24,7 @@ open class BackpackElasticsearchEventDispatcher(
     @Inject val updateRegistryNotifyEventHandler: UpdateRegistryNotifyEventHandler,
     @Inject val deleteRegistryNotifyEventHandler: DeleteRegistryNotifyEventHandler,
     @Value("\${msgbus.source}") val source: String,
-    @Value("\${msgbus.dlq_source}") val dlqSource: String,
+    @Value("\${msgbus.dlq-source}") val dlqSource: String,
     @Value("\${kafka-sources.allow}") val allowesSources: Set<String>
 ) : EventDispatcher {
 
@@ -35,22 +35,24 @@ open class BackpackElasticsearchEventDispatcher(
      * It is also used by msgbus framework during dql publish exception handling
      */
     override fun transformValue(eventHeaders: EventHeaders, data: ByteArray): EventTransformedValue? {
-        when (eventHeaders.source) {
-            source -> {
-                return when (eventHeaders.eventType) {
-                    CreateListNotifyEvent.getEventType() -> {
-                        val createListNotifyEvent = CreateListNotifyEvent.deserialize(data)
-                        EventTransformedValue("guest_${createListNotifyEvent.guestId}", ExecutionSerialization.ID_SERIALIZATION, createListNotifyEvent)
+        if (eventHeaders.source == source || eventHeaders.source == dlqSource || allowesSources.contains(eventHeaders.source)) {
+            when (eventHeaders.source) {
+                source -> {
+                    return when (eventHeaders.eventType) {
+                        CreateListNotifyEvent.getEventType() -> {
+                            val createListNotifyEvent = CreateListNotifyEvent.deserialize(data)
+                            EventTransformedValue("guest_${createListNotifyEvent.guestId}", ExecutionSerialization.ID_SERIALIZATION, createListNotifyEvent)
+                        }
+                        UpdateListNotifyEvent.getEventType() -> {
+                            val updateListNotifyEvent = UpdateListNotifyEvent.deserialize(data)
+                            EventTransformedValue("lists_${updateListNotifyEvent.listId}", ExecutionSerialization.ID_SERIALIZATION, updateListNotifyEvent)
+                        }
+                        DeleteListNotifyEvent.getEventType() -> {
+                            val deleteListNotifyEvent = DeleteListNotifyEvent.deserialize(data)
+                            EventTransformedValue("guest_${deleteListNotifyEvent.guestId}", ExecutionSerialization.ID_SERIALIZATION, deleteListNotifyEvent)
+                        }
+                        else -> null
                     }
-                    UpdateListNotifyEvent.getEventType() -> {
-                        val updateListNotifyEvent = UpdateListNotifyEvent.deserialize(data)
-                        EventTransformedValue("lists_${updateListNotifyEvent.listId}", ExecutionSerialization.ID_SERIALIZATION, updateListNotifyEvent)
-                    }
-                    DeleteListNotifyEvent.getEventType() -> {
-                        val deleteListNotifyEvent = DeleteListNotifyEvent.deserialize(data)
-                        EventTransformedValue("guest_${deleteListNotifyEvent.guestId}", ExecutionSerialization.ID_SERIALIZATION, deleteListNotifyEvent)
-                    }
-                    else -> null
                 }
             }
         }

@@ -11,6 +11,7 @@ import com.tgt.backpackelasticsearch.util.RegistryType
 import com.tgt.lists.lib.api.transport.ListMetaDataTO
 import com.tgt.lists.lib.api.util.LIST_STATUS
 import com.tgt.lists.lib.kafka.model.CreateListNotifyEvent
+import com.tgt.lists.lib.kafka.model.DeleteListNotifyEvent
 import com.tgt.lists.msgbus.ListsMessageBusProducer
 import com.tgt.lists.msgbus.event.EventHeaders
 import com.tgt.lists.msgbus.event.EventLifecycleNotificationProvider
@@ -26,7 +27,7 @@ import java.util.stream.Collectors
 
 @MicronautTest
 @Stepwise
-class CreateRegistryFunctionalTest extends BaseKafkaFunctionalTest {
+class ElasticsearchEventDispatcherFunctionalTest extends BaseKafkaFunctionalTest {
 
     PollingConditions conditions = new PollingConditions(timeout: 30, delay: 1)
 
@@ -55,7 +56,7 @@ class CreateRegistryFunctionalTest extends BaseKafkaFunctionalTest {
         testEventListener.reset()
     }
 
-    def "Guest creates registry - Consumer kicks in to consume the event and copy the data into elastic search"() {
+    def "Guest creates registry - Consumer kicks in to consume the event and copies regisrtry data into elastic search"() {
         String guestId = "1236"
         def registryId = UUID.randomUUID()
         def city = "Minneapolis"
@@ -78,8 +79,8 @@ class CreateRegistryFunctionalTest extends BaseKafkaFunctionalTest {
             @Override
             boolean onPreDispatchConsumerEvent(String topic, @NotNull EventHeaders eventHeaders, @NotNull byte[] data, boolean isPoisonEvent) {
                 if (eventHeaders.eventType == CreateListNotifyEvent.getEventType()) {
-                    def createList = CreateListNotifyEvent.deserialize(data)
-                    if (createList.listId == registryId) {
+                    def createRegistry = CreateListNotifyEvent.deserialize(data)
+                    if (createRegistry.listId == registryId) {
                         return true
                     }
                 }
@@ -91,13 +92,50 @@ class CreateRegistryFunctionalTest extends BaseKafkaFunctionalTest {
         listsMessageBusProducer.sendMessage(createRegistryEvent.getEventType(), createRegistryEvent, registryId ).block()
 
         then:
-        testEventListener.verifyEvents { consumerEvents, producerEvents, consumerStatusEvents ->
+        testEventListener.verifyEvents {consumerEvents, producerEvents, consumerStatusEvents ->
             conditions.eventually {
-//                TestEventListener.Result[] completedEvents = consumerEvents.stream().filter {
-//                    def result = (TestEventListener.Result)it
-//                    (!result.preDispatch)
-//                }.collect(Collectors.toList())
-//                assert completedEvents.size() == 1
+                def completedEvents = producerEvents.stream().filter {
+                    def result = (TestEventListener.Result)it
+                    (!result.preDispatch)
+                }.collect(Collectors.toList())
+                assert completedEvents.size() == 1
+            }
+        }
+
+
+    }
+
+    def "Guest deletes registry - Consumer kicks in to consume the event and deletes registry data from elastic search"() {
+        String guestId = "1236"
+        def registryId = UUID.randomUUID()
+
+        def listMetadata = new ListMetaDataTO(true, LIST_STATUS.PENDING)
+        def deleteRegistryEvent = new DeleteListNotifyEvent(guestId, registryId, "REGISTRY", "Testing Registry Event", listMetadata, null)
+
+        testEventListener.preDispatchLambda = new PreDispatchLambda() {
+            @Override
+            boolean onPreDispatchConsumerEvent(String topic, @NotNull EventHeaders eventHeaders, @NotNull byte[] data, boolean isPoisonEvent) {
+                if (eventHeaders.eventType == DeleteListNotifyEvent.getEventType()) {
+                    def deleteRegistry = DeleteListNotifyEvent.deserialize(data)
+                    if (deleteRegistry.listId == registryId) {
+                        return true
+                    }
+                }
+                return false
+            }
+        }
+
+        when:
+        listsMessageBusProducer.sendMessage(deleteRegistryEvent.getEventType(), deleteRegistryEvent, registryId ).block()
+
+        then:
+        testEventListener.verifyEvents {consumerEvents, producerEvents, consumerStatusEvents ->
+            conditions.eventually {
+                def completedEvents = producerEvents.stream().filter {
+                    def result = (TestEventListener.Result)it
+                    (!result.preDispatch)
+                }.collect(Collectors.toList())
+                assert completedEvents.size() == 1
             }
         }
 

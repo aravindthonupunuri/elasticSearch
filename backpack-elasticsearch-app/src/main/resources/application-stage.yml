@@ -91,7 +91,7 @@ components:
 
 msgbus:
   source: backpackelasticsearch
-  dlq_source: backpackelasticsearch_dlq
+  dlq-source: backpackelasticsearch-dlq
   kafka:
     consumer:
       enabled: false

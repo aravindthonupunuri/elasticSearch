@@ -36,7 +36,7 @@ class CreateRegistryService(
 
         // Copy data into primary and backup client to ensure both are in sync
         return elasticCallExecutor.execute("saveRegistry", elasticClientManager.primaryClient, saveToElasticsearch(indexRequest))
-            .zipWith(elasticClientManager.backupClient?.let { elasticCallExecutor.execute("saveRegistry", it, saveToElasticsearch(indexRequest)) })
+            .zipWith(elasticClientManager.backupClient?.let { elasticCallExecutor.execute("saveRegistry-backup", it, saveToElasticsearch(indexRequest)) })
             .map { Tuple(it.t1, it.t2) }
     }
 

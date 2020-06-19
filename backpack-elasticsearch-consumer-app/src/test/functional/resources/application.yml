@@ -101,7 +101,7 @@ components:
 
 msgbus:
   source: lists-api-consumer-app
-  dlq_source: backpackelasticsearch_dlq
+  dlq-source: backpackelasticsearch-dlq
   kafka:
     consumer:
       enabled: true
@@ -149,4 +149,4 @@ tracing:
 
 kafka-sources:
   allow:
-    - backpackelasticsearch_dlq
+    - backpackelasticsearch-dlq

@@ -18,7 +18,7 @@ import javax.inject.Singleton
 class CreateRegistryNotifyEventHandler(
     @Inject val createRegistryService: CreateRegistryService,
     @Inject private val eventHeaderFactory: EventHeaderFactory,
-    @Value("\${msgbus.dlq_source}") val dlqSource: String
+    @Value("\${msgbus.dlq-source}") val dlqSource: String
 ) {
     private val logger = KotlinLogging.logger { CreateRegistryNotifyEventHandler::class.java.name }
 

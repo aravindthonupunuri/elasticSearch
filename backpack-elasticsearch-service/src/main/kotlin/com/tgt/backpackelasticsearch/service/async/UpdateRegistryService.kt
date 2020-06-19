@@ -34,7 +34,7 @@ class UpdateRegistryService(
 
         // Update data into primary and backup client to ensure both are in sync
         return elasticCallExecutor.execute("updateRegistry", elasticClientManager.primaryClient, updateToElasticsearch(indexRequest))
-            .zipWith(elasticClientManager.backupClient?.let { elasticCallExecutor.execute("updateRegistry", it, updateToElasticsearch(indexRequest)) })
+            .zipWith(elasticClientManager.backupClient?.let { elasticCallExecutor.execute("updateRegistry-backup", it, updateToElasticsearch(indexRequest)) })
             .map { Tuple(it.t1, it.t2) }
     }
 

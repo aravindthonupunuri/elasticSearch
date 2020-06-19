@@ -8,6 +8,7 @@ micronaut:
         enabled: false # we are using our own binder via our custom micronaut-metrics lib
 
 elasticsearch:
+  index: ${esaas-index}
   httpHosts: ${esaas-primary-url} # same as esaas.primary.httpHosts
   request:
     default:
@@ -112,7 +113,7 @@ components:
 
 msgbus:
   source: backpackelasticsearch
-  dlq_source: backpackelasticsearch_dlq
+  dlq-source: backpackelasticsearch-dlq
   kafka:
     consumer:
       enabled: false

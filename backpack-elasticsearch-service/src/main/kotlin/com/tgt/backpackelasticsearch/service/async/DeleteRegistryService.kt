@@ -28,7 +28,7 @@ class DeleteRegistryService(
 
         // Delete data from primary and backup client to ensure both are in sync
         return elasticCallExecutor.execute("deleteRegistry", elasticClientManager.primaryClient, deleteFromElasticsearch(indexRequest))
-            .zipWith(elasticClientManager.backupClient?.let { elasticCallExecutor.execute("deleteRegistry", it, deleteFromElasticsearch(indexRequest)) })
+            .zipWith(elasticClientManager.backupClient?.let { elasticCallExecutor.execute("deleteRegistry-backup", it, deleteFromElasticsearch(indexRequest)) })
             .map { Tuple(it.t1, it.t2) }
     }
 
