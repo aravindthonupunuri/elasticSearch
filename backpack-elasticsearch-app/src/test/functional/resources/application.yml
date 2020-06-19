@@ -5,6 +5,8 @@ micronaut:
     port: ${server-port:32000}
 
 elasticsearch:
+  index: ${esaas-index}
+  operation-timeout: 500ms # seconds, default: 1s
   httpHosts: "http://localhost:9200,http://127.0.0.2:9200" # same as esaas.primary.httpHosts
   request:
     default:

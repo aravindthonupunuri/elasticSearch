@@ -18,18 +18,25 @@ import javax.inject.Singleton
 class DeleteRegistryService(
     @Inject private val elasticCallExecutor: ElasticCallExecutor,
     @Inject private val elasticClientManager: ElasticClientManager,
-    @Value("\${elasticsearch.index}") private val registryIndex: String
+    @Value("\${elasticsearch.index}") private val registryIndex: String,
+    @Value("\${elasticsearch.operation-timeout}") private val operationTimeout: String = "1s"
 ) {
 
     fun deleteRegistry(registryId: UUID?): Mono<Tuple<DeleteResponse, DeleteResponse>> {
         val indexRequest = DeleteRequest(registryIndex)
-            .timeout("1s")
+            .timeout(operationTimeout)
             .id(registryId.toString())
 
+        // If backup client is null then zipWith is called with null that shall make everything fail at runtime, so null check
+        return if (elasticClientManager.backupClient != null)
         // Delete data from primary and backup client to ensure both are in sync
-        return elasticCallExecutor.execute("deleteRegistry", elasticClientManager.primaryClient, deleteFromElasticsearch(indexRequest))
-            .zipWith(elasticClientManager.backupClient?.let { elasticCallExecutor.execute("deleteRegistry-backup", it, deleteFromElasticsearch(indexRequest)) })
-            .map { Tuple(it.t1, it.t2) }
+            elasticCallExecutor.execute("deleteRegistry", elasticClientManager.primaryClient, deleteFromElasticsearch(indexRequest))
+                .zipWith(elasticClientManager.backupClient?.let { elasticCallExecutor.execute("deleteRegistry-backup", it, deleteFromElasticsearch(indexRequest)) })
+                .map { Tuple(it.t1, it.t2) }
+        else
+        // Delete data from primary
+            elasticCallExecutor.execute("deleteRegistry", elasticClientManager.primaryClient, deleteFromElasticsearch(indexRequest))
+                .map { Tuple(it, it) }
     }
 
     private fun deleteFromElasticsearch(indexRequest: DeleteRequest?): (RestHighLevelClient, ListenerArgs<DeleteResponse>) -> Unit {

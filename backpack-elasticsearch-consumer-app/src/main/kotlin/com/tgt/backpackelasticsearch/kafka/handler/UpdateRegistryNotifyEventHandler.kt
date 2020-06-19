@@ -42,17 +42,13 @@ class UpdateRegistryNotifyEventHandler(
             eventDateTs = registryMetaData?.event?.eventDateTs,
             numberOfGuests = registryMetaData?.event?.numberOfGuests
         ))
-            .map {
-            if (it.v1() != null && it.v1().id == updateRegistryNotifyEvent.listId.toString() &&
-                it.v2() != null && it.v2().id == updateRegistryNotifyEvent.listId.toString()) {
-                EventProcessingResult(true, eventHeaders, updateRegistryNotifyEvent)
-            } else {
+            .map { EventProcessingResult(true, eventHeaders, updateRegistryNotifyEvent) }
+            .onErrorResume {
                 val message = "Exception while updating registry data into elastic search from handleCreateRegistryNotifyEvent: $it"
                 logger.error(message, it)
-                EventProcessingResult(false,
+                Mono.just(EventProcessingResult(false,
                     eventHeaderFactory.nextRetryHeaders(eventHeaders = eventHeaders, errorCode = 500, errorMsg = message).copy(source = dlqSource),
-                    updateRegistryNotifyEvent)
+                    updateRegistryNotifyEvent))
             }
-        }
     }
 }

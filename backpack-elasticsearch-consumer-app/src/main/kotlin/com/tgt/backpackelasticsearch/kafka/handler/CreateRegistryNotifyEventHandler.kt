@@ -42,17 +42,13 @@ class CreateRegistryNotifyEventHandler(
             eventDateTs = registryMetaData?.event?.eventDateTs,
             numberOfGuests = registryMetaData?.event?.numberOfGuests
         ))
-            .map {
-                if (it.v1() != null && it.v1().id == createRegistryNotifyEvent.listId.toString() &&
-                    it.v2() != null && it.v2().id == createRegistryNotifyEvent.listId.toString()) {
-                    EventProcessingResult(true, eventHeaders, createRegistryNotifyEvent)
-                } else {
-                    val message = "Exception while saving registry data into elastic search from handleCreateRegistryNotifyEvent: $it"
-                    logger.error(message, it)
-                    EventProcessingResult(false,
-                        eventHeaderFactory.nextRetryHeaders(eventHeaders = eventHeaders, errorCode = 500, errorMsg = message).copy(source = dlqSource),
-                        createRegistryNotifyEvent)
-                }
+            .map { EventProcessingResult(true, eventHeaders, createRegistryNotifyEvent) }
+            .onErrorResume {
+                val message = "Exception while saving registry data into elastic search from handleCreateRegistryNotifyEvent: $it"
+                logger.error(message, it)
+                Mono.just(EventProcessingResult(false,
+                    eventHeaderFactory.nextRetryHeaders(eventHeaders = eventHeaders, errorCode = 500, errorMsg = message).copy(source = dlqSource),
+                    createRegistryNotifyEvent))
             }
     }
 }

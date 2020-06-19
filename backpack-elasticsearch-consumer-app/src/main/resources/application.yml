@@ -49,6 +49,7 @@ api:
 
 elasticsearch:
   index: ${esaas-index}
+  operation-timeout: 500ms # seconds, default: 1s
   httpHosts: ${esaas-primary-url} # same as esaas.primary.httpHosts
   request:
     default:

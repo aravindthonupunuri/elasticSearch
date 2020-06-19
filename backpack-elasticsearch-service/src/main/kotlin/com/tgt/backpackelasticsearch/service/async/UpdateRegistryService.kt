@@ -19,7 +19,8 @@ import javax.inject.Singleton
 class UpdateRegistryService(
     @Inject private val elasticCallExecutor: ElasticCallExecutor,
     @Inject private val elasticClientManager: ElasticClientManager,
-    @Value("\${elasticsearch.index}") private val registryIndex: String
+    @Value("\${elasticsearch.index}") private val registryIndex: String,
+    @Value("\${elasticsearch.operation-timeout}") private val operationTimeout: String = "1s"
 ) {
 
     val mapper = ObjectMapper()
@@ -29,13 +30,19 @@ class UpdateRegistryService(
         val json = mapper.writeValueAsString("Registry doc that is being updated")
 
         val indexRequest = UpdateRequest(registryIndex, registryData.registryId.toString())
-            .timeout("1s")
+            .timeout(operationTimeout)
             .doc(json)
 
+        // If backup client is null then zipWith is called with null that shall make everything fail at runtime, so null check
+        return if (elasticClientManager.backupClient != null)
         // Update data into primary and backup client to ensure both are in sync
-        return elasticCallExecutor.execute("updateRegistry", elasticClientManager.primaryClient, updateToElasticsearch(indexRequest))
-            .zipWith(elasticClientManager.backupClient?.let { elasticCallExecutor.execute("updateRegistry-backup", it, updateToElasticsearch(indexRequest)) })
-            .map { Tuple(it.t1, it.t2) }
+            elasticCallExecutor.execute("updateRegistry", elasticClientManager.primaryClient, updateToElasticsearch(indexRequest))
+                .zipWith(elasticClientManager.backupClient?.let { elasticCallExecutor.execute("updateRegistry-backup", it, updateToElasticsearch(indexRequest)) })
+                .map { Tuple(it.t1, it.t2) }
+        else
+        // Update data into primary
+            elasticCallExecutor.execute("updateRegistry", elasticClientManager.primaryClient, updateToElasticsearch(indexRequest))
+                .map { Tuple(it, it) }
     }
 
     private fun updateToElasticsearch(indexRequest: UpdateRequest?): (RestHighLevelClient, ListenerArgs<UpdateResponse>) -> Unit {

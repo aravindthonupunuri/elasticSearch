@@ -20,7 +20,8 @@ import javax.inject.Singleton
 class CreateRegistryService(
     @Inject private val elasticCallExecutor: ElasticCallExecutor,
     @Inject private val elasticClientManager: ElasticClientManager,
-    @Value("\${elasticsearch.index}") private val registryIndex: String
+    @Value("\${elasticsearch.index}") private val registryIndex: String,
+    @Value("\${elasticsearch.operation-timeout}") private val operationTimeout: String = "1s"
 ) {
 
     val mapper = ObjectMapper()
@@ -30,14 +31,20 @@ class CreateRegistryService(
         val json = mapper.writeValueAsString(registryData)
 
         val indexRequest = IndexRequest(registryIndex)
-            .timeout("1s")
+            .timeout(operationTimeout)
             .id(registryData.registryId.toString())
             .source(json, XContentType.JSON)
 
+        // If backup client is null then zipWith is called with null that shall make everything fail at runtime, so null check
+        return if (elasticClientManager.backupClient != null)
         // Copy data into primary and backup client to ensure both are in sync
-        return elasticCallExecutor.execute("saveRegistry", elasticClientManager.primaryClient, saveToElasticsearch(indexRequest))
-            .zipWith(elasticClientManager.backupClient?.let { elasticCallExecutor.execute("saveRegistry-backup", it, saveToElasticsearch(indexRequest)) })
-            .map { Tuple(it.t1, it.t2) }
+            elasticCallExecutor.execute("saveRegistry", elasticClientManager.primaryClient, saveToElasticsearch(indexRequest))
+                .zipWith(elasticCallExecutor.execute("saveRegistry-backup", elasticClientManager.backupClient!!, saveToElasticsearch(indexRequest)))
+                .map { Tuple(it.t1, it.t2) }
+        else
+        // Copy data into primary
+            elasticCallExecutor.execute("saveRegistry", elasticClientManager.primaryClient, saveToElasticsearch(indexRequest))
+                .map { Tuple(it, it) }
     }
 
     private fun saveToElasticsearch(indexRequest: IndexRequest?): (RestHighLevelClient, ListenerArgs<IndexResponse>) -> Unit {

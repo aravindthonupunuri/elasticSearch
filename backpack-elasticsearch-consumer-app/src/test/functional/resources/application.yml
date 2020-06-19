@@ -5,12 +5,13 @@ micronaut:
     port: ${server-port:33000}
 
 elasticsearch:
+  index: registry
+  operation-timeout: 500ms # seconds, default: 1s
   httpHosts: "http://localhost:9200,http://127.0.0.2:9200" # same as esaas.primary.httpHosts
   request:
     default:
       connection-request-timeout: 200   # millis, default: 1s
       connect-timeout: 10000            # millis, default: 30s
-  index: registry
 
 esaas:
   nuidUser: user

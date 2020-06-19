@@ -25,17 +25,13 @@ class DeleteRegistryNotifyEventHandler(
         isPoisonEvent: Boolean
     ): Mono<EventProcessingResult> {
         return deleteRegistryService.deleteRegistry(deleteRegistryNotifyEvent.listId)
-            .map {
-                if (it.v1() != null && it.v1().id == deleteRegistryNotifyEvent.listId.toString() &&
-                    it.v2() != null && it.v2().id == deleteRegistryNotifyEvent.listId.toString()) {
-                    EventProcessingResult(true, eventHeaders, deleteRegistryNotifyEvent)
-                } else {
-                    val message = "Exception while deleting registry data of elastic search from handleDeleteRegistryNotifyEvent: $it"
-                    logger.error(message, it)
-                    EventProcessingResult(false,
-                        eventHeaderFactory.nextRetryHeaders(eventHeaders = eventHeaders, errorCode = 500, errorMsg = message).copy(source = dlqSource),
-                        deleteRegistryNotifyEvent)
-                }
+            .map { EventProcessingResult(true, eventHeaders, deleteRegistryNotifyEvent) }
+            .onErrorResume {
+                val message = "Exception while deleting registry data of elastic search from handleDeleteRegistryNotifyEvent: $it"
+                logger.error(message, it)
+                Mono.just(EventProcessingResult(false,
+                    eventHeaderFactory.nextRetryHeaders(eventHeaders = eventHeaders, errorCode = 500, errorMsg = message).copy(source = dlqSource),
+                    deleteRegistryNotifyEvent))
             }
     }
 }
