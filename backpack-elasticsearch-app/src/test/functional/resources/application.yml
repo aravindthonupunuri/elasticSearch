@@ -21,6 +21,8 @@ esaas:
     httpHosts: "http://localhost:9200,http://127.0.0.2:9200"
   backup:
     httpHosts: "http://localhost:9200,http://127.0.0.2:9200"
+  health:
+    enabled: true # enable custom health indicator with two elastic clients
 
 jackson:
   property-naming-strategy: "SNAKE_CASE"
@@ -37,6 +39,9 @@ api:
 endpoints:
   prometheus:
     sensitive: false
+  health:
+    elasticsearch:
+      rest.high.level.enabled: false # disable default elastic health indicator and use custom indicator instead
 
 filter:
   server:

@@ -8,11 +8,15 @@ import java.util.*
 import javax.inject.Singleton
 
 @Singleton
-class BackpackElasticsearchPermissionManager(private val cartClient: CartClient) : ListPermissionManager {
+class BackpackElasticsearchPermissionManager() : ListPermissionManager {
 
-    val defaultListPermissionManager: DefaultListPermissionManager
+    val defaultListPermissionManager: ListPermissionManager
     init {
-        defaultListPermissionManager = DefaultListPermissionManager(cartClient)
+        defaultListPermissionManager = object: ListPermissionManager {
+            override fun authorize(userId: String, listId: UUID): Mono<Boolean> {
+                return Mono.just(true)
+            }
+        }
     }
 
     override fun authorize(userId: String, listId: UUID): Mono<Boolean> {
