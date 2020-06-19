@@ -152,4 +152,5 @@ endpoints:
   health:
     enabled: true
     sensitive: false
-
+    elasticsearch:
+      rest.high.level.enabled: false # disable default elastic health indicator and use custom indicator instead

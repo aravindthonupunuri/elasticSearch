@@ -11,6 +11,11 @@ micronaut:
       web:
         enabled: false # we are using our own binder via our custom micronaut-metrics lib
 
+endpoints:
+  health:
+    elasticsearch:
+      rest.high.level.enabled: false # disable default elastic health indicator and use custom indicator instead
+
 lists:
   metrics:
     binders:
