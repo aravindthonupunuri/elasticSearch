@@ -40,14 +40,17 @@ open class BackpackElasticsearchEventDispatcher(
                 source -> {
                     return when (eventHeaders.eventType) {
                         CreateListNotifyEvent.getEventType() -> {
+                            logger.info { "TransformValue: Got CreateList Event" }
                             val createListNotifyEvent = CreateListNotifyEvent.deserialize(data)
                             EventTransformedValue("guest_${createListNotifyEvent.guestId}", ExecutionSerialization.ID_SERIALIZATION, createListNotifyEvent)
                         }
                         UpdateListNotifyEvent.getEventType() -> {
+                            logger.info { "TransformValue: Got UpdateList Event" }
                             val updateListNotifyEvent = UpdateListNotifyEvent.deserialize(data)
                             EventTransformedValue("lists_${updateListNotifyEvent.listId}", ExecutionSerialization.ID_SERIALIZATION, updateListNotifyEvent)
                         }
                         DeleteListNotifyEvent.getEventType() -> {
+                            logger.info { "TransformValue: Got DeleteList Event" }
                             val deleteListNotifyEvent = DeleteListNotifyEvent.deserialize(data)
                             EventTransformedValue("guest_${deleteListNotifyEvent.guestId}", ExecutionSerialization.ID_SERIALIZATION, deleteListNotifyEvent)
                         }

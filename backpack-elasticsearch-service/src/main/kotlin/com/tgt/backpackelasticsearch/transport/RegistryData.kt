@@ -1,5 +1,6 @@
 package com.tgt.backpackelasticsearch.transport
 
+import com.tgt.backpackelasticsearch.util.RegistryStatus
 import com.tgt.backpackelasticsearch.util.RegistryType
 import java.util.*
 
@@ -7,7 +8,7 @@ data class RegistryData(
     val registryId: UUID?,
     val registryTitle: String?,
     val registryType: RegistryType?,
-    val registryStatus: String?, // TODO Make sense to hold this data in elastic search at all
+    val registryStatus: RegistryStatus?,
     val registrantFirstName: String?,
     val registrantLastName: String?,
     val coregistrantFirstName: String?,

@@ -29,10 +29,9 @@ enum class RegistrySubChannel(val value: String) {
     KIOSK("kiosk")
 }
 
-enum class RegistrySearchSortFieldGroup(val value: String) {
-    NAME("name"),
-    EVENT_DATE("event_date"),
-    LOCATION("location")
+enum class RegistryStatus(val value: String) {
+    ACTIVE("active"),
+    INACTIVE("inactive")
 }
 
 enum class RegistrySortFieldGroup(val value: String) {
@@ -66,4 +65,10 @@ enum class RegistryFlow(val value: String) {
 enum class RegistryContentsFieldGroup(val value: String) {
     REGISTRY("registry"),
     REGISTRY_ITEMS("registry_items")
+}
+
+enum class RegistrySearchSortFieldGroup(val value: String) {
+    NAME("name"),
+    EVENT_DATE("event_date"),
+    LOCATION("location")
 }

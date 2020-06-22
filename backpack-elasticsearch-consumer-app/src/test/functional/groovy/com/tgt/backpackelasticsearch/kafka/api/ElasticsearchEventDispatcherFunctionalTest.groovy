@@ -6,6 +6,7 @@ import com.tgt.backpackelasticsearch.transport.RegistryEventTO
 import com.tgt.backpackelasticsearch.transport.RegistryMetaDataTO
 import com.tgt.backpackelasticsearch.transport.RegistryRecipientTO
 import com.tgt.backpackelasticsearch.util.RecipientType
+import com.tgt.backpackelasticsearch.util.RegistryStatus
 import com.tgt.backpackelasticsearch.util.RegistrySubChannel
 import com.tgt.backpackelasticsearch.util.RegistryType
 import com.tgt.lists.lib.api.transport.ListMetaDataTO
@@ -71,7 +72,7 @@ class ElasticsearchEventDispatcherFunctionalTest extends BaseKafkaFunctionalTest
 
         def listMetadata = new ListMetaDataTO(true, LIST_STATUS.PENDING)
         def registryMetaData = RegistryMetaDataTO.getCoreRegistryMetadataMap(RegistrySubChannel.KIOSK, "41", RegistryType.WEDDING,
-            false, false, null, [groom, bride], event, null)
+            false, false, "10", RegistryStatus.ACTIVE, [groom, bride], event, null)
 
         def createRegistryEvent = new CreateListNotifyEvent(guestId, registryId, "REGISTRY", "Testing Registry Event", listMetadata, registryMetaData)
 

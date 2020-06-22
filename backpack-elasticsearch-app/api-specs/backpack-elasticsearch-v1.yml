@@ -193,7 +193,7 @@ definitions:
       registry_id:
         type: string
       registry_status:
-        type: string
+        $ref: '#/definitions/RegistryStatus'
       registry_title:
         type: string
       registrant_first_name:
@@ -223,6 +223,12 @@ definitions:
     enum:
       - BABY
       - WEDDING
+
+  RegistryStatus:
+    type: string
+    enum:
+      - ACTIVE
+      - INACTIVE
 
   Error401:
     type: object

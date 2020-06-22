@@ -31,7 +31,7 @@ class CreateRegistryNotifyEventHandler(
         return createRegistryService.saveRegistry(RegistryData(registryId = createRegistryNotifyEvent.listId,
             registryTitle = createRegistryNotifyEvent.listTitle,
             registryType = registryMetaData?.registryType,
-            registryStatus = "ACTIVE", // TODO pick this from registry response
+            registryStatus = registryMetaData?.registryStatus,
             registrantFirstName = registryMetaData?.recipients?.firstOrNull { it.recipientType == RecipientType.REGISTRANT }?.firstName,
             registrantLastName = registryMetaData?.recipients?.firstOrNull { it.recipientType == RecipientType.REGISTRANT }?.lastName,
             coregistrantFirstName = registryMetaData?.recipients?.firstOrNull { it.recipientType == RecipientType.COREGISTRANT }?.firstName,

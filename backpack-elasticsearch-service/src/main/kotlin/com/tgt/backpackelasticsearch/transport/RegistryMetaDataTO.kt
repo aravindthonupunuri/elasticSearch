@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import com.tgt.backpackelasticsearch.util.RegistryStatus
 import com.tgt.backpackelasticsearch.util.RegistrySubChannel
 import com.tgt.backpackelasticsearch.util.RegistryType
 
@@ -21,6 +22,8 @@ data class RegistryMetaDataTO(
     val groupGiftEnabled: Boolean? = false,
     @JsonProperty("group_gift_amount")
     val groupGiftAmount: String? = null,
+    @JsonProperty("registry_status")
+    val registryStatus: RegistryStatus? = null,
     @JsonProperty("recipient_list")
     val recipients: List<RegistryRecipientTO>? = null,
     @JsonProperty("event")
@@ -48,7 +51,7 @@ data class RegistryMetaDataTO(
             return mapOf(REGISTRY_METADATA to
                 RegistryMetaDataTO(registryMetaData?.subChannel, registryMetaData?.profileAddressId, registryMetaData?.registryType,
                     registryMetaData?.giftCardsEnabled, registryMetaData?.groupGiftEnabled, registryMetaData?.groupGiftAmount,
-                    registryMetaData?.recipients, registryMetaData?.event, registryMetaData?.babyRegistry, registryMetaData?.guestRulesMetaData))
+                    registryMetaData?.registryStatus, registryMetaData?.recipients, registryMetaData?.event, registryMetaData?.babyRegistry, registryMetaData?.guestRulesMetaData))
         }
 
         // ["registry-metadata" : [sub_channel: "KIOSK"]
@@ -60,13 +63,14 @@ data class RegistryMetaDataTO(
             giftCardsEnabled: Boolean?,
             groupGiftEnabled: Boolean?,
             groupGiftAmount: String?,
+            registryStatus: RegistryStatus?,
             recipientList: List<RegistryRecipientTO>?,
             event: RegistryEventTO?,
             babyRegistry: RegistryBabyTO?
         ): Map<String, Any>? {
             return mapOf(REGISTRY_METADATA to
                 RegistryMetaDataTO(subChannel = subChannel, profileAddressId = profileAddressId, registryType = registryType, giftCardsEnabled = giftCardsEnabled,
-                    groupGiftEnabled = groupGiftEnabled, groupGiftAmount = groupGiftAmount, recipients = recipientList, event = event, babyRegistry = babyRegistry))
+                    groupGiftEnabled = groupGiftEnabled, groupGiftAmount = groupGiftAmount, registryStatus = registryStatus, recipients = recipientList, event = event, babyRegistry = babyRegistry))
         }
 
         @JvmStatic
@@ -77,6 +81,7 @@ data class RegistryMetaDataTO(
             giftCardsEnabled: Boolean?,
             groupGiftEnabled: Boolean?,
             groupGiftAmount: String?,
+            registryStatus: RegistryStatus?,
             recipientList: List<RegistryRecipientTO>?,
             event: RegistryEventTO?,
             babyRegistry: RegistryBabyTO?,
@@ -84,7 +89,7 @@ data class RegistryMetaDataTO(
         ): Map<String, Any>? {
             return mapOf(REGISTRY_METADATA to
                 RegistryMetaDataTO(subChannel = subChannel, profileAddressId = profileAddressId, registryType = registryType, giftCardsEnabled = giftCardsEnabled,
-                    groupGiftEnabled = groupGiftEnabled, groupGiftAmount = groupGiftAmount, recipients = recipientList, event = event, babyRegistry = babyRegistry,
+                    groupGiftEnabled = groupGiftEnabled, groupGiftAmount = groupGiftAmount, registryStatus = registryStatus, recipients = recipientList, event = event, babyRegistry = babyRegistry,
                     guestRulesMetaData = guestRulesMetaData))
         }
     }
