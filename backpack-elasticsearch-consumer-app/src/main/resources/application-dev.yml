@@ -2,6 +2,7 @@ micronaut:
   application:
     name: backpack-elasticsearch-consumer
   server:
+    host: ${backpack-elasticsearch-consumer-host:localhost}
     port: 8085
 
   metrics:
@@ -139,10 +140,10 @@ msgbus:
       enabled: true
     dlqproducer:
       enabled: true
-    topic: ${kafka-msgbus-topic}
+    topic: lists-msg-bus
     consumer-group: lists-msg-bus-consumer
     consumer-batch-size: 10
-    dlq-topic: ${kafka-dlq-topic}
+    dlq-topic: lists-dlq
     dlq-consumer-group: lists-dlq-consumer
     dlq-event-retry-interval-secs: 1
     dlq-max-event-retry-count: 2
@@ -154,3 +155,8 @@ endpoints:
     sensitive: false
     elasticsearch:
       rest.high.level.enabled: false # disable default elastic health indicator and use custom indicator instead
+
+kafka-sources:
+  allow:
+    - backpack-registry
+    - backpackelasticsearch

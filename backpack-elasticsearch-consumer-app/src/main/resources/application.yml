@@ -2,6 +2,7 @@ micronaut:
   application:
     name: backpack-elasticsearch-consumer
   server:
+    host: ${backpack-elasticsearch-consumer-host:localhost}
     port: 8085
 
   metrics:
@@ -180,9 +181,12 @@ msgbus:
 kafka-sources:
   allow:
     - backpack-registry
+    - backpackelasticsearch
 
 endpoints:
   health:
     enabled: true
     sensitive: false
+    elasticsearch:
+      rest.high.level.enabled: false # disable default elastic health indicator and use custom indicator instead
 
