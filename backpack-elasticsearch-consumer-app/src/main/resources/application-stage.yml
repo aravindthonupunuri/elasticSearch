@@ -87,47 +87,6 @@ components:
     sanitizing-filter:
       enabled: false
 
-kafka:
-  bootstrap:
-    servers: ${kafka-vip}
-#  ssl:
-#    endpoint.identification.algorithm: ""# disable karka broker cert's hostname verification
-#    keystore:
-#      location: ${kafka-ssl-location}/client-keystore.jks
-#      password: ${kafka-ssl-keypass}
-#    truststore:
-#      location: ${kafka-ssl-location}/client-truststore.jks
-#      password: ${kafka-ssl-trustpass}
-#      type: PKCS12
-#  security:
-#    protocol: ssl
-  consumers:
-    backpack-elasticsearch-msg-bus-stage-consumer:
-      key:
-        deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value:
-        deserializer: org.apache.kafka.common.serialization.ByteArrayDeserializer
-    backpack-elasticsearch-dlq-stage-consumer:
-      key:
-        deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value:
-        deserializer: org.apache.kafka.common.serialization.ByteArrayDeserializer
-  producers:
-    # default is a Jackson based JSON serializer for key/value
-    backpack-elasticsearch-msg-bus-stage-producer:
-      retries: 3
-      retry:
-        backoff:
-          ms: 1000
-      max:
-        in:
-          flight:
-            requests:
-              per:
-                connection: 1
-        block:
-          ms: 2000
-
 msgbus:
   source: backpackelasticsearch
   dlq-source: backpackelasticsearch-dlq
@@ -141,10 +100,10 @@ msgbus:
     dlqproducer:
       enabled: true
     topic: lists-msg-bus-stage
-    consumer-group: lists-msg-bus-consumer
+    consumer-group: backpack-elasticsearch-msg-bus-stage-consumer
     consumer-batch-size: 10
     dlq-topic: lists-dlq-stage
-    dlq-consumer-group: lists-dlq-consumer
+    dlq-consumer-group: backpack-elasticsearch-dlq-stage-consumer
     dlq-event-retry-interval-secs: 1
     dlq-max-event-retry-count: 2
     dlq-consumer-batch-size: 10
