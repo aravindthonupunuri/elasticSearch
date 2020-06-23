@@ -12,6 +12,10 @@ import com.tgt.lists.common.components.exception.BadRequestException
 import com.tgt.lists.lib.api.util.AppErrorCodes
 import io.micronaut.http.HttpStatus
 import io.micronaut.http.annotation.*
+import io.swagger.v3.oas.annotations.media.ArraySchema
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.media.Schema
+import io.swagger.v3.oas.annotations.responses.ApiResponse
 import reactor.core.publisher.Mono
 import javax.inject.Inject
 
@@ -22,6 +26,9 @@ class BackpackElasticsearchController(
 
     @Get("/")
     @Status(HttpStatus.OK)
+    @ApiResponse(
+        content = [Content(mediaType = "application/json", array = ArraySchema(schema = Schema(implementation = RegistryData::class)))]
+    )
     fun searchRegistryByFirstSecondName(
         @Header(PROFILE_ID) guestId: String,
         @QueryValue("first_name") firstName: String?,
@@ -31,6 +38,13 @@ class BackpackElasticsearchController(
         @QueryValue("sort_field") sortFieldBy: RegistrySearchSortFieldGroup? = RegistrySearchSortFieldGroup.NAME,
         @QueryValue("sort_order") sortOrderBy: RegistrySortOrderGroup? = RegistrySortOrderGroup.ASCENDING
     ): Mono<List<RegistryData>> {
+        // TODO Check if null check is either of them OR both
+        if (firstName.isNullOrEmpty()) {
+            throw BadRequestException(AppErrorCodes.BAD_REQUEST_ERROR_CODE(listOf("firstName is incorrect, can’t be null")))
+        }
+        if (lastName.isNullOrEmpty()) {
+            throw BadRequestException(AppErrorCodes.BAD_REQUEST_ERROR_CODE(listOf("lastName is incorrect, can’t be null")))
+        }
         if (registryChannel == null) {
             throw BadRequestException(AppErrorCodes.BAD_REQUEST_ERROR_CODE(listOf("channel is incorrect, can’t be null")))
         }

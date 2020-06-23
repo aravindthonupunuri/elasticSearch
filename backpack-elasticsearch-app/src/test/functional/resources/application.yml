@@ -1,11 +1,11 @@
 micronaut:
   application:
-    name: backpack-registry-app
+    name: backpack-elasticsearch-app
   server:
     port: ${server-port:32000}
 
 elasticsearch:
-  index: ${esaas-index}
+  index: backpackregistry
   operation-timeout: 500ms # seconds, default: 1s
   httpHosts: "http://localhost:9200,http://127.0.0.2:9200" # same as esaas.primary.httpHosts
   request:
@@ -68,15 +68,15 @@ logging:
       path: /registry/**
 
 mockfilter:
-  paths: /registries_search/.*,/zipkin,/testserver/auth/oauth/v2/token,/
+  paths: /zipkin,/testserver/auth/oauth/v2/token,/
 
 resilience4j:
   circuitbreaker:
     failure-rate-threshold: 50            # failure rate threshold in percentage (default: 50)
-    wait-duration-secs-in-open-state: 10  # time cb waits before transitioning from open to half-open (default: 60s)
+    wait-duration-secs-in-open-state: 1  # time cb waits before transitioning from open to half-open (default: 60s)
     sliding-window-type: TIME_BASED       # possible values TIME_BASED or COUNT_BASED (default: COUNT_BASED)
-    sliding-window-size: 100               # seconds for TIME_BASED, request-count for COUNT_BASED (default: 100)
-    minimum-number-of-calls: 10            # min calls required (per sliding window period) before cb calculates error rate (default: 10)
+    sliding-window-size: 5               # seconds for TIME_BASED, request-count for COUNT_BASED (default: 100)
+    minimum-number-of-calls: 2            # min calls required (per sliding window period) before cb calculates error rate (default: 10)
     permitted-number-of-calls-in-half-open-state: 1 # Number of permitted calls when the CircuitBreaker is half open.
 
 backends:
@@ -109,7 +109,7 @@ api-key: "testkey"
 components:
   server:
     list-authorization-filter:
-      base-uri: /registries/v2
+      base-uri: /registries_search/v1
 
 kafka:
   embedded:
@@ -142,7 +142,7 @@ kafka:
           ms: 2_000
 
 msgbus:
-  source: backpack-registry
+  source: backpack-elasticsearch
   kafka:
     consumer:
       enabled: false

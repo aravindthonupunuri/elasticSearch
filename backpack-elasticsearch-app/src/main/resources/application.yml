@@ -124,7 +124,7 @@ tracing:
 components:
   server:
     list-authorization-filter:
-      base-uri: /backpackelasticsearch
+      base-uri: /registries_search/v1
 
 msgbus:
   source: backpackelasticsearch
