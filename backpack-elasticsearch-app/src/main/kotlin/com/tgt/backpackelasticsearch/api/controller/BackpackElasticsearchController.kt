@@ -2,12 +2,12 @@ package com.tgt.backpackelasticsearch.api.controller
 
 import com.tgt.backpackelasticsearch.service.GetRegistryService
 import com.tgt.backpackelasticsearch.transport.RegistryData
+import com.tgt.backpackelasticsearch.transport.RegistrySearchSortFieldGroup
 import com.tgt.backpackelasticsearch.util.BackpackElasticsearchConstants.ELASTIC_SEARCH_BASEPATH
 import com.tgt.backpackelasticsearch.util.BackpackElasticsearchConstants.PROFILE_ID
-import com.tgt.backpackelasticsearch.util.RegistryChannel
-import com.tgt.backpackelasticsearch.util.RegistrySearchSortFieldGroup
-import com.tgt.backpackelasticsearch.util.RegistrySortOrderGroup
-import com.tgt.backpackelasticsearch.util.RegistrySubChannel
+import com.tgt.backpackregistry.util.RegistryChannel
+import com.tgt.backpackregistry.util.RegistrySortOrderGroup
+import com.tgt.backpackregistry.util.RegistrySubChannel
 import com.tgt.lists.common.components.exception.BadRequestException
 import com.tgt.lists.lib.api.util.AppErrorCodes
 import io.micronaut.http.HttpStatus

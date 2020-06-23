@@ -2,13 +2,13 @@ package com.tgt.backpackelasticsearch.kafka.api
 
 import com.tgt.backpackelasticsearch.test.BaseKafkaFunctionalTest
 import com.tgt.backpackelasticsearch.test.PreDispatchLambda
-import com.tgt.backpackelasticsearch.transport.RegistryEventTO
-import com.tgt.backpackelasticsearch.transport.RegistryMetaDataTO
-import com.tgt.backpackelasticsearch.transport.RegistryRecipientTO
-import com.tgt.backpackelasticsearch.util.RecipientType
-import com.tgt.backpackelasticsearch.util.RegistryStatus
-import com.tgt.backpackelasticsearch.util.RegistrySubChannel
-import com.tgt.backpackelasticsearch.util.RegistryType
+import com.tgt.backpackregistry.transport.RegistryEventTO
+import com.tgt.backpackregistry.transport.RegistryMetaDataTO
+import com.tgt.backpackregistry.transport.RegistryRecipientTO
+import com.tgt.backpackregistry.util.RecipientType
+import com.tgt.backpackregistry.util.RegistryStatus
+import com.tgt.backpackregistry.util.RegistrySubChannel
+import com.tgt.backpackregistry.util.RegistryType
 import com.tgt.lists.lib.api.transport.ListMetaDataTO
 import com.tgt.lists.lib.api.util.LIST_STATUS
 import com.tgt.lists.lib.kafka.model.CreateListNotifyEvent
@@ -139,7 +139,5 @@ class ElasticsearchEventDispatcherFunctionalTest extends BaseKafkaFunctionalTest
                 assert completedEvents.size() == 1
             }
         }
-
-
     }
 }

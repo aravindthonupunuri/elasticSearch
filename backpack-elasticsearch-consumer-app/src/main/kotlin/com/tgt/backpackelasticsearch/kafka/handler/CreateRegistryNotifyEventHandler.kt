@@ -2,8 +2,8 @@ package com.tgt.backpackelasticsearch.kafka.handler
 
 import com.tgt.backpackelasticsearch.service.async.CreateRegistryService
 import com.tgt.backpackelasticsearch.transport.RegistryData
-import com.tgt.backpackelasticsearch.transport.RegistryMetaDataTO
-import com.tgt.backpackelasticsearch.util.RecipientType
+import com.tgt.backpackregistry.transport.RegistryMetaDataTO
+import com.tgt.backpackregistry.util.RecipientType
 import com.tgt.lists.lib.kafka.model.CreateListNotifyEvent
 import com.tgt.lists.msgbus.event.EventHeaderFactory
 import com.tgt.lists.msgbus.event.EventHeaders

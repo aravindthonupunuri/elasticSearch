@@ -1,7 +1,7 @@
 package com.tgt.backpackelasticsearch.transport
 
-import com.tgt.backpackelasticsearch.util.RegistryStatus
-import com.tgt.backpackelasticsearch.util.RegistryType
+import com.tgt.backpackregistry.util.RegistryStatus
+import com.tgt.backpackregistry.util.RegistryType
 import java.util.*
 
 data class RegistryData(
