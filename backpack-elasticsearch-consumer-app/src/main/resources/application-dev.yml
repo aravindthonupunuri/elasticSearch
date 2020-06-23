@@ -40,6 +40,7 @@ logging:
       - x-api-id
 
 resilience4j:
+  filter: false
   circuitbreaker:
     failure-rate-threshold: 50                      # failure rate threshold in percentage (default: 50)
     wait-duration-secs-in-open-state: 1             # time cb waits before transitioning from open to half-open (default: 60s)
