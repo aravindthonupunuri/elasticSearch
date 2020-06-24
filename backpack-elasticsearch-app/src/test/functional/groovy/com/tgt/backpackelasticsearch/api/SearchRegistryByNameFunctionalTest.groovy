@@ -1,24 +1,41 @@
 package com.tgt.backpackelasticsearch.api
 
-
-import com.tgt.backpackelasticsearch.test.BaseKafkaFunctionalTest
+import com.tgt.backpackelasticsearch.service.GetRegistryService
+import com.tgt.backpackelasticsearch.service.async.CreateRegistryService
+import com.tgt.backpackelasticsearch.test.BaseElasticFunctionalTest
 import com.tgt.backpackelasticsearch.transport.RegistryData
 import com.tgt.backpackelasticsearch.util.BackpackElasticsearchConstants
 import com.tgt.backpackregistry.util.RegistryChannel
+import com.tgt.backpackregistry.util.RegistryStatus
 import com.tgt.backpackregistry.util.RegistrySubChannel
+import com.tgt.backpackregistry.util.RegistryType
 import io.micronaut.http.HttpRequest
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.HttpStatus
 import io.micronaut.http.client.exceptions.HttpClientResponseException
 import io.micronaut.test.annotation.MicronautTest
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
+import spock.lang.Stepwise
 import spock.lang.Unroll
+
+import javax.inject.Inject
+import java.time.LocalDateTime
 
 import static com.tgt.backpackelasticsearch.test.DataProvider.getHeaders
 
 @MicronautTest
-class SearchRegistryByNameFunctionalTest extends BaseKafkaFunctionalTest {
+@Stepwise
+class SearchRegistryByNameFunctionalTest extends BaseElasticFunctionalTest {
 
+    private static Logger logger = LoggerFactory.getLogger(SearchRegistryByNameFunctionalTest)
     String uri = BackpackElasticsearchConstants.ELASTIC_SEARCH_BASEPATH
+
+    @Inject
+    CreateRegistryService createRegistryService
+
+    @Inject
+    GetRegistryService getRegistryService
 
     @Unroll
     def "test get registry by first, last name - bad request"() {
@@ -42,23 +59,46 @@ class SearchRegistryByNameFunctionalTest extends BaseKafkaFunctionalTest {
         RegistryChannel.WEB |   null                     |   "firstName" |   "lastName"
         RegistryChannel.WEB |   RegistrySubChannel.KIOSK |   ""          |   "lastName"
         RegistryChannel.WEB |   RegistrySubChannel.KIOSK |   "firstName" |   ""
-
     }
 
-//    def "test get registry by first, last name - valid request"() {
-//        given:
-//        String guestId = "1236"
-//        def url = uri + "?first_name=first&last_name=last&channel=WEB&sub_channel=KIOSK"
-//
-//        when:
-//        HttpResponse<List<RegistryData>> listResponse = client.toBlocking()
-//            .exchange(HttpRequest.GET(url)
-//                .headers (getHeaders(guestId)), RegistryData)
-//
-//        def actualStatus = listResponse.status()
-//        def actual = listResponse.body()
-//
-//        then:
-//        actualStatus == HttpStatus.OK
-//    }
+    @Unroll
+    def "test create new list with name "() {
+        given:
+        RegistryData registryRequest = new RegistryData(UUID.randomUUID(), "interesting title", registryType, registryStatus, registrantFirst, registrantLast, coregistrantFirst, coregistrantLast, "MSP", "MN", "USA", LocalDateTime.now().toString(),20)
+
+        when:
+
+        def response = createRegistryService.saveRegistry(registryRequest).block()
+
+        then:
+        def actualStatus = response.v1()
+        actualStatus != null
+
+        where:
+        registryType            | registryStatus            | registrantFirst   |   registrantLast  |   coregistrantFirst   |   coregistrantLast
+        RegistryType.BABY       | RegistryStatus.ACTIVE     | "fist name"       |   "last one"      |   "co first"          |   "co last"
+        RegistryType.WEDDING    | RegistryStatus.ACTIVE     | "funny first"     |   "seri last"     |   "last first"        |   "first am"
+        RegistryType.BABY       | RegistryStatus.INACTIVE   | "sdkw wef"        |   "opwe sd23"     |   "wegs whwe"         |   "hkn,de she"
+        RegistryType.WEDDING    | RegistryStatus.INACTIVE   | "kbnch sgs"       |   "sdfklkxcn cs"  |   "sgsd bsd"          |   "sgds, cmf"
+    }
+
+
+    def "test get registry by first, last name - valid request"() {
+        given:
+        String guestId = "1236"
+        def url = uri + "?first_name=first&last_name=last&channel=WEB&sub_channel=KIOSK"
+
+        when:
+        sleep(1000)
+        HttpResponse<RegistryData[]> listResponse = client.toBlocking()
+            .exchange(HttpRequest.GET(url)
+                .headers (getHeaders(guestId)), RegistryData[])
+
+        def actualStatus = listResponse.status()
+        def actual = listResponse.body()
+
+        then:
+        actualStatus == HttpStatus.OK
+        actual.size() > 1
+    }
 }
