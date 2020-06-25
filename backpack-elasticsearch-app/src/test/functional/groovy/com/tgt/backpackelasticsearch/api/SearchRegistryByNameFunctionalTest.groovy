@@ -86,7 +86,7 @@ class SearchRegistryByNameFunctionalTest extends BaseElasticFunctionalTest {
     def "test get registry by first, last name - valid request"() {
         given:
         String guestId = "1236"
-        def url = uri + "?first_name=first&last_name=last&channel=WEB&sub_channel=KIOSK"
+        def url = uri + "?first_name=co&last_name=last&channel=WEB&sub_channel=KIOSK"
 
         when:
         sleep(1000)
@@ -99,6 +99,6 @@ class SearchRegistryByNameFunctionalTest extends BaseElasticFunctionalTest {
 
         then:
         actualStatus == HttpStatus.OK
-        actual.size() > 1
+        actual.size() == 1
     }
 }

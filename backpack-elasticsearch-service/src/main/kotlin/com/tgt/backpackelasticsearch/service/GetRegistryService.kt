@@ -12,6 +12,7 @@ import org.elasticsearch.client.RequestOptions
 import org.elasticsearch.client.RestHighLevelClient
 import org.elasticsearch.common.unit.TimeValue
 import org.elasticsearch.index.query.MultiMatchQueryBuilder
+import org.elasticsearch.index.query.Operator
 import org.elasticsearch.search.builder.SearchSourceBuilder
 import reactor.core.publisher.Mono
 import java.util.concurrent.TimeUnit
@@ -29,13 +30,21 @@ class GetRegistryService(
     fun findByRecipientName(recipientFirstName: String?, recipientLastName: String?): Mono<List<RegistryData>> {
         val searchRequest = SearchRequest(registryIndex)
         val searchSourceBuilder = SearchSourceBuilder()
-        val fullName = recipientFirstName + recipientLastName
-        val matchQueryBuilder = MultiMatchQueryBuilder(fullName, "*_name") // Match against every column ending with name
+        val fullName = "$recipientFirstName $recipientLastName"
+        // Match first and last name in both registrant as well co-regisrants first, last names
+        // Do note its AND condition, so both first as well last has to be in either of 4 names
+        val matchQueryBuilder = MultiMatchQueryBuilder(
+            fullName,
+            "registrantFirstName", "registrantLastName", "coregistrantFirstName", "coregistrantLastName"
+        )
+            .type(MultiMatchQueryBuilder.Type.CROSS_FIELDS).operator(Operator.AND)
 
         searchSourceBuilder.query(matchQueryBuilder)
             .from(0)
             .size(5) // default=10
             .timeout(TimeValue(10, TimeUnit.SECONDS))
+        searchRequest.source(searchSourceBuilder)
+        searchRequest.preference("_local")
         return elasticCallExecutor.executeWithFallback(executionId = "searchListByName", stmtBlock = queryElastic(searchRequest))
             .map {
                 val searchResponse = it
