@@ -117,7 +117,7 @@ pipeline:
     registry: docker.target.com
     repo: docker.target.com/app/backpack-elasticsearch/backpack-elasticsearch-app
     dockerfile: ./backpack-elasticsearch-app/Dockerfile
-    tags: 'rc.${DRONE_TAG:24}'
+    tags: 'rc.${DRONE_TAG:33}'
     when:
       event: tag
       branch: master
@@ -152,7 +152,7 @@ pipeline:
     registry: docker.target.com
     repo: docker.target.com/app/backpack-elasticsearch/backpack-elasticsearch-consumer-app
     dockerfile: ./backpack-elasticsearch-consumer-app/Dockerfile
-    tags: 'rc.${DRONE_TAG:24}'
+    tags: 'rc.${DRONE_TAG:33}'
     when:
       event: tag
       branch: master
