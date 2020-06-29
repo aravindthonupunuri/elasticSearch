@@ -1,0 +1,63 @@
+{
+	"info": {
+		"_postman_id": "a5343c15-a1bc-4876-9782-17cc770f103c",
+		"name": "Registry Search",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get Registry by co/registrants name",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "x-api-key",
+						"value": "{{key}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{search-host}}?first_name=Father&last_name=last&channel=MOBILE&sub_channel=KIOSK",
+					"host": [
+						"{{search-host}}"
+					],
+					"query": [
+						{
+							"key": "first_name",
+							"value": "Father"
+						},
+						{
+							"key": "last_name",
+							"value": "last"
+						},
+						{
+							"key": "channel",
+							"value": "MOBILE"
+						},
+						{
+							"key": "sub_channel",
+							"value": "KIOSK"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
