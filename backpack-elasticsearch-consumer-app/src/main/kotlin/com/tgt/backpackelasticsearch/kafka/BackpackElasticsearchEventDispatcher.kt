@@ -25,7 +25,7 @@ open class BackpackElasticsearchEventDispatcher(
     @Inject val deleteRegistryNotifyEventHandler: DeleteRegistryNotifyEventHandler,
     @Value("\${msgbus.source}") val source: String,
     @Value("\${msgbus.dlq-source}") val dlqSource: String,
-    @Value("\${kafka-sources.allow}") val allowesSources: Set<String>
+    @Value("\${kafka-sources.allow}") val allowedSources: List<String>
 ) : EventDispatcher {
 
     private val logger = KotlinLogging.logger {}
@@ -35,7 +35,7 @@ open class BackpackElasticsearchEventDispatcher(
      * It is also used by msgbus framework during dql publish exception handling
      */
     override fun transformValue(eventHeaders: EventHeaders, data: ByteArray): EventTransformedValue? {
-        if (eventHeaders.source == source || eventHeaders.source == dlqSource || allowesSources.contains(eventHeaders.source)) {
+        if (eventHeaders.source == source || eventHeaders.source == dlqSource || allowedSources.contains(eventHeaders.source)) {
             return when (eventHeaders.eventType) {
                 CreateListNotifyEvent.getEventType() -> {
                     logger.info { "TransformValue: Got CreateList Event" }
@@ -62,7 +62,7 @@ open class BackpackElasticsearchEventDispatcher(
         // Check for both the source:
         // 1. Generic messages created for the common list bus
         // 2. Failed messages and are retried as part of DLQ process
-        if (eventHeaders.source == source || eventHeaders.source == dlqSource || allowesSources.contains(eventHeaders.source)) {
+        if (eventHeaders.source == source || eventHeaders.source == dlqSource || allowedSources.contains(eventHeaders.source)) {
             // handle following events only from configured source
             when (eventHeaders.eventType) {
                 CreateListNotifyEvent.getEventType() -> {
