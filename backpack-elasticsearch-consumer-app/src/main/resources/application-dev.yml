@@ -91,6 +91,7 @@ components:
 cart:
   client:
     refresh-cycle-sec: 999999999
+    fastly-header-name: cartslb
 
 msgbus:
   source: backpackelasticsearch
