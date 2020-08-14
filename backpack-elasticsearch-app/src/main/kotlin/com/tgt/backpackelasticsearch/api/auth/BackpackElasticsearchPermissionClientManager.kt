@@ -1,4 +1,4 @@
-package com.tgt.shoppinglist.api.auth
+package com.tgt.backpackelasticsearch.api.auth
 
 import com.tgt.lists.common.components.exception.BaseErrorCodes.FORBIDDEN_ERROR_CODE
 import com.tgt.lists.common.components.exception.ForbiddenException

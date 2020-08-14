@@ -1,4 +1,4 @@
-package com.tgt.shoppinglist.api.auth
+package com.tgt.backpackelasticsearch.api.auth
 
 import com.tgt.lists.cart.CartClient
 import com.tgt.lists.common.components.filters.auth.permissions.CartPermissionManager
