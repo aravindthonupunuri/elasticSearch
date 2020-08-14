@@ -19,6 +19,10 @@ lists:
 jackson:
   property-naming-strategy: "SNAKE_CASE"
 
+cart:
+  client:
+    refresh-cycle-sec: 999999999
+
 filter:
   server:
     order:

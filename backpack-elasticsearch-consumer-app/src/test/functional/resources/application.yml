@@ -81,7 +81,11 @@ kafka:
         block:
           ms: 2_000
   embedded:
-    enabled: true
+    enabled: false
+
+cart:
+  client:
+    refresh-cycle-sec: 999999999
 
 components:
   server:

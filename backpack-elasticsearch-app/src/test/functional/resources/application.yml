@@ -3,6 +3,24 @@ micronaut:
     name: backpack-elasticsearch-app
   server:
     port: ${server-port:32000}
+  http:
+    client:
+      read-timeout: 20s
+    services:
+      carts-api:
+        urls:
+          - http://localhost:${server-port:32000}
+        pool:
+          enabled: false
+      permissions-api:
+        urls:
+          - http://localhost:${server-port:32000}
+        pool:
+          enabled: false
+  metrics:
+    binders:
+      web:
+        enabled: false # we are using our own binder via our custom micronaut-metrics lib
 
 elasticsearch:
   index: backpackregistry
@@ -26,6 +44,10 @@ esaas:
 
 jackson:
   property-naming-strategy: "SNAKE_CASE"
+
+cart:
+  client:
+    refresh-cycle-sec: 999999999
 
 api:
   oauth:

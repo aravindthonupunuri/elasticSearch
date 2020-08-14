@@ -32,11 +32,10 @@ allprojects {
     repositories {
         mavenCentral()
         maven { url "https://jcenter.bintray.com" }
+        maven { url 'https://repo.spring.io/milestone' }
+        maven { url "https://packages.confluent.io/maven/" }
         maven { url "https://binrepo.target.com/artifactory/lists-v4" }
-        maven { url "https://binrepo.target.com/artifactory/driveup-libs-release" }
-        maven { url "https://binrepo.target.com/artifactory/eno-release" }
         maven { url "https://binrepo.target.com/artifactory/platform" }
-        maven { url "http://binrepo.target.com/artifactory/digital-search-libs-snapshot-local/" }
         mavenLocal()
     }
 
@@ -45,43 +44,52 @@ allprojects {
 
     dependencies {
         implementation platform("io.micronaut:micronaut-bom:$micronautVersion")
-        implementation "io.projectreactor:reactor-core"
+        implementation "io.micronaut.reactor:micronaut-reactor"
+        implementation "io.projectreactor.kotlin:reactor-kotlin-extensions:1.1.0-M1"
+        implementation "io.micronaut.reactor:micronaut-reactor-http-client:1.0.0"
+
         implementation "org.jetbrains.kotlin:kotlin-stdlib:1.3.72"
         implementation "org.jetbrains.kotlin:kotlin-reflect:1.3.72"
         implementation "io.github.microutils:kotlin-logging:1.6.24"
 
         implementation "io.micronaut:micronaut-runtime"
         implementation "io.micronaut:micronaut-http-client"
+
         implementation "io.micronaut:micronaut-http-server-netty"
         implementation "io.micronaut:micronaut-validation"
-        implementation "io.micronaut.configuration:micronaut-hibernate-validator"
+        implementation "io.micronaut.beanvalidation:micronaut-hibernate-validator"
+        implementation "io.micronaut.cache:micronaut-cache-core"
         implementation "javax.annotation:javax.annotation-api"
+        implementation "com.lmax:disruptor:3.4.2"
 
-        implementation "io.micronaut.configuration:micronaut-elasticsearch"
+        implementation "io.micronaut.elasticsearch:micronaut-elasticsearch"
 
-        implementation "com.tgt.lists:lists-lib:1.0.41"
-        implementation "com.tgt.lists:lists-components:1.128.11"
+        implementation("com.tgt.lists:lists-lib:2.201.0") {
+            exclude group: 'com.tgt.lists.micronaut', module: 'micronaut-resilience4j'
+            exclude group: 'com.tgt.lists', module: 'lists-components'
+            exclude group: 'com.tgt.lists', module: 'lists-oauth'
+            exclude group: 'com.tgt.lists', module: 'lists-message-bus'
+        }
+        implementation("com.tgt.lists:lists-components:2.201.0") {
+            exclude group: 'com.tgt.lists.micronaut', module: 'micronaut-resilience4j'
+        }
 
+        implementation "com.tgt.lists:lists-permissions-client:2.201.0"
+        implementation "com.tgt.lists:lists-cart-client:2.201.0"
         implementation "com.tgt.lists:backpack-registry-client:1.135.2"
-        implementation "com.tgt.lists:lists-cart-client:1.122.5"
-        implementation "com.tgt.lists:lists-v2-client:1.122.0"
-        implementation "com.tgt.lists:lists-sic-client:1.122.0"
-        implementation "com.tgt.lists:lists-item-search-client:1.121.9"
-        implementation "com.tgt.lists:lists-core-items-client:1.121.6"
-        implementation "com.tgt.lists:lists-cartwheel-client:1.121.0"
-        implementation "com.tgt.lists:lists-neptune-client:1.121.3"
-        implementation "com.tgt.lists:lists-oauth:1.128.1"
-        implementation "com.tgt.lists.micronaut:micronaut-zipkin:1.127.19"
-        implementation "com.tgt.lists:lists-message-bus:1.128.9"
-        implementation "com.tgt.lists:lists-logging:1.128.7"
-        implementation 'com.tgt.lists.micronaut:micronaut-jdbc:1.127.7'
+        implementation "com.tgt.lists:lists-oauth:2.201.0"
+        implementation "com.tgt.lists.micronaut:micronaut-zipkin:2.201.0"
+        implementation "com.tgt.lists:lists-message-bus:2.201.0"
+        implementation "com.tgt.lists:lists-logging:2.201.0"
         implementation "com.tgt.lists:platform-connector-micronaut:2.0.8.1"
         implementation "io.swagger.core.v3:swagger-annotations"
-        implementation "com.tgt.lists.micronaut:micronaut-metrics:1.128.4"
-        implementation "com.tgt.lists.micronaut:micronaut-elastic:1.210.2"
+        implementation "com.tgt.lists.micronaut:micronaut-metrics:2.201.0"
+        implementation "io.micronaut.kotlin:micronaut-kotlin-runtime"
+        implementation "io.micronaut:micronaut-runtime"
+        implementation "com.tgt.lists.micronaut:micronaut-elastic:2.201.0"
 
+        kapt "io.micronaut.configuration:micronaut-openapi:1.5.0"
         kapt platform("io.micronaut:micronaut-bom:$micronautVersion")
-        kapt "io.micronaut.configuration:micronaut-openapi"
         kapt "io.micronaut:micronaut-inject-java"
         kapt "io.micronaut:micronaut-validation"
         kaptTest platform("io.micronaut:micronaut-bom:$micronautVersion")
@@ -90,16 +98,20 @@ allprojects {
         runtime "com.fasterxml.jackson.core:jackson-databind:2.9.8"
         runtime "com.fasterxml.jackson.module:jackson-module-kotlin:2.9.9"
 
-        testImplementation "io.micronaut:micronaut-inject-groovy"
-        testImplementation "org.codehaus.groovy:groovy:2.5.5"
-        testImplementation "org.spockframework:spock-core:1.3-groovy-2.5"
+        testImplementation platform("io.micronaut:micronaut-bom:$micronautVersion")
+        testImplementation "io.micronaut:micronaut-inject-groovy:$micronautVersion"
+        testImplementation("org.spockframework:spock-core") {
+            exclude group: "org.codehaus.groovy", module: "groovy-all"
+        }
+        testImplementation "org.codehaus.groovy:groovy-json:3.0.5"
         testImplementation "io.micronaut.test:micronaut-test-spock"
         testImplementation "com.tgt.swaggerlib:swagger-sync:1.210.2"
-        testImplementation "com.tgt.lists.micronaut:micronaut-test:1.127.0"
+        testImplementation "com.tgt.lists.micronaut:micronaut-test:2.201.0"
         testImplementation("org.objenesis:objenesis:2.6")
-        testImplementation 'io.micronaut.configuration:micronaut-micrometer-registry-prometheus'
+        testImplementation 'io.micronaut.micrometer:micronaut-micrometer-registry-prometheus'
         testImplementation "org.testcontainers:spock:1.12.2"
-        testImplementation "org.testcontainers:elasticsearch:1.13.0"
+        testImplementation "org.testcontainers:elasticsearch:1.14.3"
+        testImplementation "org.testcontainers:kafka:1.14.3"
         testImplementation "cglib:cglib:3.3.0"
         testImplementation group: 'io.opentracing', name: 'opentracing-mock', version: '0.33.0'
     }

@@ -74,7 +74,7 @@ class ElasticsearchEventDispatcherFunctionalTest extends BaseKafkaFunctionalTest
         def registryMetaData = RegistryMetaDataTO.getCoreRegistryMetadataMap(RegistrySubChannel.KIOSK, "41", RegistryType.WEDDING,
             false, false, "10", RegistryStatus.ACTIVE, [groom, bride], event, null)
 
-        def createRegistryEvent = new CreateListNotifyEvent(guestId, registryId, "REGISTRY", "Testing Registry Event", listMetadata, registryMetaData)
+        def createRegistryEvent = new CreateListNotifyEvent(guestId, registryId, "REGISTRY", "Testing Registry Event", listMetadata, registryMetaData, null)
 
         testEventListener.preDispatchLambda = new PreDispatchLambda() {
             @Override
@@ -111,7 +111,7 @@ class ElasticsearchEventDispatcherFunctionalTest extends BaseKafkaFunctionalTest
         def registryId = UUID.randomUUID()
 
         def listMetadata = new ListMetaDataTO(true, LIST_STATUS.PENDING)
-        def deleteRegistryEvent = new DeleteListNotifyEvent(guestId, registryId, "REGISTRY", "Testing Registry Event", listMetadata, null)
+        def deleteRegistryEvent = new DeleteListNotifyEvent(guestId, registryId, "REGISTRY", "Testing Registry Event", listMetadata, null, null)
 
         testEventListener.preDispatchLambda = new PreDispatchLambda() {
             @Override

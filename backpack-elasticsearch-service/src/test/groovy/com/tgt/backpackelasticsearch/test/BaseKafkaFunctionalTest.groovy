@@ -14,6 +14,7 @@ import org.jetbrains.annotations.NotNull
 import org.jetbrains.annotations.Nullable
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.testcontainers.containers.KafkaContainer
 import spock.lang.Shared
 
 import javax.inject.Inject
@@ -22,6 +23,9 @@ import java.util.concurrent.ConcurrentLinkedQueue
 class BaseKafkaFunctionalTest extends BaseFunctionalTest implements TestPropertyProvider {
 
     static Logger LOG = LoggerFactory.getLogger(BaseKafkaFunctionalTest)
+
+    @Shared
+    static KafkaContainer kafkaContainer
 
     @Shared
     @Inject
@@ -45,20 +49,24 @@ class BaseKafkaFunctionalTest extends BaseFunctionalTest implements TestProperty
         String kafkaBootstrapServers = System.getenv("KAFKA_BOOTSTRAP_SERVERS")
 
         if (kafkaBootstrapServers == null) {
-            // use local embedded kafka
-            LOG.info("using embedded kafka")
-            map.put("kafka.bootstrap.servers", 'localhost:30001')
-            map.put("kafka.embedded.enabled", "true")
-            map.put("kafka.embedded.topics", "$MSGBUS_TOPIC,$DLQ_TOPIC")
-            // log cleaner thread uses high memory by default (134217728 i.e. 128MB)
-            // which causes Heap OutOfMemory issues. Setting to somethig smaller 20MB.
-            map.put("kafka.embedded.properties.log.cleaner.dedupe.buffer.size", 20000000)
+            LOG.info("Using testcontainer kafka")
+
+            if (kafkaContainer == null) {
+                LOG.info("starting testcontainer kafka")
+                // kafka default for auto.create.topics.enable is "true" which means topics will be auto created
+                // when a producer tries to produce to a topic that doesn't exists yet.
+                kafkaContainer = new KafkaContainer("4.1.2")
+                kafkaContainer.start()
+            }
+
+            kafkaBootstrapServers = kafkaContainer.getBootstrapServers()
+            LOG.info("getProperties [kafka.bootstrap.servers: $kafkaBootstrapServers]")
+            map.put("kafka.bootstrap.servers", "${kafkaBootstrapServers}")
         }
         else {
             // use drone's kafka service
             LOG.info("using drone kafka service $kafkaBootstrapServers")
             map.put("kafka.bootstrap.servers", kafkaBootstrapServers)
-            map.put("kafka.embedded.enabled", "false")
         }
         return map
     }

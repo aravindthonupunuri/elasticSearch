@@ -46,8 +46,17 @@ tasks.withType(Test) {
 }
 
 test {
+    useJUnitPlatform()
     dependsOn testUnit
     dependsOn testFunctional
+}
+
+testUnit {
+    useJUnitPlatform()
+}
+
+testFunctional {
+    useJUnitPlatform()
 }
 
 cleanTest {

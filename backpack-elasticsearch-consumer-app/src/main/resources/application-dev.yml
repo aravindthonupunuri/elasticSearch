@@ -88,6 +88,10 @@ components:
     sanitizing-filter:
       enabled: false
 
+cart:
+  client:
+    refresh-cycle-sec: 999999999
+
 msgbus:
   source: backpackelasticsearch
   dlq-source: backpackelasticsearch-dlq

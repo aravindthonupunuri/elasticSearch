@@ -5,6 +5,28 @@ micronaut:
     host: ${backpack-elasticsearch-app-host:localhost}
     port: 8081
     idle-timeout: 2000ms
+  http:
+    client.connect-ttl: 30m
+    client.pool.acquire-timeout: 2000ms
+    services:
+      carts-api:
+        urls:
+          - "https://carts.perf.target.com"
+        connect-timeout: 300ms
+        read-timeout: 1000ms
+        pool:
+          enabled: true
+          max-connections: 128
+          max-pending-acquires: 50
+      permissions-api:
+        urls:
+          - "https://listspermissions.dev.target.com"
+        connect-timeout: 300ms
+        read-timeout: 300ms
+        pool:
+          enabled: true
+          max-connections: 128
+          max-pending-acquires: 50
 
   metrics:
     binders:
@@ -75,6 +97,10 @@ backends:
       sliding-window-type: TIME_BASED       # possible values TIME_BASED or COUNT_BASED
       sliding-window-size: 5                # seconds for TIME_BASED, request-count for COUNT_BASED
       minimum-number-of-calls: 2            # min calls required (per sliding window period) before cb calculates error rate.
+
+cart:
+  client:
+    refresh-cycle-sec: 999999999
 
 tracing:
   zipkin:

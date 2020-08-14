@@ -32,8 +32,6 @@ class BaseElasticFunctionalTest extends Specification implements TestPropertyPro
         if(elasticUrl == null) {
             elasticsearchContainer =
                 new ElasticsearchContainer("docker.elastic.co/elasticsearch/elasticsearch:7.6.2")
-                    .withEnv("ELASTIC_PASSWORD", ELASTICSEARCH_PASSWORD)
-                    .withEnv("xpack.security.enabled", "true")
             elasticsearchContainer.start()
             def mappedPort = elasticsearchContainer.getMappedPort(9200)
             elasticUrl = "http://localhost:${mappedPort}"

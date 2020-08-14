@@ -8,7 +8,7 @@ sourceSets {
         }
         resources.srcDir "src/test/unit/resources"
     }
-    
+
     testFunctional {
         groovy {
             srcDir { "src/test/functional/groovy" }
@@ -46,8 +46,17 @@ tasks.withType(Test) {
 }
 
 test {
+    useJUnitPlatform()
     dependsOn testUnit
     dependsOn testFunctional
+}
+
+testUnit {
+    useJUnitPlatform()
+}
+
+testFunctional {
+    useJUnitPlatform()
 }
 
 cleanTest {

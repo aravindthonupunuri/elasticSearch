@@ -158,6 +158,10 @@ kafka:
         block:
           ms: 2000
 
+cart:
+  client:
+    refresh-cycle-sec: 999999999
+
 msgbus:
   source: backpackelasticsearch
   dlq-source: backpackelasticsearch-dlq

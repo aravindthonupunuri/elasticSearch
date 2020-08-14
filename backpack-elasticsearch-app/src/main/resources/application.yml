@@ -5,6 +5,25 @@ micronaut:
     host: ${backpack-elasticsearch-app-host:localhost}
     port: 8081
     idle-timeout: 2000ms
+  http:
+    services:
+      carts-api:
+        urls:
+          - ${cart-base-url}
+        follow-redirects: false
+        connect-timeout: 1500ms
+        read-timeout: 1500ms
+        pool:
+          enabled: true
+          max-connections: 5
+      permissions-api:
+        urls:
+          - ${permissions-api-base-url}
+          connect-timeout: 300ms
+          read-timeout: 300ms
+          pool:
+            enabled: true
+            max-connections: 5
 
   metrics:
     binders:
@@ -79,6 +98,10 @@ api:
     excluded-paths: "/store_item_placements/v1/,/lists/v2,/redsky_aggregations/v1/"
 
 api-key: "fda12ff92c2e0e04412bab909732bd2367970263"
+
+cart:
+  client:
+    refresh-cycle-sec: 999999999
 
 resilience4j:
   filter: false
