@@ -3,9 +3,9 @@ package com.tgt.backpackelasticsearch.kafka
 import com.tgt.backpackelasticsearch.kafka.handler.CreateRegistryNotifyEventHandler
 import com.tgt.backpackelasticsearch.kafka.handler.DeleteRegistryNotifyEventHandler
 import com.tgt.backpackelasticsearch.kafka.handler.UpdateRegistryNotifyEventHandler
-import com.tgt.lists.lib.kafka.model.CreateListNotifyEvent
-import com.tgt.lists.lib.kafka.model.DeleteListNotifyEvent
-import com.tgt.lists.lib.kafka.model.UpdateListNotifyEvent
+import com.tgt.lists.atlas.kafka.model.CreateListNotifyEvent
+import com.tgt.lists.atlas.kafka.model.DeleteListNotifyEvent
+import com.tgt.lists.atlas.kafka.model.UpdateListNotifyEvent
 import com.tgt.lists.msgbus.EventDispatcher
 import com.tgt.lists.msgbus.event.DeadEventTransformedValue
 import com.tgt.lists.msgbus.event.EventHeaders

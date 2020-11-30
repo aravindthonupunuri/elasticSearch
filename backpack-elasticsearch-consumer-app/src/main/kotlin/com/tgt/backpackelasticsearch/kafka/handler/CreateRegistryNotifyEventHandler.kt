@@ -2,9 +2,11 @@ package com.tgt.backpackelasticsearch.kafka.handler
 
 import com.tgt.backpackelasticsearch.service.async.CreateRegistryService
 import com.tgt.backpackelasticsearch.transport.RegistryData
-import com.tgt.backpackregistry.transport.RegistryMetaDataTO
-import com.tgt.backpackregistry.util.RecipientType
-import com.tgt.lists.lib.kafka.model.CreateListNotifyEvent
+import com.tgt.backpackregistryclient.transport.RegistryMetaDataTO
+import com.tgt.backpackregistryclient.util.RecipientType
+import com.tgt.backpackregistryclient.util.RegistryStatus
+import com.tgt.backpackregistryclient.util.RegistryType
+import com.tgt.lists.atlas.kafka.model.CreateListNotifyEvent
 import com.tgt.lists.msgbus.event.EventHeaderFactory
 import com.tgt.lists.msgbus.event.EventHeaders
 import com.tgt.lists.msgbus.event.EventProcessingResult
@@ -27,11 +29,17 @@ class CreateRegistryNotifyEventHandler(
         eventHeaders: EventHeaders,
         isPoisonEvent: Boolean
     ): Mono<EventProcessingResult> {
-        val registryMetaData = RegistryMetaDataTO.getRegistryMetadata(createRegistryNotifyEvent.userMetaData)
-        return createRegistryService.saveRegistry(RegistryData(registryId = createRegistryNotifyEvent.listId,
+        val registryMetaData = RegistryMetaDataTO.toEntityRegistryMetadata(createRegistryNotifyEvent.userMetaData)
+        return createRegistryService.saveRegistry(
+            RegistryData(
+                registryId = createRegistryNotifyEvent.listId,
             registryTitle = createRegistryNotifyEvent.listTitle,
-            registryType = registryMetaData?.registryType,
-            registryStatus = registryMetaData?.registryStatus,
+            registryType = if (createRegistryNotifyEvent.listSubType != null)
+                RegistryType.toRegistryType(createRegistryNotifyEvent.listSubType!!)
+                else null,
+            registryStatus = if (createRegistryNotifyEvent.listState != null)
+                RegistryStatus.toRegistryStatus(createRegistryNotifyEvent.listState.toString())
+            else null,
             registrantFirstName = registryMetaData?.recipients?.firstOrNull { it.recipientType == RecipientType.REGISTRANT }?.firstName,
             registrantLastName = registryMetaData?.recipients?.firstOrNull { it.recipientType == RecipientType.REGISTRANT }?.lastName,
             coregistrantFirstName = registryMetaData?.recipients?.firstOrNull { it.recipientType == RecipientType.COREGISTRANT }?.firstName,
@@ -39,8 +47,7 @@ class CreateRegistryNotifyEventHandler(
             eventCity = registryMetaData?.event?.city,
             eventState = registryMetaData?.event?.state,
             eventCountry = registryMetaData?.event?.country,
-            eventDateTs = registryMetaData?.event?.eventDateTs,
-            numberOfGuests = registryMetaData?.event?.numberOfGuests
+            eventDate = registryMetaData?.event?.eventDate
         ))
             .map { EventProcessingResult(true, eventHeaders, createRegistryNotifyEvent) }
             .onErrorResume {

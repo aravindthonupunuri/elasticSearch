@@ -19,16 +19,12 @@ lists:
 jackson:
   property-naming-strategy: "SNAKE_CASE"
 
-cart:
-  client:
-    refresh-cycle-sec: 999999999
-    fastly-header-name: cartslb
-
 filter:
   server:
     order:
       lists-brave-tracing-server-filter: 100
       list-authorization-filter: 200
+      registry-channel-subchannel-filter: 400
   client:
     order:
       lists-brave-tracing-client-filter: 900
@@ -91,6 +87,8 @@ components:
     list-authorization-filter:
       enabled: false
     sanitizing-filter:
+      enabled: false
+    registry-channel-subchannel-filter:
       enabled: false
 
 msgbus:

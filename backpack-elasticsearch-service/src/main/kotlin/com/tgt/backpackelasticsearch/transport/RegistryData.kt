@@ -1,9 +1,15 @@
 package com.tgt.backpackelasticsearch.transport
 
+import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.tgt.backpackregistry.util.RegistryStatus
-import com.tgt.backpackregistry.util.RegistryType
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer
+import com.tgt.backpackregistryclient.util.RegistryStatus
+import com.tgt.backpackregistryclient.util.RegistryType
+import java.time.LocalDate
 import java.util.*
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -30,8 +36,9 @@ data class RegistryData(
     val eventState: String? = null,
     @JsonProperty("event_country")
     val eventCountry: String? = null,
-    @JsonProperty("event_date_ts")
-    val eventDateTs: String? = null,
-    @JsonProperty("number_of_guests")
-    val numberOfGuests: Int? = 0
+    @JsonDeserialize(using = LocalDateDeserializer::class)
+    @JsonSerialize(using = LocalDateSerializer::class)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    @JsonProperty("event_date")
+    val eventDate: LocalDate? = null
 )

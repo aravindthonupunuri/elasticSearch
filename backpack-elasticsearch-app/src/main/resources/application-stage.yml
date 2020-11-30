@@ -9,15 +9,6 @@ micronaut:
     client.connect-ttl: 30m
     client.pool.acquire-timeout: 2000ms
     services:
-      carts-api:
-        urls:
-          - "https://carts.perf.target.com"
-        connect-timeout: 300ms
-        read-timeout: 1000ms
-        pool:
-          enabled: true
-          max-connections: 128
-          max-pending-acquires: 50
       permissions-api:
         urls:
           - "https://listspermissions.dev.target.com"
@@ -54,6 +45,7 @@ filter:
       lists-brave-tracing-server-filter: 100
       list-authorization-filter: 200
       sanitizing-filter: 300
+      registry-channel-subchannel-filter: 400
   client:
     order:
       lists-brave-tracing-client-filter: 900
@@ -98,11 +90,6 @@ backends:
       sliding-window-size: 5                # seconds for TIME_BASED, request-count for COUNT_BASED
       minimum-number-of-calls: 2            # min calls required (per sliding window period) before cb calculates error rate.
 
-cart:
-  client:
-    refresh-cycle-sec: 999999999
-    fastly-header-name: cartslb
-
 tracing:
   zipkin:
     enabled: false
@@ -121,6 +108,10 @@ components:
   server:
     list-authorization-filter:
       base-uri: /registries_search/v1
+    sanitizing-filter:
+      enabled: true
+    registry-channel-subchannel-filter:
+      enabled: false
 
 msgbus:
   source: backpackelasticsearch

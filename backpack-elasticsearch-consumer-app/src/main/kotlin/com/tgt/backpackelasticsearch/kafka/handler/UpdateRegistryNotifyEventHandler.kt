@@ -2,9 +2,11 @@ package com.tgt.backpackelasticsearch.kafka.handler
 
 import com.tgt.backpackelasticsearch.service.async.UpdateRegistryService
 import com.tgt.backpackelasticsearch.transport.RegistryData
-import com.tgt.backpackregistry.transport.RegistryMetaDataTO
-import com.tgt.backpackregistry.util.RecipientType
-import com.tgt.lists.lib.kafka.model.UpdateListNotifyEvent
+import com.tgt.backpackregistryclient.transport.RegistryMetaDataTO
+import com.tgt.backpackregistryclient.util.RecipientType
+import com.tgt.backpackregistryclient.util.RegistryStatus
+import com.tgt.backpackregistryclient.util.RegistryType
+import com.tgt.lists.atlas.kafka.model.UpdateListNotifyEvent
 import com.tgt.lists.msgbus.event.EventHeaderFactory
 import com.tgt.lists.msgbus.event.EventHeaders
 import com.tgt.lists.msgbus.event.EventProcessingResult
@@ -27,11 +29,15 @@ class UpdateRegistryNotifyEventHandler(
         eventHeaders: EventHeaders,
         isPoisonEvent: Boolean
     ): Mono<EventProcessingResult> {
-        val registryMetaData = RegistryMetaDataTO.getRegistryMetadata(updateRegistryNotifyEvent.userMetaData)
+        val registryMetaData = RegistryMetaDataTO.toEntityRegistryMetadata(updateRegistryNotifyEvent.userMetaData)
         return updateRegistryService.updateRegistry(RegistryData(registryId = updateRegistryNotifyEvent.listId,
             registryTitle = updateRegistryNotifyEvent.listTitle,
-            registryType = registryMetaData?.registryType,
-            registryStatus = registryMetaData?.registryStatus,
+            registryType = if (updateRegistryNotifyEvent.listSubType != null)
+                RegistryType.toRegistryType(updateRegistryNotifyEvent.listSubType!!)
+            else null,
+            registryStatus = if (updateRegistryNotifyEvent.listState != null)
+                RegistryStatus.toRegistryStatus(updateRegistryNotifyEvent.listState.toString())
+            else null,
             registrantFirstName = registryMetaData?.recipients?.firstOrNull { it.recipientType == RecipientType.REGISTRANT }?.firstName,
             registrantLastName = registryMetaData?.recipients?.firstOrNull { it.recipientType == RecipientType.REGISTRANT }?.lastName,
             coregistrantFirstName = registryMetaData?.recipients?.firstOrNull { it.recipientType == RecipientType.COREGISTRANT }?.firstName,
@@ -39,8 +45,7 @@ class UpdateRegistryNotifyEventHandler(
             eventCity = registryMetaData?.event?.city,
             eventState = registryMetaData?.event?.state,
             eventCountry = registryMetaData?.event?.country,
-            eventDateTs = registryMetaData?.event?.eventDateTs,
-            numberOfGuests = registryMetaData?.event?.numberOfGuests
+            eventDate = registryMetaData?.event?.eventDate
         ))
             .map { EventProcessingResult(true, eventHeaders, updateRegistryNotifyEvent) }
             .onErrorResume {

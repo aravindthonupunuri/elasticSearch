@@ -7,11 +7,6 @@ micronaut:
     client:
       read-timeout: 20s
     services:
-      carts-api:
-        urls:
-          - http://localhost:${server-port:32000}
-        pool:
-          enabled: false
       permissions-api:
         urls:
           - http://localhost:${server-port:32000}
@@ -45,12 +40,6 @@ esaas:
 jackson:
   property-naming-strategy: "SNAKE_CASE"
 
-cart:
-  client:
-    refresh-cycle-sec: 999999999
-    fastly-header-name: cartslb
-    gcp-lb-header: eggo_grapenuts
-
 api:
   oauth:
     filter-path: /**
@@ -74,6 +63,7 @@ filter:
       lists-brave-tracing-server-filter: 100
       list-authorization-filter: 200
       sanitizing-filter: 300
+      registry-channel-subchannel-filter: 400
   client:
     order:
       lists-brave-tracing-client-filter: 900
@@ -135,6 +125,10 @@ components:
   server:
     list-authorization-filter:
       base-uri: /registries_search/v1
+    sanitizing-filter:
+      enabled: false
+    registry-channel-subchannel-filter:
+      enabled: false
 
 kafka:
   embedded:

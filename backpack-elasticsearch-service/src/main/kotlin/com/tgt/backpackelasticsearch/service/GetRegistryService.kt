@@ -1,6 +1,6 @@
 package com.tgt.backpackelasticsearch.service
 
-import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.tgt.backpackelasticsearch.transport.RegistryData
 import com.tgt.lists.micronaut.elastic.ElasticCallExecutor
@@ -25,17 +25,18 @@ class GetRegistryService(
     @Value("\${elasticsearch.index}") private val registryIndex: String
 ) {
 
-    val mapper = ObjectMapper()
+    val mapper = jacksonObjectMapper()
 
     fun findByRecipientName(recipientFirstName: String?, recipientLastName: String?): Mono<List<RegistryData>> {
         val searchRequest = SearchRequest(registryIndex)
         val searchSourceBuilder = SearchSourceBuilder()
         val fullName = "$recipientFirstName $recipientLastName"
-        // Match first and last name in both registrant as well co-regisrants first, last names
+
+        // Match first and last name in both registrant as well co-registrants first, last names
         // Do note its AND condition, so both first as well last has to be in either of 4 names
         val matchQueryBuilder = MultiMatchQueryBuilder(
             fullName,
-            "registrantFirstName", "registrantLastName", "coregistrantFirstName", "coregistrantLastName"
+            "registrant_first_name", "registrant_last_name", "coregistrant_first_name", "coregistrant_last_name"
         )
             .type(MultiMatchQueryBuilder.Type.CROSS_FIELDS).operator(Operator.AND)
 

@@ -5,22 +5,20 @@ import com.tgt.backpackelasticsearch.service.async.CreateRegistryService
 import com.tgt.backpackelasticsearch.test.BaseElasticFunctionalTest
 import com.tgt.backpackelasticsearch.transport.RegistryData
 import com.tgt.backpackelasticsearch.util.BackpackElasticsearchConstants
-import com.tgt.backpackregistry.util.RegistryChannel
-import com.tgt.backpackregistry.util.RegistryStatus
-import com.tgt.backpackregistry.util.RegistrySubChannel
-import com.tgt.backpackregistry.util.RegistryType
+import com.tgt.backpackregistryclient.util.RegistryChannel
+import com.tgt.backpackregistryclient.util.RegistryStatus
+import com.tgt.backpackregistryclient.util.RegistrySubChannel
+import com.tgt.backpackregistryclient.util.RegistryType
 import io.micronaut.http.HttpRequest
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.HttpStatus
 import io.micronaut.http.client.exceptions.HttpClientResponseException
 import io.micronaut.test.annotation.MicronautTest
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import spock.lang.Stepwise
 import spock.lang.Unroll
 
 import javax.inject.Inject
-import java.time.LocalDateTime
+import java.time.LocalDate
 
 import static com.tgt.backpackelasticsearch.test.DataProvider.getHeaders
 
@@ -28,7 +26,6 @@ import static com.tgt.backpackelasticsearch.test.DataProvider.getHeaders
 @Stepwise
 class SearchRegistryByNameFunctionalTest extends BaseElasticFunctionalTest {
 
-    private static Logger logger = LoggerFactory.getLogger(SearchRegistryByNameFunctionalTest)
     String uri = BackpackElasticsearchConstants.ELASTIC_SEARCH_BASEPATH
 
     @Inject
@@ -64,7 +61,7 @@ class SearchRegistryByNameFunctionalTest extends BaseElasticFunctionalTest {
     @Unroll
     def "test create new list with name "() {
         given:
-        RegistryData registryRequest = new RegistryData(UUID.randomUUID(), "interesting title", registryType, registryStatus, registrantFirst, registrantLast, coregistrantFirst, coregistrantLast, "MSP", "MN", "USA", LocalDateTime.now().toString(),20)
+        RegistryData registryRequest = new RegistryData(UUID.randomUUID(), "interesting title", registryType, registryStatus, registrantFirst, registrantLast, coregistrantFirst, coregistrantLast, "MSP", "MN", "USA", LocalDate.now())
 
         when:
 
@@ -76,10 +73,10 @@ class SearchRegistryByNameFunctionalTest extends BaseElasticFunctionalTest {
 
         where:
         registryType            | registryStatus            | registrantFirst   |   registrantLast  |   coregistrantFirst   |   coregistrantLast
-        RegistryType.BABY       | RegistryStatus.ACTIVE     | "fist name"       |   "last one"      |   "co first"          |   "co last"
-        RegistryType.WEDDING    | RegistryStatus.ACTIVE     | "funny first"     |   "seri last"     |   "last first"        |   "first am"
-        RegistryType.BABY       | RegistryStatus.INACTIVE   | "sdkw wef"        |   "opwe sd23"     |   "wegs whwe"         |   "hkn,de she"
-        RegistryType.WEDDING    | RegistryStatus.INACTIVE   | "kbnch sgs"       |   "sdfklkxcn cs"  |   "sgsd bsd"          |   "sgds, cmf"
+        RegistryType.BABY       | RegistryStatus.@ACTIVE     | "fist name"       |   "last one"      |   "co first"          |   "co last"
+        RegistryType.WEDDING    | RegistryStatus.@ACTIVE     | "funny first"     |   "seri last"     |   "last first"        |   "first am"
+        RegistryType.BABY       | RegistryStatus.@INACTIVE   | "sdkw wef"        |   "opwe sd23"     |   "wegs whwe"         |   "hkn,de she"
+        RegistryType.WEDDING    | RegistryStatus.@INACTIVE   | "kbnch sgs"       |   "sdfklkxcn cs"  |   "sgsd bsd"          |   "sgds, cmf"
     }
 
 

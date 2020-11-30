@@ -53,17 +53,6 @@ x-api-definition:
   nuid_ad_groups: null
   risk_rating: MEDIUM
   last_pentest_date: null
-  dependencies:
-    - system_name: carts-v4
-      system_type: ORIGIN
-      api_spec: 'https://git.target.com/checkout/bumblebee/blob/master/api-spec/carts-v4.yaml'
-      code_repository: "https://git.target.com/checkout/bumblebee"
-      issue_tracker: "https://git.target.com/checkout/bumblebee/issues"
-      endpoints:
-        - name: Production
-          url: 'https://api.target.com/carts/v4'
-        - name: Stage
-          url: 'https://stage-api.target.com/carts/v4'
   links:
     issue_tracker: https://git.target.com/Registry-Modernization/backpack-registry-search/issues
     api_wiki_page: null

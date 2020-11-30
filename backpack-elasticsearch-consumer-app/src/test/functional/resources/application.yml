@@ -83,17 +83,13 @@ kafka:
   embedded:
     enabled: false
 
-cart:
-  client:
-    refresh-cycle-sec: 999999999
-    fastly-header-name: cartslb
-    gcp-lb-header: eggo_grapenuts
-
 components:
   server:
     list-authorization-filter:
       enabled: false
     sanitizing-filter:
+      enabled: false
+    registry-channel-subchannel-filter:
       enabled: false
 
 #  ssl:
@@ -136,6 +132,7 @@ filter:
       lists-brave-tracing-server-filter: 100
       lists-traceid-filter: 101
       list-authorization-filter: 200
+      registry-channel-subchannel-filter: 400
   client:
     order:
       lists-brave-tracing-client-filter: 900

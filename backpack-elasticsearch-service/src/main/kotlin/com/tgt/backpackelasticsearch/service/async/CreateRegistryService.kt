@@ -1,6 +1,6 @@
 package com.tgt.backpackelasticsearch.service.async
 
-import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.tgt.backpackelasticsearch.transport.RegistryData
 import com.tgt.lists.micronaut.elastic.ElasticCallExecutor
 import com.tgt.lists.micronaut.elastic.ElasticClientManager
@@ -24,7 +24,7 @@ class CreateRegistryService(
     @Value("\${elasticsearch.operation-timeout}") private val operationTimeout: String = "1s"
 ) {
 
-    val mapper = ObjectMapper()
+    val mapper = jacksonObjectMapper()
 
     fun saveRegistry(registryData: RegistryData): Mono<Tuple<IndexResponse, IndexResponse>> {
 

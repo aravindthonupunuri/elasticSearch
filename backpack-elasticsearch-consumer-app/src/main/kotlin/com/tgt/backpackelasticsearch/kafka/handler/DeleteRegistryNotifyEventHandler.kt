@@ -1,7 +1,7 @@
 package com.tgt.backpackelasticsearch.kafka.handler
 
 import com.tgt.backpackelasticsearch.service.async.DeleteRegistryService
-import com.tgt.lists.lib.kafka.model.DeleteListNotifyEvent
+import com.tgt.lists.atlas.kafka.model.DeleteListNotifyEvent
 import com.tgt.lists.msgbus.event.EventHeaderFactory
 import com.tgt.lists.msgbus.event.EventHeaders
 import com.tgt.lists.msgbus.event.EventProcessingResult

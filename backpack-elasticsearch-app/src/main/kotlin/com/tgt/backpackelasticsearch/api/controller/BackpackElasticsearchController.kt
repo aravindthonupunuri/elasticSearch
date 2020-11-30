@@ -5,11 +5,11 @@ import com.tgt.backpackelasticsearch.transport.RegistryData
 import com.tgt.backpackelasticsearch.transport.RegistrySearchSortFieldGroup
 import com.tgt.backpackelasticsearch.util.BackpackElasticsearchConstants.ELASTIC_SEARCH_BASEPATH
 import com.tgt.backpackelasticsearch.util.BackpackElasticsearchConstants.PROFILE_ID
-import com.tgt.backpackregistry.util.RegistryChannel
-import com.tgt.backpackregistry.util.RegistrySortOrderGroup
-import com.tgt.backpackregistry.util.RegistrySubChannel
+import com.tgt.backpackregistryclient.util.RegistryChannel
+import com.tgt.backpackregistryclient.util.RegistrySortOrderGroup
+import com.tgt.backpackregistryclient.util.RegistrySubChannel
 import com.tgt.lists.common.components.exception.BadRequestException
-import com.tgt.lists.lib.api.util.AppErrorCodes
+import com.tgt.lists.common.components.exception.BaseErrorCodes.BAD_REQUEST_ERROR_CODE
 import io.micronaut.http.HttpStatus
 import io.micronaut.http.annotation.*
 import io.swagger.v3.oas.annotations.media.ArraySchema
@@ -40,16 +40,16 @@ class BackpackElasticsearchController(
     ): Mono<List<RegistryData>> {
         // TODO Check if null check is either of them OR both
         if (firstName.isNullOrEmpty()) {
-            throw BadRequestException(AppErrorCodes.BAD_REQUEST_ERROR_CODE(listOf("firstName is incorrect, can’t be null")))
+            throw BadRequestException(BAD_REQUEST_ERROR_CODE(listOf("firstName is incorrect, can’t be null")))
         }
         if (lastName.isNullOrEmpty()) {
-            throw BadRequestException(AppErrorCodes.BAD_REQUEST_ERROR_CODE(listOf("lastName is incorrect, can’t be null")))
+            throw BadRequestException(BAD_REQUEST_ERROR_CODE(listOf("lastName is incorrect, can’t be null")))
         }
         if (registryChannel == null) {
-            throw BadRequestException(AppErrorCodes.BAD_REQUEST_ERROR_CODE(listOf("channel is incorrect, can’t be null")))
+            throw BadRequestException(BAD_REQUEST_ERROR_CODE(listOf("channel is incorrect, can’t be null")))
         }
         if (registrySubChannel == null) {
-            throw BadRequestException(AppErrorCodes.BAD_REQUEST_ERROR_CODE(listOf("sub_channel is incorrect, can’t be null")))
+            throw BadRequestException(BAD_REQUEST_ERROR_CODE(listOf("sub_channel is incorrect, can’t be null")))
         }
         // TODO Sort field and order are yet to be implemented
         return getRegistryService.findByRecipientName(firstName, lastName)

@@ -53,17 +53,6 @@ x-api-definition:
   nuid_ad_groups: null
   risk_rating: MEDIUM
   last_pentest_date: null
-  dependencies:
-    - system_name: carts-v4
-      system_type: ORIGIN
-      api_spec: 'https://git.target.com/checkout/bumblebee/blob/master/api-spec/carts-v4.yaml'
-      code_repository: "https://git.target.com/checkout/bumblebee"
-      issue_tracker: "https://git.target.com/checkout/bumblebee/issues"
-      endpoints:
-        - name: Production
-          url: 'https://api.target.com/carts/v4'
-        - name: Stage
-          url: 'https://stage-api.target.com/carts/v4'
   links:
     issue_tracker: https://git.target.com/Registry-Modernization/backpack-elasticsearch/issues
     api_wiki_page: null
@@ -141,13 +130,13 @@ paths:
           description: registry channel
           required: true
           type: string
-          enum: [ "WEB", "MOBILE"]
+          enum: [ "WEB", "MOBILE", "STORE"]
         - name: sub_channel
           in: query
           description: registry subchannel
           required: true
           type: string
-          enum: [ "KIOSK"]
+          enum: [ "KIOSK", "SCANNER", "TGTWEB", "GRIPHAPP", "GRANDAPP", "SPARTA"]
         - name: sort_field
           in: query
           description: sort field by given enum options
@@ -206,7 +195,7 @@ definitions:
         type: string
       registry_type:
         $ref: '#/definitions/RegistryType'
-      event_date_ts:
+      event_date:
         type: string
       event_city:
         type: string
@@ -214,9 +203,6 @@ definitions:
         type: string
       event_country:
         type: string
-      number_of_guests:
-        type: integer
-        format: int32
 
   RegistryType:
     type: string

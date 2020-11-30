@@ -64,19 +64,15 @@ allprojects {
 
         implementation "io.micronaut.elasticsearch:micronaut-elasticsearch"
 
-        implementation("com.tgt.lists:lists-lib:2.201.0") {
-            exclude group: 'com.tgt.lists.micronaut', module: 'micronaut-resilience4j'
+        implementation "com.tgt.lists:lists-permissions-client:2.201.2"
+        implementation("com.tgt.backpackregistry:backpack-registry-client:2.201.47") {
             exclude group: 'com.tgt.lists', module: 'lists-components'
-            exclude group: 'com.tgt.lists', module: 'lists-oauth'
-            exclude group: 'com.tgt.lists', module: 'lists-message-bus'
         }
-        implementation("com.tgt.lists:lists-components:2.201.0") {
+        implementation("com.tgt.lists:atlas-client:2.201.40")
+        implementation("com.tgt.lists:lists-components:2.201.5") {
             exclude group: 'com.tgt.lists.micronaut', module: 'micronaut-resilience4j'
         }
 
-        implementation "com.tgt.lists:lists-permissions-client:2.201.0"
-        implementation "com.tgt.lists:lists-cart-client:2.201.0"
-        implementation "com.tgt.lists:backpack-registry-client:1.135.2"
         implementation "com.tgt.lists:lists-oauth:2.201.0"
         implementation "com.tgt.lists.micronaut:micronaut-zipkin:2.201.0"
         implementation "com.tgt.lists:lists-message-bus:2.201.0"
@@ -153,7 +149,6 @@ allprojects {
         input = files(
             "src/main/kotlin/com/tgt/lists/api"
         )
-        filters = ".*/com/tgt/lists/integration/cart/transport/.*"
 
         reports {
             html {

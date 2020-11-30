@@ -2,17 +2,11 @@ package com.tgt.backpackelasticsearch.kafka.api
 
 import com.tgt.backpackelasticsearch.test.BaseKafkaFunctionalTest
 import com.tgt.backpackelasticsearch.test.PreDispatchLambda
-import com.tgt.backpackregistry.transport.RegistryEventTO
-import com.tgt.backpackregistry.transport.RegistryMetaDataTO
-import com.tgt.backpackregistry.transport.RegistryRecipientTO
-import com.tgt.backpackregistry.util.RecipientType
-import com.tgt.backpackregistry.util.RegistryStatus
-import com.tgt.backpackregistry.util.RegistrySubChannel
-import com.tgt.backpackregistry.util.RegistryType
-import com.tgt.lists.lib.api.transport.ListMetaDataTO
-import com.tgt.lists.lib.api.util.LIST_STATUS
-import com.tgt.lists.lib.kafka.model.CreateListNotifyEvent
-import com.tgt.lists.lib.kafka.model.DeleteListNotifyEvent
+import com.tgt.backpackregistryclient.util.RegistryChannel
+import com.tgt.backpackregistryclient.util.RegistrySubChannel
+import com.tgt.lists.atlas.api.type.LIST_STATE
+import com.tgt.lists.atlas.kafka.model.CreateListNotifyEvent
+import com.tgt.lists.atlas.kafka.model.DeleteListNotifyEvent
 import com.tgt.lists.msgbus.ListsMessageBusProducer
 import com.tgt.lists.msgbus.event.EventHeaders
 import com.tgt.lists.msgbus.event.EventLifecycleNotificationProvider
@@ -60,21 +54,8 @@ class ElasticsearchEventDispatcherFunctionalTest extends BaseKafkaFunctionalTest
     def "Guest creates registry - Consumer kicks in to consume the event and copies regisrtry data into elastic search"() {
         String guestId = "1236"
         def registryId = UUID.randomUUID()
-        def city = "Minneapolis"
-        def state = "Minnesota"
-        def country = "USA"
-        def eventTimeStamp = System.currentTimeMillis().toString()
-        def noOfGuests = 30
 
-        RegistryEventTO event = new RegistryEventTO(city, state, country, eventTimeStamp, noOfGuests )
-        RegistryRecipientTO groom = new RegistryRecipientTO(RecipientType.REGISTRANT,"Groom", "First", "Second", "Last")
-        RegistryRecipientTO bride = new RegistryRecipientTO(RecipientType.COREGISTRANT,"Bride", "First", "Second", "Last")
-
-        def listMetadata = new ListMetaDataTO(true, LIST_STATUS.PENDING)
-        def registryMetaData = RegistryMetaDataTO.getCoreRegistryMetadataMap(RegistrySubChannel.KIOSK, "41", RegistryType.WEDDING,
-            false, false, "10", RegistryStatus.ACTIVE, [groom, bride], event, null)
-
-        def createRegistryEvent = new CreateListNotifyEvent(guestId, registryId, "REGISTRY", "Testing Registry Event", listMetadata, registryMetaData, null)
+        def createRegistryEvent = new CreateListNotifyEvent(guestId, registryId, "REGISTRY", null, "Testing Registry Event", RegistryChannel.WEB.name(), RegistrySubChannel.TGTWEB.name(), LIST_STATE.ACTIVE, null,  null, null)
 
         testEventListener.preDispatchLambda = new PreDispatchLambda() {
             @Override
@@ -110,8 +91,7 @@ class ElasticsearchEventDispatcherFunctionalTest extends BaseKafkaFunctionalTest
         String guestId = "1236"
         def registryId = UUID.randomUUID()
 
-        def listMetadata = new ListMetaDataTO(true, LIST_STATUS.PENDING)
-        def deleteRegistryEvent = new DeleteListNotifyEvent(guestId, registryId, "REGISTRY", "Testing Registry Event", listMetadata, null, null)
+        def deleteRegistryEvent = new DeleteListNotifyEvent(guestId, registryId, "REGISTRY", "Testing Registry Event", null, null)
 
         testEventListener.preDispatchLambda = new PreDispatchLambda() {
             @Override

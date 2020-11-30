@@ -7,15 +7,6 @@ micronaut:
     idle-timeout: 2000ms
   http:
     services:
-      carts-api:
-        urls:
-          - ${cart-base-url}
-        follow-redirects: false
-        connect-timeout: 1500ms
-        read-timeout: 1500ms
-        pool:
-          enabled: true
-          max-connections: 5
       permissions-api:
         urls:
           - ${permissions-api-base-url}
@@ -71,6 +62,7 @@ filter:
       lists-brave-tracing-server-filter: 100
       list-authorization-filter: 200
       sanitizing-filter: 300
+      registry-channel-subchannel-filter: 400
   client:
     order:
       lists-brave-tracing-client-filter: 900
@@ -98,11 +90,6 @@ api:
     excluded-paths: "/store_item_placements/v1/,/lists/v2,/redsky_aggregations/v1/"
 
 api-key: "fda12ff92c2e0e04412bab909732bd2367970263"
-
-cart:
-  client:
-    refresh-cycle-sec: 999999999
-    fastly-header-name: cartslb
 
 resilience4j:
   filter: false
@@ -150,6 +137,10 @@ components:
   server:
     list-authorization-filter:
       base-uri: /registries_search/v1
+    sanitizing-filter:
+      enabled: true
+    registry-channel-subchannel-filter:
+      enabled: false
 
 msgbus:
   source: backpackelasticsearch

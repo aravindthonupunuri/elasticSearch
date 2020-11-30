@@ -1,6 +1,6 @@
 package com.tgt.backpackelasticsearch.service.async
 
-import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.tgt.backpackelasticsearch.transport.RegistryData
 import com.tgt.lists.micronaut.elastic.ElasticCallExecutor
 import com.tgt.lists.micronaut.elastic.ElasticClientManager
@@ -23,11 +23,11 @@ class UpdateRegistryService(
     @Value("\${elasticsearch.operation-timeout}") private val operationTimeout: String = "1s"
 ) {
 
-    val mapper = ObjectMapper()
+    val mapper = jacksonObjectMapper()
 
     fun updateRegistry(registryData: RegistryData): Mono<Tuple<UpdateResponse, UpdateResponse>> {
 
-        val json = mapper.writeValueAsString("Registry doc that is being updated")
+        val json = mapper.writeValueAsString(registryData)
 
         val indexRequest = UpdateRequest(registryIndex, registryData.registryId.toString())
             .timeout(operationTimeout)
