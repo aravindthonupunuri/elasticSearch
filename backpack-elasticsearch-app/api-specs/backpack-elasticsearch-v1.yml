@@ -12,6 +12,7 @@ produces:
 consumes:
   - application/json
 x-api-definition:
+  dependencies: []
   api_name: registries_search-v1
   personnel:
     portfolio: Digital
@@ -46,7 +47,7 @@ x-api-definition:
       proxy_pattern: side-car
   notification_ids:
     - description: ShuttleIO
-      id: 'null'
+      id: b071dbd9261f4d9b80972b607467b689
     - description: slack
       id: GQ10ZD7UZ
   slack_channel_id: GQ10ZD7UZ
@@ -165,10 +166,6 @@ paths:
           description: Unauthorized
           schema:
             $ref: '#/definitions/Error401'
-        '403':
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/Error403'
         '404':
           description: Not found
           schema:
