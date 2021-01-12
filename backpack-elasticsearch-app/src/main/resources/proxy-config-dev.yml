@@ -1,91 +1,86 @@
-filters:
-  - Cors
-  - KeyValidation
-  - ProxyHeaders
-  - Auth
-#upstream:
-# TAP doesn't need upstream section
-# TAP uses the protocol (HTTP/HTTPS) and port for the health check as the upstream for proxy.
-# host: localhost
-# port: 8080
-# ssl: false
-listenAddressPort: ":8080"
-cors:
-  whitelist:
-    - https://editor.swagger.io
-  allowCredentials: true
-  allowHeaders:
-    - Authorization
-keyValidation:
-  environment: "STAGE"
-apiName: "backpack-elasticsearch"
+version: 2
+server:
+  listen_address: localhost:8080
+environment: stage
+health:
+  proxy:
+   enabled: true
+   path: /proxyhealth
+api_name: backpack_elasticsearch-v1
 metrics:
-  enabled: true
-auth:
-  passOnNoAuth: true
-  passOnNoAuthRoutes:
-    GET:
-      - "/health"
-  clientTimeout: 30
-  cacheExpireSeconds: 3600
-  strategies:
-    #    - strategy: ID2
-    #      configuration:
-    #        host: oauth.iam.perf.target.com
-    #        port: 443
-    #        ssl: true
-    #        enterpriseValidator:
-    #          host: gsp.perf.target.com
-    #          port: 443
-    #          ssl: true
-    #        issuer:
-    #          - 'https://oauth.iam.perf.target.com'
-    - strategy: GSP
-      configuration:
-        host: gsp.perf.target.com
-        port: 443
-        path: gsp/oauth_validations/v3
-        publicKeyEndpoint:
-          host: gsp.perf.target.com
-          port: 443
-          path: gsp/oauth_tokens/v2/keys/
-        ssl: true
-        issuer:
-          - "mi6"
-        routesByScope:
-          ecom.high:
-            - GET: /:*
-            - POST: /:*
-            - PUT: /:*
-            - DELETE: /:*
-          ecom.low:
-            - GET: /:*
-            - POST: /:*
-            - PUT: /:*
-            - DELETE: /:*
-          ecom.med:
-            - GET: /:*
-            - POST: /:*
-            - PUT: /:*
-            - DELETE: /:*
-          ecom.none:
-            - GET: /:*
-            - POST: /:*
-            - PUT: /:*
-            - DELETE: /:*
-        routesByASL:
-          H:
-            - GET: /:*
-            - POST: /:*
-            - PUT: /:*
-            - DELETE: /:*
-          L:
-            - GET: /:*
-            - POST: /:*
-            - PUT: /:*
-            - DELETE: /:*
-          M:
-            - GET: /:*
-            - POST: /:*
-            - PUT: /:*
-            - DELETE: /:*
+  push: true
+handlers:
+  key_validation:
+    environment: STAGE
+  auth:
+    anonymous_routes:
+      - GET: /health
+      - GET: /apispec
+    strategies:
+      gsp:
+          - routes_by_scope:
+              ecom.high:
+                - GET: /:*
+                - POST: /:*
+                - PUT: /:*
+                - DELETE: /:*
+              ecom.low:
+                - GET: /:*
+                - POST: /:*
+                - PUT: /:*
+                - DELETE: /:*
+              ecom.med:
+                - GET: /:*
+                - POST: /:*
+                - PUT: /:*
+                - DELETE: /:*
+              ecom.none:
+                - GET: /:*
+                - POST: /:*
+                - PUT: /:*
+                - DELETE: /:*
+            routes_by_asl:
+              H:
+                - GET: /:*
+                - POST: /:*
+                - PUT: /:*
+                - DELETE: /:*
+              L:
+                - GET: /:*
+                - POST: /:*
+                - PUT: /:*
+                - DELETE: /:*
+              M:
+                - GET: /:*
+                - POST: /:*
+                - PUT: /:*
+                - DELETE: /:*
+
+      id2:
+          - routes_by_scope:
+              axiom.user:
+                - GET: /:*
+              axiom.admin:
+                - GET: /:*
+                - POST: /:*
+                - PUT: /:*
+                - DELETE: /:*
+              axiom.leader:
+                - GET: /:*
+                - POST: /:*
+                - PUT: /:*
+                - DELETE: /:*
+            routes_by_aal:
+              1:
+                - GET: /:*
+                - POST: /:*
+                - PUT: /:*
+                - DELETE: /:*
+  cors:
+    whitelist:
+      - https://editor.swagger.io
+    allow_any_target_domain: true
+    allow_credentials: true
+    allow_any_origin: true
+    allowed_headers:
+      - Authorization

@@ -108,6 +108,12 @@ components:
   server:
     list-authorization-filter:
       base-uri: /registries_search/v1
+    id2-custom-scopes:
+      names: 
+        - axiom.user
+        - axiom.admin
+        - axiom.leader
+      profile-header: member_id
     sanitizing-filter:
       enabled: true
     registry-channel-subchannel-filter:
