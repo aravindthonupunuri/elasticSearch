@@ -1,19 +1,19 @@
 swagger: '2.0'
 info:
-  version: 1.0.0
-  title: registries_search-v1
+  version: 1.0.1
+  title: registries_searches-v1
   description: Api to search gift registries
 host: api.target.com
 schemes:
   - https
-basePath: /registries_search/v1
+basePath: /registries_searches/v1
 produces:
   - application/json
 consumes:
   - application/json
 x-api-definition:
   dependencies: []
-  api_name: registries_search-v1
+  api_name: registries_searches-v1
   personnel:
     portfolio: Digital
     owner: Indrakumar.Thimmaiah
@@ -51,7 +51,7 @@ x-api-definition:
     - description: slack
       id: GQ10ZD7UZ
   slack_channel_id: GQ10ZD7UZ
-  nuid_ad_groups: null
+  nuid_ad_groups: APP-BACKPACK-REGISTRY-PROD-READ
   risk_rating: MEDIUM
   last_pentest_date: null
   links:
@@ -71,13 +71,13 @@ x-api-definition:
     api_spec: https://git.target.com/Registry-Modernization/backpack-elasticsearch/blob/master/api-spec/backpack-elasticsearch-v1.yml
   endpoints:
     external:
-      production: https://api.target.com/registries_search/v1
-      stage: https://stage-api.target.com/registries_search/v1
+      production: https://api.target.com/registries_searches/v1
+      stage: https://stage-api.target.com/registries_searches/v1
       qa: null
       ci: null
     internal:
-      production: https://api-internal.target.com/registries_search/v1
-      stage: https://stgapi-internal.target.com/registries_search/v1
+      production: https://api-internal.target.com/registries_searches/v1
+      stage: https://stgapi-internal.target.com/registries_searches/v1
       qa: null
       ci: null
 securityDefinitions:
@@ -166,6 +166,10 @@ paths:
           description: Unauthorized
           schema:
             $ref: '#/definitions/Error401'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/Error403'
         '404':
           description: Not found
           schema:

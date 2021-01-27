@@ -124,7 +124,7 @@ api-key: "testkey"
 components:
   server:
     list-authorization-filter:
-      base-uri: /registries_search/v1
+      base-uri: /registries_searches/v1
     sanitizing-filter:
       enabled: false
     registry-channel-subchannel-filter:

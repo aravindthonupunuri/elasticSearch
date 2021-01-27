@@ -107,9 +107,9 @@ tracing:
 components:
   server:
     list-authorization-filter:
-      base-uri: /registries_search/v1
+      base-uri: /registries_searches/v1
     id2-custom-scopes:
-      names: 
+      names:
         - axiom.user
         - axiom.admin
         - axiom.leader
