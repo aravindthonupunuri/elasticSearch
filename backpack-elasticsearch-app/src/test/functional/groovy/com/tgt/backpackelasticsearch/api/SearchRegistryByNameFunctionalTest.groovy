@@ -72,8 +72,10 @@ class SearchRegistryByNameFunctionalTest extends BaseElasticFunctionalTest {
         actualStatus != null
 
         where:
-        registryType            | registryStatus            | registrantFirst   |   registrantLast  |   coregistrantFirst   |   coregistrantLast
+        registryType            | registryStatus             | registrantFirst   |   registrantLast  |   coregistrantFirst   |   coregistrantLast
         RegistryType.BABY       | RegistryStatus.@ACTIVE     | "fist name"       |   "last one"      |   "co first"          |   "co last"
+        RegistryType.WEDDING    | RegistryStatus.@ACTIVE     | "fist name"       |   "last one"      |   "co first"          |   "co last"
+        RegistryType.WEDDING    | RegistryStatus.@INACTIVE   | "fist name"       |   "last one"      |   "co first"          |   "co last"
         RegistryType.WEDDING    | RegistryStatus.@ACTIVE     | "funny first"     |   "seri last"     |   "last first"        |   "first am"
         RegistryType.BABY       | RegistryStatus.@INACTIVE   | "sdkw wef"        |   "opwe sd23"     |   "wegs whwe"         |   "hkn,de she"
         RegistryType.WEDDING    | RegistryStatus.@INACTIVE   | "kbnch sgs"       |   "sdfklkxcn cs"  |   "sgsd bsd"          |   "sgds, cmf"
@@ -96,6 +98,24 @@ class SearchRegistryByNameFunctionalTest extends BaseElasticFunctionalTest {
 
         then:
         actualStatus == HttpStatus.OK
-        actual.size() == 1
+        actual.size() == 2
+    }
+
+    def "test get registry gives empty response for Inactive registry"() {
+        given:
+        String guestId = "1234"
+        def url = uri + "?first_name=sdkw&last_name=opwe&channel=WEB&sub_channel=KIOSK"
+
+        when:
+        HttpResponse<RegistryData[]> listResponse = client.toBlocking()
+                .exchange(HttpRequest.GET(url)
+                        .headers (getHeaders(guestId)), RegistryData[])
+
+        def actualStatus = listResponse.status()
+        def actual = listResponse.body()
+
+        then:
+        actualStatus == HttpStatus.OK
+        actual.size() == 0
     }
 }

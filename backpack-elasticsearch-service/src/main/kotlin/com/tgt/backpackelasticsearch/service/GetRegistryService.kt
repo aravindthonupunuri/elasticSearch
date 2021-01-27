@@ -3,6 +3,7 @@ package com.tgt.backpackelasticsearch.service
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.tgt.backpackelasticsearch.transport.RegistryData
+import com.tgt.backpackregistryclient.util.RegistryStatus
 import com.tgt.lists.micronaut.elastic.ElasticCallExecutor
 import com.tgt.lists.micronaut.elastic.ListenerArgs
 import io.micronaut.context.annotation.Value
@@ -11,8 +12,7 @@ import org.elasticsearch.action.search.SearchResponse
 import org.elasticsearch.client.RequestOptions
 import org.elasticsearch.client.RestHighLevelClient
 import org.elasticsearch.common.unit.TimeValue
-import org.elasticsearch.index.query.MultiMatchQueryBuilder
-import org.elasticsearch.index.query.Operator
+import org.elasticsearch.index.query.*
 import org.elasticsearch.search.builder.SearchSourceBuilder
 import reactor.core.publisher.Mono
 import java.util.concurrent.TimeUnit
@@ -40,9 +40,10 @@ class GetRegistryService(
         )
             .type(MultiMatchQueryBuilder.Type.CROSS_FIELDS).operator(Operator.AND)
 
-        searchSourceBuilder.query(matchQueryBuilder)
-            .from(0)
-            .size(5) // default=10
+        // Match registries with Active status
+        val matchQuery = MatchQueryBuilder("registry_status", RegistryStatus.ACTIVE)
+
+        searchSourceBuilder.query(BoolQueryBuilder().must(matchQueryBuilder).must(matchQuery))
             .timeout(TimeValue(10, TimeUnit.SECONDS))
         searchRequest.source(searchSourceBuilder)
         searchRequest.preference("_local")
