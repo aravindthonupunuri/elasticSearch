@@ -55,23 +55,23 @@ jackson:
 
 kafka:
   consumers:
-    lists-msg-bus-kafkapp-consumer:
+    backpack-elasticsearch-data-bus-consumer:
       key:
         deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value:
         deserializer: org.apache.kafka.common.serialization.ByteArrayDeserializer
-    lists-dlq-kafkapp-consumer:
+    backpack-elasticsearch-data-bus-dlq-consumer:
       key:
         deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value:
         deserializer: org.apache.kafka.common.serialization.ByteArrayDeserializer
   producers:
     # default is a Jackson based JSON serializer for key/value
-    lists-msg-bus-producer:
+    backpack-elasticsearch-data-bus-producer:
       retries: 3
       retry:
         backoff:
-          ms: 1_000
+          ms: 1000
       max:
         in:
           flight:
@@ -79,7 +79,7 @@ kafka:
               per:
                 connection: 1
         block:
-          ms: 2_000
+          ms: 2000
   embedded:
     enabled: false
 
@@ -104,7 +104,7 @@ components:
 #    protocol: ssl
 
 msgbus:
-  source: lists-api-consumer-app
+  source: backpackelasticsearch
   dlq-source: backpackelasticsearch-dlq
   kafka:
     consumer:
@@ -115,11 +115,11 @@ msgbus:
       enabled: true
     dlqproducer:
       enabled: true
-    topic: lists-msg-bus
-    consumer-group: lists-msg-bus-kafkapp-consumer
+    topic: registry-internal-data-bus-stage
+    consumer-group: backpack-elasticsearch-data-bus-consumer
     consumer-batch-size: 10
-    dlq-topic: lists-dlq
-    dlq-consumer-group: lists-dlq-kafkapp-consumer
+    dlq-topic: registry-internal-data-bus-stage-dlq
+    dlq-consumer-group: backpack-elasticsearch-data-bus-dlq-consumer
     dlq-event-retry-interval-secs: 1
     dlq-max-event-retry-count: 3
     dlq-consumer-batch-size: 10
@@ -154,4 +154,5 @@ tracing:
 
 kafka-sources:
   allow:
+    - backpack-registry
     - backpackelasticsearch-dlq

@@ -103,11 +103,11 @@ msgbus:
       enabled: true
     dlqproducer:
       enabled: true
-    topic: lists-msg-bus-stage
-    consumer-group: backpack-elasticsearch-msg-bus-stage-consumer
+    topic: registry-internal-data-bus-stage
+    consumer-group: backpack-elasticsearch-data-bus-stage-consumer
     consumer-batch-size: 10
-    dlq-topic: lists-dlq-stage
-    dlq-consumer-group: backpack-elasticsearch-dlq-stage-consumer
+    dlq-topic: registry-internal-data-bus-stage-dlq
+    dlq-consumer-group: backpack-elasticsearch-data-bus-dlq-stage-consumer
     dlq-event-retry-interval-secs: 1
     dlq-max-event-retry-count: 2
     dlq-consumer-batch-size: 10
