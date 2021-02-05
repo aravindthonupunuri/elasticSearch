@@ -53,9 +53,10 @@ class ElasticsearchEventDispatcherFunctionalTest extends BaseKafkaFunctionalTest
         testEventListener.reset()
     }
 
+    def registryId = UUID.randomUUID()
+
     def "Guest creates registry - Consumer kicks in to consume the event and copies regisrtry data into elastic search"() {
         String guestId = "1236"
-        def registryId = UUID.randomUUID()
 
         def createRegistryEvent = new CreateListNotifyEvent(guestId, registryId, "REGISTRY", RegistryType.WEDDING.name(), "List title 1",
             RegistryChannel.WEB.name(), RegistrySubChannel.TGTWEB.name(), LIST_STATE.INACTIVE, null, LocalDate.now(),

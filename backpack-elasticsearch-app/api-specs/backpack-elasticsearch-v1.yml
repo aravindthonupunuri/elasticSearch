@@ -196,6 +196,8 @@ definitions:
         type: string
       registry_type:
         $ref: '#/definitions/RegistryType'
+      search_visibility:
+        $ref: '#/definitions/RegistrySearchVisibility'
       event_date:
         type: string
       event_city:
@@ -210,12 +212,20 @@ definitions:
     enum:
       - BABY
       - WEDDING
+      - CHARITY
+      - CUSTOM
 
   RegistryStatus:
     type: string
     enum:
       - ACTIVE
       - INACTIVE
+
+  RegistrySearchVisibility:
+    type: string
+    enum:
+      - PUBLIC
+      - PRIVATE
 
   Error401:
     type: object

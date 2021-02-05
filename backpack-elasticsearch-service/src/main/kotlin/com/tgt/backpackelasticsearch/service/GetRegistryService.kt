@@ -3,7 +3,6 @@ package com.tgt.backpackelasticsearch.service
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.tgt.backpackelasticsearch.transport.RegistryData
-import com.tgt.backpackregistryclient.util.RegistryStatus
 import com.tgt.lists.micronaut.elastic.ElasticCallExecutor
 import com.tgt.lists.micronaut.elastic.ListenerArgs
 import io.micronaut.context.annotation.Value
@@ -32,18 +31,12 @@ class GetRegistryService(
         val searchSourceBuilder = SearchSourceBuilder()
         val fullName = "$recipientFirstName $recipientLastName"
 
-        // Match first and last name in both registrant as well co-registrants first, last names
-        // Do note its AND condition, so both first as well last has to be in either of 4 names
-        val matchQueryBuilder = MultiMatchQueryBuilder(
-            fullName,
-            "registrant_first_name", "registrant_last_name", "coregistrant_first_name", "coregistrant_last_name"
-        )
-            .type(MultiMatchQueryBuilder.Type.CROSS_FIELDS).operator(Operator.AND)
+        val query = "$fullName AND (registry_status=ACTIVE) AND (search_visibility=PUBLIC)"
 
-        // Match registries with Active status
-        val matchQuery = MatchQueryBuilder("registry_status", RegistryStatus.ACTIVE)
+        val queryStringQueryBuilder = QueryStringQueryBuilder(query)
+                .defaultField("*")
 
-        searchSourceBuilder.query(BoolQueryBuilder().must(matchQueryBuilder).must(matchQuery))
+        searchSourceBuilder.query(queryStringQueryBuilder)
             .timeout(TimeValue(10, TimeUnit.SECONDS))
         searchRequest.source(searchSourceBuilder)
         searchRequest.preference("_local")

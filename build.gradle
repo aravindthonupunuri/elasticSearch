@@ -65,7 +65,7 @@ allprojects {
         implementation "io.micronaut.elasticsearch:micronaut-elasticsearch"
 
         implementation "com.tgt.lists:lists-permissions-client:2.201.2"
-        implementation("com.tgt.backpackregistry:backpack-registry-client:2.201.73") {
+        implementation("com.tgt.backpackregistry:backpack-registry-client:2.201.98") {
             exclude group: 'com.tgt.lists', module: 'lists-components'
         }
         implementation("com.tgt.lists:atlas-client:2.201.62")

@@ -38,6 +38,7 @@ class UpdateRegistryNotifyEventHandler(
             registryStatus = if (updateRegistryNotifyEvent.listState != null)
                 RegistryStatus.toRegistryStatus(updateRegistryNotifyEvent.listState.toString())
             else null,
+            searchVisibility = registryMetaData?.searchVisibility,
             registrantFirstName = registryMetaData?.recipients?.firstOrNull { it.recipientType == RecipientType.REGISTRANT }?.firstName,
             registrantLastName = registryMetaData?.recipients?.firstOrNull { it.recipientType == RecipientType.REGISTRANT }?.lastName,
             coregistrantFirstName = registryMetaData?.recipients?.firstOrNull { it.recipientType == RecipientType.COREGISTRANT }?.firstName,

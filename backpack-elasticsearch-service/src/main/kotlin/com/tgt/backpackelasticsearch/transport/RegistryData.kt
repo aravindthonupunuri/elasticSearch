@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer
+import com.tgt.backpackregistryclient.util.RegistrySearchVisibility
 import com.tgt.backpackregistryclient.util.RegistryStatus
 import com.tgt.backpackregistryclient.util.RegistryType
 import java.time.LocalDate
@@ -22,6 +23,8 @@ data class RegistryData(
     val registryType: RegistryType?,
     @JsonProperty("registry_status")
     val registryStatus: RegistryStatus?,
+    @JsonProperty("registry_visibility")
+    val searchVisibility: RegistrySearchVisibility?,
     @JsonProperty("registrant_first_name")
     val registrantFirstName: String?,
     @JsonProperty("registrant_last_name")

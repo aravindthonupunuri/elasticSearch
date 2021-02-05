@@ -40,6 +40,7 @@ class CreateRegistryNotifyEventHandler(
             registryStatus = if (createRegistryNotifyEvent.listState != null)
                 RegistryStatus.toRegistryStatus(createRegistryNotifyEvent.listState.toString())
             else null,
+            searchVisibility = registryMetaData?.searchVisibility,
             registrantFirstName = registryMetaData?.recipients?.firstOrNull { it.recipientType == RecipientType.REGISTRANT }?.firstName,
             registrantLastName = registryMetaData?.recipients?.firstOrNull { it.recipientType == RecipientType.REGISTRANT }?.lastName,
             coregistrantFirstName = registryMetaData?.recipients?.firstOrNull { it.recipientType == RecipientType.COREGISTRANT }?.firstName,
