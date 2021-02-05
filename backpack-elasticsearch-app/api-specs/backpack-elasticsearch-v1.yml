@@ -51,7 +51,7 @@ x-api-definition:
     - description: slack
       id: GQ10ZD7UZ
   slack_channel_id: GQ10ZD7UZ
-  nuid_ad_groups: APP-BACKPACK-REGISTRY-PROD-READ
+  nuid_ad_groups: [APP-BACKPACK-REGISTRY-PROD-READ]
   risk_rating: MEDIUM
   last_pentest_date: null
   links:
