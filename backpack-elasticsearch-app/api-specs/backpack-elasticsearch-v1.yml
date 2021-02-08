@@ -104,13 +104,6 @@ paths:
       tags:
         - registries_search
       parameters:
-        - name: Authorization
-          in: header
-          description: bearer token
-          required: true
-          type: string
-          format: string
-          default: Bearer
         - name: first_name
           in: query
           description: Guest first name
