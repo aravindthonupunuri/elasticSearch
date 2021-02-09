@@ -1,6 +1,6 @@
 swagger: '2.0'
 info:
-  version: 1.0.1
+  version: 1.0.2
   title: registries_searches-v1
   description: Api to search gift registries
 host: api.target.com
