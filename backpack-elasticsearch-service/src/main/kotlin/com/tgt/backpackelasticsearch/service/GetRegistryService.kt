@@ -3,6 +3,9 @@ package com.tgt.backpackelasticsearch.service
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.tgt.backpackelasticsearch.transport.RegistryData
+import com.tgt.lists.common.components.exception.BadRequestException
+import com.tgt.lists.common.components.exception.BaseErrorCodes
+import com.tgt.lists.common.components.exception.ErrorCode
 import com.tgt.lists.micronaut.elastic.ElasticCallExecutor
 import com.tgt.lists.micronaut.elastic.ListenerArgs
 import io.micronaut.context.annotation.Value
@@ -26,12 +29,24 @@ class GetRegistryService(
 
     val mapper = jacksonObjectMapper()
 
-    fun findByRecipientName(recipientFirstName: String?, recipientLastName: String?): Mono<List<RegistryData>> {
+    fun findRegistry(
+        recipientFirstName: String?,
+        recipientLastName: String?,
+        organizationName: String?
+    ): Mono<List<RegistryData>> {
+        if (organizationName.isNullOrEmpty() && (recipientFirstName.isNullOrEmpty() || recipientLastName.isNullOrEmpty())) {
+            throw BadRequestException(ErrorCode(BaseErrorCodes.BAD_REQUEST_ERROR_CODE, listOf("Missing required field first name and last name or organization")))
+        }
         val searchRequest = SearchRequest(registryIndex)
         val searchSourceBuilder = SearchSourceBuilder()
         val fullName = "$recipientFirstName $recipientLastName"
+        val identifier =
+            organizationName
+            // Match first and last name in both registrant as well co-registrants first, last names
+            // Do note its AND condition, so both first as well last has to be in either of 4 names
+            ?: fullName
 
-        val query = "$fullName AND (registry_status=ACTIVE) AND (search_visibility=PUBLIC)"
+        val query = "$identifier AND (registry_status=ACTIVE) AND (search_visibility=PUBLIC)"
 
         val queryStringQueryBuilder = QueryStringQueryBuilder(query)
                 .defaultField("*")
@@ -40,7 +55,7 @@ class GetRegistryService(
             .timeout(TimeValue(10, TimeUnit.SECONDS))
         searchRequest.source(searchSourceBuilder)
         searchRequest.preference("_local")
-        return elasticCallExecutor.executeWithFallback(executionId = "searchListByName", stmtBlock = queryElastic(searchRequest))
+        return elasticCallExecutor.executeWithFallback(executionId = "searchRegistry", stmtBlock = queryElastic(searchRequest))
             .map {
                 val searchResponse = it
                 val hits = searchResponse.getHits()
@@ -55,7 +70,7 @@ class GetRegistryService(
     private fun queryElastic(indexRequest: SearchRequest?): (RestHighLevelClient, ListenerArgs<SearchResponse>) -> Unit {
         return { client: RestHighLevelClient, listenerArgs: ListenerArgs<SearchResponse> ->
             client.searchAsync(indexRequest, RequestOptions.DEFAULT,
-                ElasticCallExecutor.listenerToSink(elasticCallExecutor, listenerArgs, "searchListByName", "/$registryIndex/_doc"))
+                ElasticCallExecutor.listenerToSink(elasticCallExecutor, listenerArgs, "searchRegistry", "/$registryIndex/_doc"))
         }
     }
 }

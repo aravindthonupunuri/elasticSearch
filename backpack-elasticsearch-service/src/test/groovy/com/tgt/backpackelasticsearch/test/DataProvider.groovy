@@ -12,7 +12,7 @@ class DataProvider {
     }
 
     static getHeaders(profileId, includeDebug = true) {
-        def headers = ["X-Tgt-Auth-Source": "gsp", "profile_id": profileId, "x-api-id": UUID.randomUUID().toString(), "Authorization" : UUID.randomUUID().toString()]
+        def headers = ["X-Tgt-Auth-Source": "gsp", "profile_id": profileId, "x-api-id": UUID.randomUUID().toString()]
         if (includeDebug) {
             headers.put("x-lists-debug", "true")
         }

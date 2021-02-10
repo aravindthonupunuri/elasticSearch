@@ -5,7 +5,7 @@ micronaut:
     port: ${server-port:33000}
 
 elasticsearch:
-  index: registry
+  index: backpackregistry
   operation-timeout: 500ms # seconds, default: 1s
   httpHosts: "http://localhost:9200,http://127.0.0.2:9200" # same as esaas.primary.httpHosts
   request:
@@ -22,15 +22,16 @@ esaas:
   backup:
     httpHosts: "http://localhost:9200,http://127.0.0.2:9200"
 
+  # resilience4j filter is not required but configuration is needed since elastic search code internally implements resilience
 resilience4j:
   filter: false
-  circuitbreaker:
-    failure-rate-threshold: 50            # failure rate threshold in percentage (default: 50)
-    wait-duration-secs-in-open-state: 10  # time cb waits before transitioning from open to half-open (default: 60s)
-    sliding-window-type: TIME_BASED       # possible values TIME_BASED or COUNT_BASED (default: COUNT_BASED)
-    sliding-window-size: 100               # seconds for TIME_BASED, request-count for COUNT_BASED (default: 100)
-    minimum-number-of-calls: 10            # min calls required (per sliding window period) before cb calculates error rate (default: 10)
-    permitted-number-of-calls-in-half-open-state: 1 # Number of permitted calls when the CircuitBreaker is half open.
+  circuit-breaker:
+    failure-rate-threshold: 50                        # failure rate threshold in percentage (default: 50)
+    wait-duration-secs-in-open-state: 10              # time cb waits before transitioning from open to half-open (default: 60s)
+    sliding-window-type: TIME_BASED                   # possible values TIME_BASED or COUNT_BASED (default: COUNT_BASED)
+    sliding-window-size: 100                          # seconds for TIME_BASED, request-count for COUNT_BASED (default: 100)
+    minimum-number-of-calls: 10                       # min calls required (per sliding window period) before cb calculates error rate (default: 10)
+    permitted-number-of-calls-in-half-open-state: 10  # min calls permitted when circuit breaker is half open
 
 backends:
   primary:
@@ -41,6 +42,7 @@ backends:
       sliding-window-type: TIME_BASED       # possible values TIME_BASED or COUNT_BASED
       sliding-window-size: 5                # seconds for TIME_BASED, request-count for COUNT_BASED
       minimum-number-of-calls: 2            # min calls required (per sliding window period) before cb calculates error rate.
+      permitted-number-of-calls-in-half-open-state: 1 # Number of permitted calls when the CircuitBreaker is half open.
   backup:
     circuit-breaker:
       enabled: true
@@ -49,7 +51,7 @@ backends:
       sliding-window-type: TIME_BASED       # possible values TIME_BASED or COUNT_BASED
       sliding-window-size: 5                # seconds for TIME_BASED, request-count for COUNT_BASED
       minimum-number-of-calls: 2            # min calls required (per sliding window period) before cb calculates error rate.
-
+      permitted-number-of-calls-in-half-open-state: 1 # Number of permitted calls when the CircuitBreaker is half open.
 jackson:
   property-naming-strategy: "SNAKE_CASE"
 

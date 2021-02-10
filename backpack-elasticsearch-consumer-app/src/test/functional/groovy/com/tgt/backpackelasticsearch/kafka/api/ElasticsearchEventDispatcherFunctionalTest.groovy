@@ -1,16 +1,19 @@
 package com.tgt.backpackelasticsearch.kafka.api
 
+import com.tgt.backpackelasticsearch.service.GetRegistryService
 import com.tgt.backpackelasticsearch.test.BaseKafkaFunctionalTest
 import com.tgt.backpackelasticsearch.test.PreDispatchLambda
-import com.tgt.backpackregistryclient.util.RegistryChannel
-import com.tgt.backpackregistryclient.util.RegistrySubChannel
-import com.tgt.backpackregistryclient.util.RegistryType
+import com.tgt.backpackelasticsearch.test.util.RegistryDataProvider
+import com.tgt.backpackregistryclient.transport.RegistryEventTO
+import com.tgt.backpackregistryclient.transport.RegistryRecipientTO
+import com.tgt.backpackregistryclient.util.*
 import com.tgt.lists.atlas.api.type.LIST_STATE
 import com.tgt.lists.atlas.kafka.model.CreateListNotifyEvent
 import com.tgt.lists.atlas.kafka.model.DeleteListNotifyEvent
 import com.tgt.lists.msgbus.ListsMessageBusProducer
 import com.tgt.lists.msgbus.event.EventHeaders
 import com.tgt.lists.msgbus.event.EventLifecycleNotificationProvider
+import io.micronaut.http.HttpStatus
 import io.micronaut.test.annotation.MicronautTest
 import io.opentracing.Tracer
 import org.jetbrains.annotations.NotNull
@@ -42,6 +45,18 @@ class ElasticsearchEventDispatcherFunctionalTest extends BaseKafkaFunctionalTest
     @Inject
     ListsMessageBusProducer listsMessageBusProducer
 
+    @Shared
+    RegistryDataProvider registryDataProvider
+
+    @Inject
+    GetRegistryService getRegistryService
+
+    @Shared
+    String guestId = "1234"
+
+    @Shared
+    UUID registryId = UUID.randomUUID()
+
     def setupSpec() {
         waitForKafkaReadiness()
         testEventListener = new TestEventListener()
@@ -50,16 +65,18 @@ class ElasticsearchEventDispatcherFunctionalTest extends BaseKafkaFunctionalTest
     }
 
     def setup() {
+        registryDataProvider = new RegistryDataProvider()
         testEventListener.reset()
     }
 
-    def registryId = UUID.randomUUID()
-
     def "Guest creates registry - Consumer kicks in to consume the event and copies regisrtry data into elastic search"() {
-        String guestId = "1236"
+        def registryMetaData = registryDataProvider.getRegistryMetaDataMap(UUID.randomUUID(), false, false, null,
+            [new RegistryRecipientTO(RecipientType.REGISTRANT, RecipientRole.GROOM, "1234First", "1234Last"),
+             new RegistryRecipientTO(RecipientType.COREGISTRANT,RecipientRole.BRIDE, "1234First", "1234Last")],
+            new RegistryEventTO("Minneapolis", "Minnesota", "USA", LocalDate.now()), null, null, null, null, "organizationName", null, RegistrySearchVisibility.PUBLIC)
 
         def createRegistryEvent = new CreateListNotifyEvent(guestId, registryId, "REGISTRY", RegistryType.WEDDING.name(), "List title 1",
-            RegistryChannel.WEB.name(), RegistrySubChannel.TGTWEB.name(), LIST_STATE.INACTIVE, null, LocalDate.now(),
+            RegistryChannel.WEB.name(), RegistrySubChannel.TGTWEB.name(), LIST_STATE.ACTIVE, registryMetaData, LocalDate.now(),
             null, null, null, null, null)
 
         testEventListener.preDispatchLambda = new PreDispatchLambda() {
@@ -81,21 +98,33 @@ class ElasticsearchEventDispatcherFunctionalTest extends BaseKafkaFunctionalTest
         then:
         testEventListener.verifyEvents {consumerEvents, producerEvents, consumerStatusEvents ->
             conditions.eventually {
-                def completedEvents = producerEvents.stream().filter {
-                    def result = (TestEventListener.Result)it
-                    (!result.preDispatch)
+                def completedEvents = consumerEvents.stream().filter {
+                    def result = (TestEventListener.Result) it
+                    (!result.preDispatch && result.success)
                 }.collect(Collectors.toList())
                 assert completedEvents.size() == 1
             }
         }
 
+        and:
 
+        when:
+        def refreshResponse = refresh()
+
+        then:
+        refreshResponse.status() == HttpStatus.OK
+
+        and:
+
+        //test if registry is persisted
+        when:
+        def response = getRegistryService.findRegistry("1234First", "1234Last", null).block()
+
+        then:
+        !response.isEmpty()
     }
 
     def "Guest deletes registry - Consumer kicks in to consume the event and deletes registry data from elastic search"() {
-        String guestId = "1236"
-        def registryId = UUID.randomUUID()
-
         def deleteRegistryEvent = new DeleteListNotifyEvent(guestId, registryId, "REGISTRY", "Testing Registry Event", null, null)
 
         testEventListener.preDispatchLambda = new PreDispatchLambda() {
@@ -117,12 +146,33 @@ class ElasticsearchEventDispatcherFunctionalTest extends BaseKafkaFunctionalTest
         then:
         testEventListener.verifyEvents {consumerEvents, producerEvents, consumerStatusEvents ->
             conditions.eventually {
-                def completedEvents = producerEvents.stream().filter {
-                    def result = (TestEventListener.Result)it
-                    (!result.preDispatch)
+                def completedEvents = consumerEvents.stream().filter {
+                    def result = (TestEventListener.Result) it
+                    (!result.preDispatch && result.success)
                 }.collect(Collectors.toList())
-                assert completedEvents.size() == 1
+                assert completedEvents.size() == 1 && completedEvents.any {
+                    (it.eventHeaders.eventType == DeleteListNotifyEvent.getEventType()) && (it.data.listId == registryId)
+
+                }
             }
         }
+
+        and:
+
+        when:
+        def refreshResponse = refresh()
+
+        then:
+        refreshResponse.status() == HttpStatus.OK
+
+        and:
+
+        //test if registry is deleted
+        when:
+        def response = getRegistryService.findRegistry("1234First", "1234Last", null).block()
+
+        then:
+        response.isEmpty()
     }
 }
+

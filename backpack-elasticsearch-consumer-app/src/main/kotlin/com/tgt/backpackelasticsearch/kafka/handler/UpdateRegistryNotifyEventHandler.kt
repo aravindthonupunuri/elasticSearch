@@ -30,24 +30,26 @@ class UpdateRegistryNotifyEventHandler(
         isPoisonEvent: Boolean
     ): Mono<EventProcessingResult> {
         val registryMetaData = RegistryMetaDataTO.toEntityRegistryMetadata(updateRegistryNotifyEvent.userMetaData)
-        return updateRegistryService.updateRegistry(RegistryData(registryId = updateRegistryNotifyEvent.listId,
-            registryTitle = updateRegistryNotifyEvent.listTitle,
-            registryType = if (updateRegistryNotifyEvent.listSubType != null)
-                RegistryType.toRegistryType(updateRegistryNotifyEvent.listSubType!!)
-            else null,
-            registryStatus = if (updateRegistryNotifyEvent.listState != null)
-                RegistryStatus.toRegistryStatus(updateRegistryNotifyEvent.listState.toString())
-            else null,
-            searchVisibility = registryMetaData?.searchVisibility,
-            registrantFirstName = registryMetaData?.recipients?.firstOrNull { it.recipientType == RecipientType.REGISTRANT }?.firstName,
-            registrantLastName = registryMetaData?.recipients?.firstOrNull { it.recipientType == RecipientType.REGISTRANT }?.lastName,
-            coregistrantFirstName = registryMetaData?.recipients?.firstOrNull { it.recipientType == RecipientType.COREGISTRANT }?.firstName,
-            coregistrantLastName = registryMetaData?.recipients?.firstOrNull { it.recipientType == RecipientType.COREGISTRANT }?.lastName,
-            eventCity = registryMetaData?.event?.city,
-            eventState = registryMetaData?.event?.state,
-            eventCountry = registryMetaData?.event?.country,
-            eventDate = registryMetaData?.event?.eventDate
-        ))
+        return updateRegistryService.updateRegistry(
+            RegistryData(registryId = updateRegistryNotifyEvent.listId,
+                registryTitle = updateRegistryNotifyEvent.listTitle,
+                registryType = if (updateRegistryNotifyEvent.listSubType != null)
+                    RegistryType.toRegistryType(updateRegistryNotifyEvent.listSubType!!)
+                else null,
+                registryStatus = if (updateRegistryNotifyEvent.listState != null)
+                    RegistryStatus.toRegistryStatus(updateRegistryNotifyEvent.listState.toString())
+                else null,
+                searchVisibility = registryMetaData?.searchVisibility,
+                registrantFirstName = registryMetaData?.recipients?.firstOrNull { it.recipientType == RecipientType.REGISTRANT }?.firstName,
+                registrantLastName = registryMetaData?.recipients?.firstOrNull { it.recipientType == RecipientType.REGISTRANT }?.lastName,
+                coregistrantFirstName = registryMetaData?.recipients?.firstOrNull { it.recipientType == RecipientType.COREGISTRANT }?.firstName,
+                coregistrantLastName = registryMetaData?.recipients?.firstOrNull { it.recipientType == RecipientType.COREGISTRANT }?.lastName,
+                organizationName = registryMetaData?.organizationName,
+                eventCity = registryMetaData?.event?.city,
+                eventState = registryMetaData?.event?.state,
+                eventCountry = registryMetaData?.event?.country,
+                eventDate = registryMetaData?.event?.eventDate
+            ))
             .map { EventProcessingResult(true, eventHeaders, updateRegistryNotifyEvent) }
             .onErrorResume {
                 val message = "Exception while updating registry data into elastic search from handleCreateRegistryNotifyEvent: $it"

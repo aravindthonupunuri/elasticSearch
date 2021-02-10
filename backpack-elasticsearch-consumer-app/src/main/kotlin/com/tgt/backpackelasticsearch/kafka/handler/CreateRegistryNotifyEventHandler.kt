@@ -45,6 +45,7 @@ class CreateRegistryNotifyEventHandler(
             registrantLastName = registryMetaData?.recipients?.firstOrNull { it.recipientType == RecipientType.REGISTRANT }?.lastName,
             coregistrantFirstName = registryMetaData?.recipients?.firstOrNull { it.recipientType == RecipientType.COREGISTRANT }?.firstName,
             coregistrantLastName = registryMetaData?.recipients?.firstOrNull { it.recipientType == RecipientType.COREGISTRANT }?.lastName,
+            organizationName = registryMetaData?.organizationName,
             eventCity = registryMetaData?.event?.city,
             eventState = registryMetaData?.event?.state,
             eventCountry = registryMetaData?.event?.country,

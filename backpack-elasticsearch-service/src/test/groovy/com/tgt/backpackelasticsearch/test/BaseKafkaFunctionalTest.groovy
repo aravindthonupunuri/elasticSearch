@@ -20,7 +20,7 @@ import spock.lang.Shared
 import javax.inject.Inject
 import java.util.concurrent.ConcurrentLinkedQueue
 
-class BaseKafkaFunctionalTest extends BaseFunctionalTest implements TestPropertyProvider {
+class BaseKafkaFunctionalTest extends BaseElasticFunctionalTest implements TestPropertyProvider {
 
     static Logger LOG = LoggerFactory.getLogger(BaseKafkaFunctionalTest)
 

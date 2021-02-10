@@ -1,5 +1,8 @@
 package com.tgt.backpackelasticsearch.test
 
+import groovy.json.JsonOutput
+import io.micronaut.http.HttpRequest
+import io.micronaut.http.HttpResponse
 import io.micronaut.http.client.RxHttpClient
 import io.micronaut.http.client.annotation.Client
 import io.micronaut.test.support.TestPropertyProvider
@@ -8,8 +11,9 @@ import spock.lang.Shared
 import spock.lang.Specification
 
 import javax.inject.Inject
+import java.sql.DriverManager
 
-class BaseElasticFunctionalTest extends Specification implements TestPropertyProvider {
+class BaseElasticFunctionalTest extends BaseFunctionalTest implements TestPropertyProvider {
 
     @Inject
     @Client("/")
@@ -21,13 +25,15 @@ class BaseElasticFunctionalTest extends Specification implements TestPropertyPro
     @Shared
     ElasticsearchContainer elasticsearchContainer
 
+    static String elasticUrl
+
     /*
     These properties will override application.yml defined properties
     */
     @Override
     Map<String, String> getProperties() {
 
-        String elasticUrl = System.getenv("ELASTIC_URL")
+        elasticUrl = System.getenv("ELASTIC_URL")
 
         if(elasticUrl == null) {
             elasticsearchContainer =
@@ -49,5 +55,15 @@ class BaseElasticFunctionalTest extends Specification implements TestPropertyPro
         ]
 
         return properties
+    }
+
+    static HttpResponse refresh() {
+        if (elasticUrl != null) {
+            try(RxHttpClient client = RxHttpClient.create(new URL(elasticUrl))) {
+                client.toBlocking().exchange(HttpRequest.POST("/backpackregistry/_refresh", JsonOutput.toJson([])))
+            } catch (Throwable t) {
+                t.printStackTrace()
+            }
+        }
     }
 }

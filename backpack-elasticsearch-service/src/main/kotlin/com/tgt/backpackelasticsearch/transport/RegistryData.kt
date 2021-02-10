@@ -33,6 +33,8 @@ data class RegistryData(
     val coregistrantFirstName: String?,
     @JsonProperty("coregistrant_last_name")
     val coregistrantLastName: String?,
+    @JsonProperty("organization_name")
+    val organizationName: String?,
     @JsonProperty("event_city")
     val eventCity: String? = null,
     @JsonProperty("event_state")

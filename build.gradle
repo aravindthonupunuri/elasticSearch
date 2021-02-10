@@ -68,7 +68,14 @@ allprojects {
         implementation("com.tgt.backpackregistry:backpack-registry-client:2.201.98") {
             exclude group: 'com.tgt.lists', module: 'lists-components'
         }
-        implementation("com.tgt.lists:atlas-client:2.201.62")
+        implementation("com.tgt.backpackregistry:backpack-registry-components:2.201.2") {
+            exclude group: 'com.tgt.lists', module: 'lists-components'
+            exclude group: 'com.tgt.lists', module: 'atlas-client'
+        }
+        implementation("com.tgt.lists:lists-components:2.201.11") {
+            exclude group: 'com.tgt.lists.micronaut', module: 'micronaut-resilience4j'
+        }
+        implementation("com.tgt.lists:atlas-client:2.201.68")
         implementation("com.tgt.lists:lists-components:2.201.5") {
             exclude group: 'com.tgt.lists.micronaut', module: 'micronaut-resilience4j'
         }
@@ -101,7 +108,7 @@ allprojects {
         }
         testImplementation "org.codehaus.groovy:groovy-json:3.0.5"
         testImplementation "io.micronaut.test:micronaut-test-spock"
-        testImplementation "com.tgt.swaggerlib:swagger-sync:1.210.2"
+        testImplementation "com.tgt.swaggerlib:swagger-sync:1.210.18"
         testImplementation "com.tgt.lists.micronaut:micronaut-test:2.201.0"
         testImplementation("org.objenesis:objenesis:2.6")
         testImplementation 'io.micronaut.micrometer:micronaut-micrometer-registry-prometheus'
