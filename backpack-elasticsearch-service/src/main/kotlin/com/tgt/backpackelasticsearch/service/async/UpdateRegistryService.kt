@@ -11,6 +11,7 @@ import org.elasticsearch.action.update.UpdateResponse
 import org.elasticsearch.client.RequestOptions
 import org.elasticsearch.client.RestHighLevelClient
 import org.elasticsearch.common.collect.Tuple
+import org.elasticsearch.common.xcontent.XContentType
 import reactor.core.publisher.Mono
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -24,14 +25,16 @@ class UpdateRegistryService(
 ) {
 
     val mapper = jacksonObjectMapper()
+    val retryOnConflict = 5
 
     fun updateRegistry(registryData: RegistryData): Mono<Tuple<UpdateResponse, UpdateResponse>> {
 
         val json = mapper.writeValueAsString(registryData)
 
         val indexRequest = UpdateRequest(registryIndex, registryData.registryId.toString())
-            .timeout(operationTimeout)
-            .doc(json)
+                .retryOnConflict(retryOnConflict)
+                .timeout(operationTimeout)
+                .doc(json, XContentType.JSON)
 
         // If backup client is null then zipWith is called with null that shall make everything fail at runtime, so null check
         return if (elasticClientManager.backupClient != null)

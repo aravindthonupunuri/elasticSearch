@@ -52,7 +52,7 @@ class UpdateRegistryNotifyEventHandler(
             ))
             .map { EventProcessingResult(true, eventHeaders, updateRegistryNotifyEvent) }
             .onErrorResume {
-                val message = "Exception while updating registry data into elastic search from handleCreateRegistryNotifyEvent: $it"
+                val message = "Exception while updating registry data into elastic search from handleUpdateRegistryNotifyEvent: $it"
                 logger.error(message, it)
                 Mono.just(EventProcessingResult(false,
                     eventHeaderFactory.nextRetryHeaders(eventHeaders = eventHeaders, errorCode = 500, errorMsg = message).copy(source = dlqSource),

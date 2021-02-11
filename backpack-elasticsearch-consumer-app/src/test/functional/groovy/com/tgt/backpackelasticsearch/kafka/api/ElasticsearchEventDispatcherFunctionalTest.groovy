@@ -10,6 +10,7 @@ import com.tgt.backpackregistryclient.util.*
 import com.tgt.lists.atlas.api.type.LIST_STATE
 import com.tgt.lists.atlas.kafka.model.CreateListNotifyEvent
 import com.tgt.lists.atlas.kafka.model.DeleteListNotifyEvent
+import com.tgt.lists.atlas.kafka.model.UpdateListNotifyEvent
 import com.tgt.lists.msgbus.ListsMessageBusProducer
 import com.tgt.lists.msgbus.event.EventHeaders
 import com.tgt.lists.msgbus.event.EventLifecycleNotificationProvider
@@ -122,6 +123,67 @@ class ElasticsearchEventDispatcherFunctionalTest extends BaseKafkaFunctionalTest
 
         then:
         !response.isEmpty()
+
+        assert response.size() == 1
+        assert response.get(0).registryId == registryId
+    }
+
+    def "Guest updates registry - Consumer kicks in to consume the event and updates registry data in elastic search"() {
+        def registryMetaData = registryDataProvider.getRegistryMetaDataMap(UUID.randomUUID(), "alternate_id",false, false, null,
+                [new RegistryRecipientTO(RecipientType.REGISTRANT, RecipientRole.GROOM, "1234First", "1234Last"),
+                 new RegistryRecipientTO(RecipientType.COREGISTRANT,RecipientRole.BRIDE, "1234First", "1234Last")],
+                new RegistryEventTO("Minneapolis", "Minnesota", "USA", LocalDate.now()), null, null,
+                null, null, "organizationName", null, RegistrySearchVisibility.PUBLIC)
+
+        def updateRegistryEvent = new UpdateListNotifyEvent(guestId, registryId, "REGISTRY", RegistryType.WEDDING.name(), "List title - updated",
+                RegistryChannel.WEB.name(), RegistrySubChannel.TGTWEB.name(), LIST_STATE.ACTIVE, registryMetaData, LocalDate.now(),
+                "updated description", null, null, null, null)
+
+        testEventListener.preDispatchLambda = new PreDispatchLambda() {
+            @Override
+            boolean onPreDispatchConsumerEvent(String topic, @NotNull EventHeaders eventHeaders, @NotNull byte[] data, boolean isPoisonEvent) {
+                if (eventHeaders.eventType == UpdateListNotifyEvent.getEventType()) {
+                    def updateRegistry = UpdateListNotifyEvent.deserialize(data)
+                    if (updateRegistry.listId == registryId) {
+                        return true
+                    }
+                }
+                return false
+            }
+        }
+
+        when:
+        listsMessageBusProducer.sendMessage(updateRegistryEvent.getEventType(), updateRegistryEvent, registryId).block()
+
+        then:
+        testEventListener.verifyEvents {consumerEvents, producerEvents, consumerStatusEvents ->
+            conditions.eventually {
+                def completedEvents = consumerEvents.stream().filter {
+                    def result = (TestEventListener.Result) it
+                    (!result.preDispatch && result.success)
+                }.collect(Collectors.toList())
+                assert completedEvents.size() == 1
+            }
+        }
+
+        and:
+
+        when:
+        def refreshResponse = refresh()
+
+        then:
+        refreshResponse.status() == HttpStatus.OK
+
+        //test if registry is persisted
+        when:
+        def response = getRegistryService.findRegistry("1234First", "1234Last", null).block()
+
+        then:
+        !response.isEmpty()
+
+        assert response.size() == 1
+        assert response.get(0).registryId == registryId
+        assert response.get(0).registryTitle == "List title - updated"
     }
 
     def "Guest deletes registry - Consumer kicks in to consume the event and deletes registry data from elastic search"() {
