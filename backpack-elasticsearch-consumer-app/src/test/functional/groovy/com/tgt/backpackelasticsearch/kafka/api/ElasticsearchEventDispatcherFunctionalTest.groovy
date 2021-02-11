@@ -70,7 +70,7 @@ class ElasticsearchEventDispatcherFunctionalTest extends BaseKafkaFunctionalTest
     }
 
     def "Guest creates registry - Consumer kicks in to consume the event and copies regisrtry data into elastic search"() {
-        def registryMetaData = registryDataProvider.getRegistryMetaDataMap(UUID.randomUUID(), false, false, null,
+        def registryMetaData = registryDataProvider.getRegistryMetaDataMap(UUID.randomUUID(), "alternate_id",false, false, null,
             [new RegistryRecipientTO(RecipientType.REGISTRANT, RecipientRole.GROOM, "1234First", "1234Last"),
              new RegistryRecipientTO(RecipientType.COREGISTRANT,RecipientRole.BRIDE, "1234First", "1234Last")],
             new RegistryEventTO("Minneapolis", "Minnesota", "USA", LocalDate.now()), null, null, null, null, "organizationName", null, RegistrySearchVisibility.PUBLIC)

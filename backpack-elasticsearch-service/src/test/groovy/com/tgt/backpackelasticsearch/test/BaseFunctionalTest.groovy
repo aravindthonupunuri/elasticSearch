@@ -13,7 +13,6 @@ import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.MockClock
 import io.micrometer.core.instrument.simple.SimpleConfig
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry
-import io.micronaut.context.annotation.Value
 import io.micronaut.http.client.RxHttpClient
 import io.micronaut.http.client.annotation.Client
 import io.micronaut.test.support.TestPropertyProvider
@@ -69,7 +68,7 @@ class BaseFunctionalTest extends Specification implements TestPropertyProvider {
                                            @Nullable byte[] correlationId, @Nullable byte[] timestamp,
                                            @Nullable byte[] errorCode, @Nullable byte[] errorMessage,
                                            @Nullable byte[] retryCount, @Nullable byte[] retryTimestamp, @Nullable byte[] maxRetryCount,
-                                           @Nullable byte[] source, @Nullable byte[] traceHeader, @Nullable byte[] mdcHeader) {
+                                           @Nullable byte[] source, @Nullable byte[] traceHeader, @Nullable byte[] mdcHeader, @Nullable byte[] testMode) {
                 def metadata = new RecordMetadata(new TopicPartition("dummy", 1), 1, 1, System.currentTimeMillis(),
                     1, 1, 1)
                 return Mono.just(metadata)

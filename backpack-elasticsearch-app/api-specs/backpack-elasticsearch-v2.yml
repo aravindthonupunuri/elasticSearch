@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  version: 1.0.2
+  version: 1.0.3
   title: registries_searches-v2
   description: Api to search gift registries
 x-api-definition:
@@ -224,16 +224,23 @@ components:
         - WEB
         - MOBILE
         - STORE
-
+        - ADMIN
+        - EXTERNAL
     RegistrySubChannel:
       type: string
       enum:
         - KIOSK
         - SCANNER
         - TGTWEB
-        - GRIPHAPP
-        - GRANDAPP
-        - SPARTA
+        - IOS
+        - ANDROID
+        - SPARTAG
+        - CC
+        - POS
+        - GOM
+        - SPARTAR
+        - EGIFT
+        - XO
 
     RegistrySearchSortFieldGroup:
       type: string

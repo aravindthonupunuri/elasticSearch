@@ -10,6 +10,7 @@ class RegistryDataProvider {
 
     fun getRegistryMetaDataMap(
         profileAddressId: UUID?,
+        alternateRegistryId: String?,
         giftCardsEnabled: Boolean?,
         groupGiftEnabled: Boolean?,
         groupGiftAmount: String?,
@@ -23,7 +24,7 @@ class RegistryDataProvider {
         occasionName: String?,
         searchVisibility: RegistrySearchVisibility?
     ): Map<String, Any>? {
-        return toUserMetaData(RegistryMetaDataTO.toStringRegistryMetadata(RegistryMetaDataTO(profileAddressId,
+        return toUserMetaData(RegistryMetaDataTO.toStringRegistryMetadata(RegistryMetaDataTO(profileAddressId, alternateRegistryId,
             giftCardsEnabled, groupGiftEnabled, groupGiftAmount, recipients, event, babyRegistry, guestRulesMetaData,
             imageMetaData, customUrl, organizationName, occasionName, searchVisibility)))?.metadata
     }

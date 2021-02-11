@@ -32,7 +32,7 @@
 					}
 				],
 				"url": {
-					"raw": "{{search-host}}?first_name=Father&last_name=last&channel=MOBILE&sub_channel=KIOSK",
+					"raw": "{{search-host}}?first_name=Father&last_name=last&channel=MOBILE&sub_channel=TGTWEB",
 					"host": [
 						"{{search-host}}"
 					],
@@ -51,7 +51,7 @@
 						},
 						{
 							"key": "sub_channel",
-							"value": "KIOSK"
+							"value": "TGTWEB"
 						}
 					]
 				}

@@ -37,7 +37,7 @@ class SearchRegistryByNameFunctionalTest extends BaseElasticFunctionalTest {
     def "test get registry by first, last name - bad request"() {
         given:
         String guestId = "1236"
-        def url = uri + "?first_name=" + firstName + "&last_name=" + lastName + "&organization_name" + organizationName + "&channel=WEB&sub_channel=KIOSK"
+        def url = uri + "?first_name=" + firstName + "&last_name=" + lastName + "&organization_name" + organizationName + "&channel=WEB&sub_channel=TGTWEB"
 
         when:
         client.toBlocking()
@@ -80,7 +80,7 @@ class SearchRegistryByNameFunctionalTest extends BaseElasticFunctionalTest {
     def "test get registry by first, last name - valid request"() {
         given:
         String guestId = "1236"
-        def url = uri + "?first_name=co&last_name=last&channel=WEB&sub_channel=KIOSK"
+        def url = uri + "?first_name=co&last_name=last&channel=WEB&sub_channel=TGTWEB"
 
         when:
         def refreshResponse = refresh()
@@ -104,7 +104,7 @@ class SearchRegistryByNameFunctionalTest extends BaseElasticFunctionalTest {
     def "test get registry by organizationName"() {
         given:
         String guestId = "1236"
-        def url = uri + "?first_name=co&organization_name=organization5&channel=WEB&sub_channel=KIOSK"
+        def url = uri + "?first_name=co&organization_name=organization5&channel=WEB&sub_channel=TGTWEB"
 
         when:
         HttpResponse<RegistryData[]> listResponse = client.toBlocking()
@@ -123,7 +123,7 @@ class SearchRegistryByNameFunctionalTest extends BaseElasticFunctionalTest {
     def "test get registry when both name and organization are passed in request"() {
         given:
         String guestId = "1236"
-        def url = uri + "?first_name=co&last_name=last&organization_name=organization1&channel=WEB&sub_channel=KIOSK"
+        def url = uri + "?first_name=co&last_name=last&organization_name=organization1&channel=WEB&sub_channel=TGTWEB"
 
         when:
         HttpResponse<RegistryData[]> listResponse = client.toBlocking()
@@ -142,7 +142,7 @@ class SearchRegistryByNameFunctionalTest extends BaseElasticFunctionalTest {
     def "test get registry when channel is not passed"() {
         given:
         String guestId = "1236"
-        def url = uri + "?first_name=co&last_name=last&organization_name=organization1&sub_channel=KIOSK"
+        def url = uri + "?first_name=co&last_name=last&organization_name=organization1&sub_channel=TGTWEB"
 
         when:
         client.toBlocking().exchange(HttpRequest.GET(url).headers (getHeaders(guestId)), RegistryData[])
@@ -155,7 +155,7 @@ class SearchRegistryByNameFunctionalTest extends BaseElasticFunctionalTest {
     def "test get registry gives empty response for Inactive registry"() {
         given:
         String guestId = "1234"
-        def url = uri + "?first_name=kbnch&last_name=sdfklkxcn&channel=WEB&sub_channel=KIOSK"
+        def url = uri + "?first_name=kbnch&last_name=sdfklkxcn&channel=WEB&sub_channel=TGTWEB"
 
         when:
         HttpResponse<RegistryData[]> listResponse = client.toBlocking()
@@ -173,7 +173,7 @@ class SearchRegistryByNameFunctionalTest extends BaseElasticFunctionalTest {
     def "test get registry gives empty response for Private registry"() {
         given:
         String guestId = "1234"
-        def url = uri + "?first_name=funny&last_name=seri&channel=WEB&sub_channel=KIOSK"
+        def url = uri + "?first_name=funny&last_name=seri&channel=WEB&sub_channel=TGTWEB"
 
         when:
         HttpResponse<RegistryData[]> listResponse = client.toBlocking()
