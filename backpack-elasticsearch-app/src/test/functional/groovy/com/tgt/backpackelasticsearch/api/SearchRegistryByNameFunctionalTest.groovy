@@ -77,7 +77,31 @@ class SearchRegistryByNameFunctionalTest extends BaseElasticFunctionalTest {
         RegistryType.WEDDING    | RegistryStatus.@INACTIVE   | "kbnch sgs"       |   "sdfklkxcn cs"  |   "sgsd bsd"          |   "sgds, cmf"      |  "organization 6" | RegistrySearchVisibility.@PUBLIC
     }
 
-    def "test get registry by first, last name - valid request"() {
+    def     "test get registry by first, last name - valid request"() {
+        given:
+        String guestId = "1236"
+        def url = uri + "?first_name=fi&last_name=l&channel=WEB&sub_channel=TGTWEB"
+
+        when:
+        def refreshResponse = refresh()
+
+        then:
+        refreshResponse.status() == HttpStatus.OK
+
+        when:
+        HttpResponse<RegistryData[]> listResponse = client.toBlocking()
+            .exchange(HttpRequest.GET(url)
+                .headers (getHeaders(guestId)), RegistryData[])
+
+        def actualStatus = listResponse.status()
+        def actual = listResponse.body()
+
+        then:
+        actualStatus == HttpStatus.OK
+        actual.size() == 1
+    }
+
+    def "test get registry by partial first, last name - valid request"() {
         given:
         String guestId = "1236"
         def url = uri + "?first_name=co&last_name=last&channel=WEB&sub_channel=TGTWEB"
@@ -116,7 +140,7 @@ class SearchRegistryByNameFunctionalTest extends BaseElasticFunctionalTest {
 
         then:
         actualStatus == HttpStatus.OK
-        actual.size() == 1
+        actual.size() == 2
         actual.first().organizationName == "organization5"
     }
 
@@ -135,7 +159,7 @@ class SearchRegistryByNameFunctionalTest extends BaseElasticFunctionalTest {
 
         then:
         actualStatus == HttpStatus.OK
-        actual.size() == 1
+        actual.size() == 2
         actual.first().organizationName == "organization1"
     }
 

@@ -59,7 +59,6 @@ class ElasticsearchEventDispatcherFunctionalTest extends BaseKafkaFunctionalTest
     UUID registryId = UUID.randomUUID()
 
     def setupSpec() {
-        waitForKafkaReadiness()
         testEventListener = new TestEventListener()
         testEventListener.tracer = tracer
         eventNotificationsProvider.registerListener(testEventListener)

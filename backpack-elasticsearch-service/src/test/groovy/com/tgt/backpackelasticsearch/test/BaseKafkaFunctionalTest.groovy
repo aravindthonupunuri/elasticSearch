@@ -9,7 +9,6 @@ import io.opentracing.Tracer
 import org.apache.kafka.clients.admin.AdminClient
 import org.apache.kafka.clients.admin.KafkaAdminClient
 import org.apache.kafka.common.ConsumerGroupState
-import org.apache.kafka.common.errors.CoordinatorNotAvailableException
 import org.jetbrains.annotations.NotNull
 import org.jetbrains.annotations.Nullable
 import org.slf4j.Logger
@@ -19,10 +18,15 @@ import spock.lang.Shared
 
 import javax.inject.Inject
 import java.util.concurrent.ConcurrentLinkedQueue
+import java.util.concurrent.ExecutionException
 
 class BaseKafkaFunctionalTest extends BaseElasticFunctionalTest implements TestPropertyProvider {
 
     static Logger LOG = LoggerFactory.getLogger(BaseKafkaFunctionalTest)
+
+    def setupSpec() {
+        waitForKafkaReadiness()
+    }
 
     @Shared
     static KafkaContainer kafkaContainer
@@ -90,7 +94,7 @@ class BaseKafkaFunctionalTest extends BaseElasticFunctionalTest implements TestP
                     it.state() != ConsumerGroupState.STABLE
                 }
             }
-            catch (CoordinatorNotAvailableException ex) {
+            catch (ExecutionException ex) {
                 LOG.error("Kafka coordinator for lists-msgbus not available", ex)
             }
 
@@ -108,7 +112,7 @@ class BaseKafkaFunctionalTest extends BaseElasticFunctionalTest implements TestP
                     it.state() != ConsumerGroupState.STABLE
                 }
             }
-            catch (CoordinatorNotAvailableException ex) {
+            catch (ExecutionException ex) {
                 LOG.error("Kafka coordinator for lists-dlq not available", ex)
             }
 
