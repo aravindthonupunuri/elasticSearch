@@ -118,7 +118,7 @@ class ElasticsearchEventDispatcherFunctionalTest extends BaseKafkaFunctionalTest
 
         //test if registry is persisted
         when:
-        def response = getRegistryService.findRegistry("1234First", "1234Last", null).block()
+        def response = getRegistryService.findRegistry("1234First", "1234Last", null, null, null, null, null).block()
 
         then:
         !response.isEmpty()
@@ -175,7 +175,7 @@ class ElasticsearchEventDispatcherFunctionalTest extends BaseKafkaFunctionalTest
 
         //test if registry is persisted
         when:
-        def response = getRegistryService.findRegistry("1234First", "1234Last", null).block()
+        def response = getRegistryService.findRegistry("1234First", "1234Last", null, null, null, null, null).block()
 
         then:
         !response.isEmpty()
@@ -230,7 +230,7 @@ class ElasticsearchEventDispatcherFunctionalTest extends BaseKafkaFunctionalTest
 
         //test if registry is deleted
         when:
-        def response = getRegistryService.findRegistry("1234First", "1234Last", null).block()
+        def response = getRegistryService.findRegistry("1234First", "1234Last", null, null, null, null, null).block()
 
         then:
         response.isEmpty()

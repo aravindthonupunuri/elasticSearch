@@ -32,7 +32,7 @@
 					}
 				],
 				"url": {
-					"raw": "{{search-host}}?first_name=Father&last_name=last&channel=MOBILE&sub_channel=TGTWEB",
+					"raw": "{{search-host}}?first_name=Father&last_name=last&channel=MOBILE&sub_channel=TGTWEB&organization_name=organization1&registry_type=BABY&state=MN&min_date=2021-12-01&max_date=2022-12-01",
 					"host": [
 						"{{search-host}}"
 					],
@@ -52,7 +52,27 @@
 						{
 							"key": "sub_channel",
 							"value": "TGTWEB"
-						}
+						},
+                        {
+                            "key": "organization_name",
+                            "value": "organization1"
+                        },
+                        {
+                            "key": "registry_type",
+                            "value": "BABY"
+                        },
+                        {
+                            "key": "state",
+                            "value": "MN"
+                        },
+                        {
+                            "key": "min_date",
+                            "value": "2021-12-01"
+                        },
+                        {
+                            "key": "max_date",
+                            "value": "2022-12-01"
+                        }
 					]
 				}
 			},

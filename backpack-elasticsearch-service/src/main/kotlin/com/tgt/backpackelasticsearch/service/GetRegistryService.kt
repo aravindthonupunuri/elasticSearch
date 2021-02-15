@@ -3,6 +3,7 @@ package com.tgt.backpackelasticsearch.service
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.tgt.backpackelasticsearch.transport.RegistryData
+import com.tgt.backpackregistryclient.util.RegistryType
 import com.tgt.lists.common.components.exception.BadRequestException
 import com.tgt.lists.common.components.exception.BaseErrorCodes
 import com.tgt.lists.common.components.exception.ErrorCode
@@ -14,9 +15,12 @@ import org.elasticsearch.action.search.SearchResponse
 import org.elasticsearch.client.RequestOptions
 import org.elasticsearch.client.RestHighLevelClient
 import org.elasticsearch.common.unit.TimeValue
-import org.elasticsearch.index.query.*
+import org.elasticsearch.index.query.BoolQueryBuilder
+import org.elasticsearch.index.query.QueryStringQueryBuilder
+import org.elasticsearch.index.query.RangeQueryBuilder
 import org.elasticsearch.search.builder.SearchSourceBuilder
 import reactor.core.publisher.Mono
+import java.time.LocalDate
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -32,7 +36,11 @@ class GetRegistryService(
     fun findRegistry(
         recipientFirstName: String?,
         recipientLastName: String?,
-        organizationName: String?
+        organizationName: String?,
+        registryType: RegistryType?,
+        state: String?,
+        minimumDate: LocalDate?,
+        maximumDate: LocalDate?
     ): Mono<List<RegistryData>> {
         if (organizationName.isNullOrEmpty() && (recipientFirstName.isNullOrEmpty() || recipientLastName.isNullOrEmpty())) {
             throw BadRequestException(ErrorCode(BaseErrorCodes.BAD_REQUEST_ERROR_CODE, listOf("Missing required field first name and last name or organization")))
@@ -40,6 +48,7 @@ class GetRegistryService(
         val searchRequest = SearchRequest(registryIndex)
         val searchSourceBuilder = SearchSourceBuilder()
         val fullName = "$recipientFirstName $recipientLastName"
+
         val identifier =
             organizationName
             // Match first and last name in both registrant as well co-registrants first, last names
@@ -48,10 +57,18 @@ class GetRegistryService(
 
         val query = "$identifier AND (registry_status=ACTIVE) AND (search_visibility=PUBLIC)"
 
-        val queryStringQueryBuilder = QueryStringQueryBuilder(query)
+        val registryQuery = if (registryType != null) "$query AND (registry_type=$registryType)" else query
+
+        val stateQuery = if (state != null) "$registryQuery AND (event_state=$state)" else registryQuery
+
+        val queryStringQueryBuilder = QueryStringQueryBuilder(stateQuery)
                 .defaultField("*")
 
-        searchSourceBuilder.query(queryStringQueryBuilder)
+        val rangeQueryBuilder = RangeQueryBuilder("event_date").from(minimumDate).to(maximumDate)
+
+        val boolQueryBuilder = BoolQueryBuilder().must(queryStringQueryBuilder).must(rangeQueryBuilder)
+
+        searchSourceBuilder.query(boolQueryBuilder)
             .timeout(TimeValue(10, TimeUnit.SECONDS))
         searchRequest.source(searchSourceBuilder)
         searchRequest.preference("_local")

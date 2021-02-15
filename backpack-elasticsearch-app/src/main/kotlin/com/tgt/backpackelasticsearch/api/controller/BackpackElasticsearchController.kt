@@ -7,6 +7,8 @@ import com.tgt.backpackelasticsearch.util.BackpackElasticsearchConstants.ELASTIC
 import com.tgt.backpackregistryclient.util.RegistryChannel
 import com.tgt.backpackregistryclient.util.RegistrySortOrderGroup
 import com.tgt.backpackregistryclient.util.RegistrySubChannel
+import com.tgt.backpackregistryclient.util.RegistryType
+import io.micronaut.core.convert.format.Format
 import io.micronaut.http.HttpStatus
 import io.micronaut.http.annotation.*
 import io.swagger.v3.oas.annotations.media.ArraySchema
@@ -14,6 +16,7 @@ import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import reactor.core.publisher.Mono
+import java.time.LocalDate
 import javax.inject.Inject
 
 @Controller(ELASTIC_SEARCH_BASEPATH)
@@ -32,10 +35,14 @@ class BackpackElasticsearchController(
         @QueryValue("organization_name") organizationName: String?,
         @QueryValue("channel") registryChannel: RegistryChannel,
         @QueryValue("sub_channel") registrySubChannel: RegistrySubChannel,
+        @QueryValue("registry_type") registryType: RegistryType?,
+        @QueryValue("state") state: String?,
+        @QueryValue("min_date") @Format("yyyy-MM-dd") minDate: LocalDate?,
+        @QueryValue("max_date") @Format("yyyy-MM-dd") maxDate: LocalDate?,
         @QueryValue("sort_field") sortFieldBy: RegistrySearchSortFieldGroup? = RegistrySearchSortFieldGroup.NAME,
         @QueryValue("sort_order") sortOrderBy: RegistrySortOrderGroup? = RegistrySortOrderGroup.ASCENDING
     ): Mono<List<RegistryData>> {
         // TODO Sort field and order are yet to be implemented
-        return getRegistryService.findRegistry(firstName, lastName, organizationName)
+        return getRegistryService.findRegistry(firstName, lastName, organizationName, registryType, state, minDate, maxDate)
     }
 }

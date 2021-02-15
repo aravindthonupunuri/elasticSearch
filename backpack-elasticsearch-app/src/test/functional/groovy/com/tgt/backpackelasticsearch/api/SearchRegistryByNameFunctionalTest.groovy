@@ -58,7 +58,7 @@ class SearchRegistryByNameFunctionalTest extends BaseElasticFunctionalTest {
     @Unroll
     def "test create new list with name "() {
         given:
-        RegistryData registryRequest = new RegistryData(UUID.randomUUID(), "interesting title", registryType, registryStatus, searchVisibility, registrantFirst, registrantLast, coregistrantFirst, coregistrantLast, organizationName, "MSP", "MN", "USA", LocalDate.now())
+        RegistryData registryRequest = new RegistryData(UUID.randomUUID(), "interesting title", registryType, registryStatus, searchVisibility, registrantFirst, registrantLast, coregistrantFirst, coregistrantLast, organizationName, "MSP", state, "USA", eventDate)
 
         when:
         def response = createRegistryService.saveRegistry(registryRequest).block()
@@ -68,16 +68,18 @@ class SearchRegistryByNameFunctionalTest extends BaseElasticFunctionalTest {
         actualStatus != null
 
         where:
-        registryType            | registryStatus             | registrantFirst   |   registrantLast  |   coregistrantFirst   |   coregistrantLast | organizationName  | searchVisibility
-        RegistryType.BABY       | RegistryStatus.@ACTIVE     | "fist name"       |   "last one"      |   "co first"          |   "co last"        |  "organization1"  | RegistrySearchVisibility.@PUBLIC
-        RegistryType.WEDDING    | RegistryStatus.@ACTIVE     | "fist name"       |   "last one"      |   "co first"          |   "co last"        |  "organization 2" | RegistrySearchVisibility.@PRIVATE
-        RegistryType.WEDDING    | RegistryStatus.@INACTIVE   | "fist name"       |   "last one"      |   "co first"          |   "co last"        |  "organization3"  | RegistrySearchVisibility.@PUBLIC
-        RegistryType.WEDDING    | RegistryStatus.@ACTIVE     | "funny first"     |   "seri last"     |   "last first"        |   "first am"       |  "organization4"  | RegistrySearchVisibility.@PRIVATE
-        RegistryType.BABY       | RegistryStatus.@ACTIVE     | "sdkw wef"        |   "opwe sd23"     |   "wegs whwe"         |   "hkn,de she"     |  "organization5"  | RegistrySearchVisibility.@PUBLIC
-        RegistryType.WEDDING    | RegistryStatus.@INACTIVE   | "kbnch sgs"       |   "sdfklkxcn cs"  |   "sgsd bsd"          |   "sgds, cmf"      |  "organization 6" | RegistrySearchVisibility.@PUBLIC
+        registryType            | registryStatus             | registrantFirst   |   registrantLast  |   coregistrantFirst   |   coregistrantLast | organizationName  |  searchVisibility                   | state | eventDate
+        RegistryType.BABY       | RegistryStatus.@ACTIVE     | "fist name"       |   "last one"      |   "co first"          |   "co last"        |  "organization1"  | RegistrySearchVisibility.@PUBLIC    | "MN"  | LocalDate.of(2021, 01, 01)
+        RegistryType.BABY       | RegistryStatus.@ACTIVE     | "fist name"       |   "last one"      |   "co first"          |   "co last"        |  "organization1"  | RegistrySearchVisibility.@PUBLIC    | "WI"  | LocalDate.of(2021, 01, 01)
+        RegistryType.BABY       | RegistryStatus.@ACTIVE     | "fist name"       |   "last one"      |   "co first"          |   "co last"        |  "organization1"  | RegistrySearchVisibility.@PUBLIC    | "MN"  | LocalDate.of(2022, 01, 01)
+        RegistryType.WEDDING    | RegistryStatus.@ACTIVE     | "fist name"       |   "last one"      |   "co first"          |   "co last"        |  "organization 2" | RegistrySearchVisibility.@PRIVATE   | "PA"  | LocalDate.of(2022, 02, 02)
+        RegistryType.WEDDING    | RegistryStatus.@INACTIVE   | "fist name"       |   "last one"      |   "co first"          |   "co last"        |  "organization3"  | RegistrySearchVisibility.@PUBLIC    | "NY"  | LocalDate.of(2021,01,01)
+        RegistryType.WEDDING    | RegistryStatus.@ACTIVE     | "funny first"     |   "seri last"     |   "last first"        |   "first am"       |  "organization4"  | RegistrySearchVisibility.@PRIVATE   | "CA"  | LocalDate.of(2021,02,01)
+        RegistryType.BABY       | RegistryStatus.@ACTIVE     | "sdkw wef"        |   "opwe sd23"     |   "wegs whwe"         |   "hkn,de she"     |  "organization5"  | RegistrySearchVisibility.@PUBLIC    | "TX"  | LocalDate.of(2021, 02, 01)
+        RegistryType.WEDDING    | RegistryStatus.@INACTIVE   | "kbnch sgs"       |   "sdfklkxcn cs"  |   "sgsd bsd"          |   "sgds, cmf"      |  "organization 6" | RegistrySearchVisibility.@PUBLIC    | "SD"  | LocalDate.of(2021, 02, 01)
     }
 
-    def     "test get registry by first, last name - valid request"() {
+    def "test get registry by first, last name - valid request"() {
         given:
         String guestId = "1236"
         def url = uri + "?first_name=fi&last_name=l&channel=WEB&sub_channel=TGTWEB"
@@ -98,7 +100,7 @@ class SearchRegistryByNameFunctionalTest extends BaseElasticFunctionalTest {
 
         then:
         actualStatus == HttpStatus.OK
-        actual.size() == 1
+        actual.size() == 3
     }
 
     def "test get registry by partial first, last name - valid request"() {
@@ -122,13 +124,13 @@ class SearchRegistryByNameFunctionalTest extends BaseElasticFunctionalTest {
 
         then:
         actualStatus == HttpStatus.OK
-        actual.size() == 1
+        actual.size() == 3
     }
 
-    def "test get registry by organizationName"() {
+    def "test get registry by organizationName and registry type"() {
         given:
         String guestId = "1236"
-        def url = uri + "?first_name=co&organization_name=organization5&channel=WEB&sub_channel=TGTWEB"
+        def url = uri + "?first_name=co&organization_name=organization5&registry_type=BABY&channel=WEB&sub_channel=TGTWEB"
 
         when:
         HttpResponse<RegistryData[]> listResponse = client.toBlocking()
@@ -140,8 +142,9 @@ class SearchRegistryByNameFunctionalTest extends BaseElasticFunctionalTest {
 
         then:
         actualStatus == HttpStatus.OK
-        actual.size() == 2
+        actual.size() == 4
         actual.first().organizationName == "organization5"
+        actual.first().registryType == RegistryType.BABY
     }
 
     def "test get registry when both name and organization are passed in request"() {
@@ -159,7 +162,7 @@ class SearchRegistryByNameFunctionalTest extends BaseElasticFunctionalTest {
 
         then:
         actualStatus == HttpStatus.OK
-        actual.size() == 2
+        actual.size() == 4
         actual.first().organizationName == "organization1"
     }
 
@@ -210,5 +213,78 @@ class SearchRegistryByNameFunctionalTest extends BaseElasticFunctionalTest {
         then:
         actualStatus == HttpStatus.OK
         actual.size() == 0
+    }
+
+    def "test get registry with min_date gives valid registries"() {
+        given:
+        String guestId = "1234"
+        def url = uri + "?first_name=co&last_name=last&channel=WEB&sub_channel=TGTWEB&min_date=2020-12-01"
+
+        when:
+        HttpResponse<RegistryData[]> listResponse = client.toBlocking()
+                .exchange(HttpRequest.GET(url)
+                        .headers (getHeaders(guestId)), RegistryData[])
+
+        def actualStatus = listResponse.status()
+        def actual = listResponse.body()
+
+        then:
+        actualStatus == HttpStatus.OK
+        actual.size() == 3
+    }
+
+    def "test get registry with only max_date gives valid registries"() {
+        given:
+        String guestId = "1234"
+        def url = uri + "?first_name=co&last_name=last&channel=WEB&sub_channel=TGTWEB&max_date=2022-12-01"
+
+        when:
+        HttpResponse<RegistryData[]> listResponse = client.toBlocking()
+                .exchange(HttpRequest.GET(url)
+                        .headers (getHeaders(guestId)), RegistryData[])
+
+        def actualStatus = listResponse.status()
+        def actual = listResponse.body()
+
+        then:
+        actualStatus == HttpStatus.OK
+        actual.size() == 3
+    }
+
+    def "test get registry with min_date and max_date gives valid registries"() {
+        given:
+        String guestId = "1234"
+        def url = uri + "?first_name=co&last_name=last&channel=WEB&sub_channel=TGTWEB&min_date=2020-12-01&max_date=2021-12-01"
+
+        when:
+        HttpResponse<RegistryData[]> listResponse = client.toBlocking()
+                .exchange(HttpRequest.GET(url.toString())
+                        .headers (getHeaders(guestId)), RegistryData[])
+
+        def actualStatus = listResponse.status()
+        def actual = listResponse.body()
+
+        then:
+        actualStatus == HttpStatus.OK
+        actual.size() == 2
+    }
+
+    def "test get registry with event state"() {
+        given:
+        String guestId = "1234"
+        def url = uri + "?first_name=co&last_name=last&channel=WEB&sub_channel=TGTWEB&state=MN"
+
+        when:
+        HttpResponse<RegistryData[]> listResponse = client.toBlocking()
+                .exchange(HttpRequest.GET(url)
+                        .headers (getHeaders(guestId)), RegistryData[])
+
+        def actualStatus = listResponse.status()
+        def actual = listResponse.body()
+
+        then:
+        actualStatus == HttpStatus.OK
+        actual.size() == 2
+        actual.first().eventState == "MN"
     }
 }

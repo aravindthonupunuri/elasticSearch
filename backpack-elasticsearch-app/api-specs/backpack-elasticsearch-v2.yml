@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  version: 1.0.3
+  version: 1.0.4
   title: registries_searches-v2
   description: Api to search gift registries
 x-api-definition:
@@ -117,8 +117,34 @@ paths:
             type: string
         - name: organization_name
           in: query
-          description: Guest last name
+          description: Organization name
           required: true
+          schema:
+            type: string
+        - name: registry_type
+          in: query
+          description: Registry Type
+          required: false
+          schema:
+            $ref: '#/components/schemas/RegistryType'
+        - name: state
+          in: query
+          description: Resgistry Event State
+          required: false
+          schema:
+            type: string
+        - name: min_date
+          in: query
+          description: Registry event date
+          required: false
+          format: date
+          schema:
+            type: string
+        - name: max_date
+          in: query
+          description: Registry event date
+          required: false
+          format: date
           schema:
             type: string
         - name: sort_field
