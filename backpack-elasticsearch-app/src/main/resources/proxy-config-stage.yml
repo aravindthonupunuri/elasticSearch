@@ -6,7 +6,7 @@ health:
   proxy:
    enabled: true
    path: /proxyhealth
-api_name: backpack_elasticsearch-v2
+api_name: backpack_elasticsearch-v1
 metrics:
   push: true
 handlers:

@@ -1,11 +1,11 @@
 openapi: 3.0.0
 info:
-  version: 1.0.4
-  title: registries_searches-v2
+  version: 1.0.5
+  title: registries_searches-v1
   description: Api to search gift registries
 x-api-definition:
   dependencies: []
-  api_name: registries_searches-v2
+  api_name: registries_searches-v1
   personnel:
     portfolio: Digital
     owner: Indrakumar.Thimmaiah
@@ -60,16 +60,16 @@ x-api-definition:
     monitoring_link:
       - https://www.thalamus.target.com
     support_team_contact: TargetIndia-TTS-GRWS-Dev@Target.com
-    api_spec: https://git.target.com/Registry-Modernization/backpack-elasticsearch/blob/master/api-spec/backpack-elasticsearch-v2.yml
+    api_spec: https://git.target.com/Registry-Modernization/backpack-elasticsearch/blob/master/api-spec/backpack-elasticsearch-v1.yml
   endpoints:
     external:
-      production: https://api.target.com/registries_searches/v2
-      stage: https://stage-api.target.com/registries_searches/v2
+      production: https://api.target.com/registries_searches/v1
+      stage: https://stage-api.target.com/registries_searches/v1
       qa: null
       ci: null
     internal:
-      production: https://api-internal.target.com/registries_searches/v2
-      stage: https://stgapi-internal.target.com/registries_searches/v2
+      production: https://api-internal.target.com/registries_searches/v1
+      stage: https://stgapi-internal.target.com/registries_searches/v1
       qa: null
       ci: null
 paths:
@@ -147,6 +147,18 @@ paths:
           format: date
           schema:
             type: string
+        - name: page
+          in: query
+          description: Page number
+          required: false
+          schema:
+            type: integer
+        - name: page_size
+          in: query
+          description: Page size
+          required: false
+          schema:
+            type: integer
         - name: sort_field
           in: query
           description: sort field by
@@ -182,7 +194,7 @@ paths:
                 $ref: '#/components/schemas/Error404'
 
 servers:
-  - url: 'https://api.target.com/registries_searches/v2'
+  - url: 'https://api.target.com/registries_searches/v1'
 components:
   schemas:
     RegistryData:

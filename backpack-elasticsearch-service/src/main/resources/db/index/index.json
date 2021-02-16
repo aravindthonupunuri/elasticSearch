@@ -1,12 +1,6 @@
 {
     "mappings":{
         "properties":{
-            "reg_first_name_suggest":{
-                "type":"completion"
-            },
-            "reg_last_name_suggest":{
-                "type":"completion"
-            },
             "registry_id":{
                 "type":"text"
             },

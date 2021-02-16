@@ -8,8 +8,8 @@ import spock.lang.Specification
 
 class ApiSpecTest extends Specification {
 
-    static String staticSpecRelativePath = "api-specs/backpack-elasticsearch-v2.yml"
-    static String dynamicSpecRelativePath = "/build/tmp/kapt3/classes/main/META-INF/swagger/backpack-elasticsearch-v2.yml"
+    static String staticSpecRelativePath = "api-specs/backpack-elasticsearch-v1.yml"
+    static String dynamicSpecRelativePath = "/build/tmp/kapt3/classes/main/META-INF/swagger/backpack-elasticsearch-v1.yml"
 
     OpenApi3ExtParser staticSpecFileParser
     OpenApi3Parser dynamicSpecFileParser
@@ -18,7 +18,7 @@ class ApiSpecTest extends Specification {
         def appDir = System.getProperty("user.dir")
 
         String staticSpecFilePath = "${appDir}/${staticSpecRelativePath}"
-        staticSpecFileParser = new OpenApi3ExtParser(staticSpecFilePath, "/registries_searches/v2")
+        staticSpecFileParser = new OpenApi3ExtParser(staticSpecFilePath, "/registries_searches/v1")
 
         String dynamicSpecFilePath = "${appDir}${dynamicSpecRelativePath}"
         dynamicSpecFileParser = new OpenApi3Parser(dynamicSpecFilePath)

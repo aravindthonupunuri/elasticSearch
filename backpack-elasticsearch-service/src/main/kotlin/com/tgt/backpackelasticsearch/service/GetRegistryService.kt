@@ -40,7 +40,9 @@ class GetRegistryService(
         registryType: RegistryType?,
         state: String?,
         minimumDate: LocalDate?,
-        maximumDate: LocalDate?
+        maximumDate: LocalDate?,
+        page: Int?,
+        pageSize: Int?
     ): Mono<List<RegistryData>> {
         if (organizationName.isNullOrEmpty() && (recipientFirstName.isNullOrEmpty() || recipientLastName.isNullOrEmpty())) {
             throw BadRequestException(ErrorCode(BaseErrorCodes.BAD_REQUEST_ERROR_CODE, listOf("Missing required field first name and last name or organization")))
@@ -68,10 +70,24 @@ class GetRegistryService(
 
         val boolQueryBuilder = BoolQueryBuilder().must(queryStringQueryBuilder).must(rangeQueryBuilder)
 
+        val finalPageSize = pageSize ?: 9999
+        val from = if (page == null || page == 0) {
+            0
+        } else {
+            if (page * finalPageSize > 9999) {
+                9999
+            } else {
+                page * finalPageSize
+            }
+        }
+
         searchSourceBuilder.query(boolQueryBuilder)
             .timeout(TimeValue(10, TimeUnit.SECONDS))
+            .from(from)
+            .size(finalPageSize)
         searchRequest.source(searchSourceBuilder)
         searchRequest.preference("_local")
+
         return elasticCallExecutor.executeWithFallback(executionId = "searchRegistry", stmtBlock = queryElastic(searchRequest))
             .map {
                 val searchResponse = it

@@ -112,7 +112,7 @@ components:
     sanitizing-filter:
       enabled: false
     registry-channel-subchannel-filter:
-      base-uri: /registries_searches/v2
+      base-uri: /registries_searches/v1
 
 msgbus:
   source: backpackelasticsearch

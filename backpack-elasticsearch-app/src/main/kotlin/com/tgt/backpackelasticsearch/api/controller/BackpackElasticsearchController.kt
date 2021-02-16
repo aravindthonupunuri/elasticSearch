@@ -40,9 +40,11 @@ class BackpackElasticsearchController(
         @QueryValue("min_date") @Format("yyyy-MM-dd") minDate: LocalDate?,
         @QueryValue("max_date") @Format("yyyy-MM-dd") maxDate: LocalDate?,
         @QueryValue("sort_field") sortFieldBy: RegistrySearchSortFieldGroup? = RegistrySearchSortFieldGroup.NAME,
-        @QueryValue("sort_order") sortOrderBy: RegistrySortOrderGroup? = RegistrySortOrderGroup.ASCENDING
+        @QueryValue("sort_order") sortOrderBy: RegistrySortOrderGroup? = RegistrySortOrderGroup.ASCENDING,
+        @QueryValue("page") page: Int?,
+        @QueryValue("page_size") pageSize: Int?
     ): Mono<List<RegistryData>> {
         // TODO Sort field and order are yet to be implemented
-        return getRegistryService.findRegistry(firstName, lastName, organizationName, registryType, state, minDate, maxDate)
+        return getRegistryService.findRegistry(firstName, lastName, organizationName, registryType, state, minDate, maxDate, page, pageSize)
     }
 }
