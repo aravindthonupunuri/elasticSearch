@@ -104,11 +104,11 @@ msgbus:
       enabled: true
     dlqproducer:
       enabled: true
-    topic: registry-internal-data-bus-stage
-    consumer-group: backpack-elasticsearch-data-bus-consumer
+    topic: registry-internal-data-bus-dev
+    consumer-group: backpack-elasticsearch-data-bus-dev-consumer
     consumer-batch-size: 10
-    dlq-topic: registry-internal-data-bus-stage-dlq
-    dlq-consumer-group: backpack-elasticsearch-data-bus-dlq-consumer
+    dlq-topic: registry-internal-data-bus-dev-dlq
+    dlq-consumer-group: backpack-elasticsearch-data-bus-dev-dlq-consumer
     dlq-event-retry-interval-secs: 1
     dlq-max-event-retry-count: 2
     dlq-consumer-batch-size: 10
@@ -124,3 +124,4 @@ kafka-sources:
   allow:
     - backpack-registry
     - backpackelasticsearch
+    - backpackregistry-migration
