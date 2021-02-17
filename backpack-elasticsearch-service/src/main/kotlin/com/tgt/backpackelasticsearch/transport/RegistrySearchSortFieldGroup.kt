@@ -1,7 +1,7 @@
 package com.tgt.backpackelasticsearch.transport
 
 enum class RegistrySearchSortFieldGroup(val value: String) {
-    NAME("name"),
+    NAME("registrant_first_name"),
     EVENT_DATE("event_date"),
-    LOCATION("location") // state
+    LOCATION("event_state")
 }

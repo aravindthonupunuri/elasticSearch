@@ -170,7 +170,7 @@ paths:
           description: sort order by
           required: false
           schema:
-            $ref: '#/components/schemas/RegistrySortOrderGroup'
+            $ref: '#/components/schemas/SortOrder'
       responses:
         '200':
           description: list of searched registries
@@ -287,11 +287,11 @@ components:
         - EVENT_DATE
         - LOCATION
 
-    RegistrySortOrderGroup:
+    SortOrder:
       type: string
       enum:
-        - ASCENDING
-        - DESCENDING
+        - ASC
+        - DESC
 
     RegistrySearchVisibility:
       type: string

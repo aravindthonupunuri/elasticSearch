@@ -84,13 +84,24 @@
                 "type":"text"
             },
             "event_state":{
-                "type":"text"
+                "type":"text",
+                "fields":{
+                    "keyword":{
+                        "type":"keyword"
+                    }
+                }
             },
             "event_country":{
                 "type":"text"
             },
             "event_date":{
-                "type":"text"
+                "type": "date",
+                "format": "yyyy-mm-dd",
+                "fields":{
+                    "keyword":{
+                        "type":"keyword"
+                    }
+                }
             }
         }
     },

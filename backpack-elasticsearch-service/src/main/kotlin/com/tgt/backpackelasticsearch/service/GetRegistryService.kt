@@ -3,6 +3,7 @@ package com.tgt.backpackelasticsearch.service
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.tgt.backpackelasticsearch.transport.RegistryData
+import com.tgt.backpackelasticsearch.transport.RegistrySearchSortFieldGroup
 import com.tgt.backpackregistryclient.util.RegistryType
 import com.tgt.lists.common.components.exception.BadRequestException
 import com.tgt.lists.common.components.exception.BaseErrorCodes
@@ -19,6 +20,8 @@ import org.elasticsearch.index.query.BoolQueryBuilder
 import org.elasticsearch.index.query.QueryStringQueryBuilder
 import org.elasticsearch.index.query.RangeQueryBuilder
 import org.elasticsearch.search.builder.SearchSourceBuilder
+import org.elasticsearch.search.sort.SortBuilders
+import org.elasticsearch.search.sort.SortOrder
 import reactor.core.publisher.Mono
 import java.time.LocalDate
 import java.util.concurrent.TimeUnit
@@ -41,6 +44,8 @@ class GetRegistryService(
         state: String?,
         minimumDate: LocalDate?,
         maximumDate: LocalDate?,
+        sortFieldBy: RegistrySearchSortFieldGroup?,
+        sortOrderBy: SortOrder?,
         page: Int?,
         pageSize: Int?
     ): Mono<List<RegistryData>> {
@@ -48,7 +53,6 @@ class GetRegistryService(
             throw BadRequestException(ErrorCode(BaseErrorCodes.BAD_REQUEST_ERROR_CODE, listOf("Missing required field first name and last name or organization")))
         }
         val searchRequest = SearchRequest(registryIndex)
-        val searchSourceBuilder = SearchSourceBuilder()
         val fullName = "$recipientFirstName $recipientLastName"
 
         val identifier =
@@ -81,10 +85,17 @@ class GetRegistryService(
             }
         }
 
-        searchSourceBuilder.query(boolQueryBuilder)
+        val searchSourceBuilder = SearchSourceBuilder().query(boolQueryBuilder)
             .timeout(TimeValue(10, TimeUnit.SECONDS))
             .from(from)
             .size(finalPageSize)
+
+        if (sortFieldBy != null) {
+            searchSourceBuilder
+                .sort(SortBuilders.fieldSort(sortFieldBy.value + ".keyword")
+                    .order(sortOrderBy ?: SortOrder.ASC))
+        }
+
         searchRequest.source(searchSourceBuilder)
         searchRequest.preference("_local")
 
