@@ -138,6 +138,9 @@ echo $encrypted_data > $encrypted_data_file
 # Therefore decode the base64 first separately i.e. don't use -base64 flag with openssl decode (enc -d) command
 echo -n $encrypted_data| openssl base64 -d -A | openssl enc -d -aes-256-cbc -out $decrypted_data_file -pass file:$decrypted_sym_key_file
 
+#remove newline from end of file, if any (TAP doesn't like newline char at end of base64 coded secrets)
+perl -pi -e 'chomp if eof' $decrypted_data_file
+
 if [ "$debug" == true ]; then
     echo " "
     echo "=============================="

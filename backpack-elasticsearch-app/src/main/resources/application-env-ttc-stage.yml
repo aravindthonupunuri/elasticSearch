@@ -1,1 +1,2 @@
-a2Fma2FlbnY6CiAgc2VydmVyczoga2Fma2EtdHRjLWFwcC5kZXYudGFyZ2V0LmNvbTo5MDkzCmNhcnQ6CiAgY2xpZW50OgogICAgZ2NwLWxiLWhlYWRlcjogY29jb2FwdWZmc19ncmFwZW51dHM=
+kafkaenv:
+  servers: kafka-ttc-app.dev.target.com:9093

@@ -46,16 +46,19 @@ tasks.withType(Test) {
 }
 
 test {
+    environment "container", "true" // simulate TAP container
     useJUnitPlatform()
     dependsOn testUnit
     dependsOn testFunctional
 }
 
 testUnit {
+    environment "container", "true" // simulate TAP container
     useJUnitPlatform()
 }
 
 testFunctional {
+    environment "container", "true" // simulate TAP container
     useJUnitPlatform()
 }
 

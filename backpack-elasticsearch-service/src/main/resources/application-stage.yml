@@ -1,0 +1,108 @@
+lists:
+  metrics:
+    binders:
+      http:
+        enabled: true # we are using our own binder via our custom micronaut-metrics lib
+
+jackson:
+  property-naming-strategy: "SNAKE_CASE"
+
+endpoints:
+  health:
+    enabled: true
+    sensitive: false
+    elasticsearch:
+      rest.high.level.enabled: false # disable default elastic health indicator and use custom indicator instead
+
+logging:
+  mdc:
+    enabled: true
+    keys:
+      - profile_id
+      - x-api-id
+    filter:
+      path: /lists/**
+
+# resilience4j filter is not required but configuration is needed since elastic search code internally implements resilience
+resilience4j:
+  filter: false
+  circuit-breaker:
+    failure-rate-threshold: 50                        # failure rate threshold in percentage (default: 50)
+    wait-duration-secs-in-open-state: 10              # time cb waits before transitioning from open to half-open (default: 60s)
+    sliding-window-type: TIME_BASED                   # possible values TIME_BASED or COUNT_BASED (default: COUNT_BASED)
+    sliding-window-size: 100                          # seconds for TIME_BASED, request-count for COUNT_BASED (default: 100)
+    minimum-number-of-calls: 10                       # min calls required (per sliding window period) before cb calculates error rate (default: 10)
+    permitted-number-of-calls-in-half-open-state: 10  # min calls permitted when circuit breaker is half open
+
+backends:
+  primary:
+    circuit-breaker:
+      failure-rate-threshold: 50                        # failure rate threshold in percentage (default: 50)
+      wait-duration-secs-in-open-state: 10              # time cb waits before transitioning from open to half-open (default: 60s)
+      sliding-window-type: TIME_BASED                   # possible values TIME_BASED or COUNT_BASED (default: COUNT_BASED)
+      sliding-window-size: 100                          # seconds for TIME_BASED, request-count for COUNT_BASED (default: 100)
+      minimum-number-of-calls: 10                       # min calls required (per sliding window period) before cb calculates error rate (default: 10)
+      permitted-number-of-calls-in-half-open-state: 10  # min calls permitted when circuit breaker is half open
+  backup:
+    circuit-breaker:
+      failure-rate-threshold: 50                        # failure rate threshold in percentage (default: 50)
+      wait-duration-secs-in-open-state: 10              # time cb waits before transitioning from open to half-open (default: 60s)
+      sliding-window-type: TIME_BASED                   # possible values TIME_BASED or COUNT_BASED (default: COUNT_BASED)
+      sliding-window-size: 100                          # seconds for TIME_BASED, request-count for COUNT_BASED (default: 100)
+      minimum-number-of-calls: 10                       # min calls required (per sliding window period) before cb calculates error rate (default: 10)
+      permitted-number-of-calls-in-half-open-state: 10  # min calls permitted when circuit breaker is half open
+
+tracing:
+  zipkin:
+    enabled: false
+    excluded-paths: /health
+    b3-propagation-suppress: true
+    sample-rate-percent: 0.5
+    http:
+      url: "https://zipkinserver.dev.target.com"
+      messageMaxBytes: 50000
+    app:
+      name: backpackelasticsearch
+      env: dev
+      region: tdc
+
+components:
+  server:
+    list-authorization-filter:
+      enabled: false
+    sanitizing-filter:
+      enabled: false
+    registry-channel-subchannel-filter:
+      base-uri: /registries_searches/v1
+
+api-key: ${global-secret.api-key}
+
+api:
+  oauth:
+    url: https://oauth.iam.perf.target.com
+    client-id: ${api-auth.id2-client-id}
+    client-secret: ${api-auth.id2-client-secret}
+    nuid-username: ${api-auth.id2-nuid-username}
+    nuid-password: ${api-auth.id2-nuid-password}
+    id2-refresh-mins: 10
+    excluded-paths: ""
+
+elasticsearch:
+  index: "backpackregistry"
+  operation-timeout: 500ms # seconds, default: 1s
+  httpHosts: ${esaas.primary.httpHosts} # same as esaas.primary.httpHosts
+  request:
+    default:
+      connection-request-timeout: 200   # millis, default: 1s
+      connect-timeout: 10000            # millis, default: 30s
+
+esaas:
+  nuidUser: ${esaas.nuidUser}
+  nuidPassword: ${esaas.nuidPassword}
+  use-fallback: true
+  primary:
+    httpHosts: https://backpack-registry-stage-ttc-elasticsearch.target.com
+  backup:
+    httpHosts: https://backpack-registry-stage-ttce-elasticsearch.target.com
+  health:
+    enabled: true # enable custom health indicator with two elastic clients

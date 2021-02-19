@@ -13,10 +13,10 @@ distTar {
 
 dependencies {
     implementation project(":backpack-elasticsearch-service")
-    implementation "com.tgt.lists.micronaut:micronaut-resilience4j:2.201.1"
+    implementation "com.tgt.lists.micronaut:micronaut-resilience4j:${micronaut_resilience4j_version}"
     implementation "org.owasp.esapi:esapi:2.2.0.0"
-    testImplementation('org.apache.kafka:kafka-clients:2.4.0:test') { force = true }
-    testImplementation('org.apache.kafka:kafka_2.12:2.4.0:test') { force = true }
+    testImplementation("org.apache.kafka:kafka-clients:${kafka_version}:test") { force = true }
+    testImplementation("org.apache.kafka:kafka_2.12:${kafka_version}:test") { force = true }
     testImplementation project(':backpack-elasticsearch-service').sourceSets.test.output
 }
 

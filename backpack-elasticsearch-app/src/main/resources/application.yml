@@ -150,11 +150,11 @@ msgbus:
     consumer:
       enabled: false
     producer:
-      enabled: true
+      enabled: false
     dlqconsumer:
       enabled: false
     dlqproducer:
-      enabled: true
+      enabled: false
     topic: registry-internal-data-bus-stage
     consumer-group: backpack-elasticsearch-data-bus-consumer
     consumer-batch-size: 10

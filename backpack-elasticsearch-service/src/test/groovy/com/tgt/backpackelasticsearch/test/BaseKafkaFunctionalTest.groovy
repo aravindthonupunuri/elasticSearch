@@ -51,7 +51,7 @@ class BaseKafkaFunctionalTest extends BaseElasticFunctionalTest implements TestP
     Map<String, String> getProperties() {
         def map = super.getProperties()
         String kafkaBootstrapServers = System.getenv("KAFKA_BOOTSTRAP_SERVERS")
-
+        System.setProperty("APP_UUID", UUID.randomUUID().toString())
         if (kafkaBootstrapServers == null) {
             LOG.info("Using testcontainer kafka")
 
@@ -59,7 +59,7 @@ class BaseKafkaFunctionalTest extends BaseElasticFunctionalTest implements TestP
                 LOG.info("starting testcontainer kafka")
                 // kafka default for auto.create.topics.enable is "true" which means topics will be auto created
                 // when a producer tries to produce to a topic that doesn't exists yet.
-                kafkaContainer = new KafkaContainer("4.1.2")
+                kafkaContainer = new KafkaContainer("5.2.1")
                 kafkaContainer.start()
             }
 

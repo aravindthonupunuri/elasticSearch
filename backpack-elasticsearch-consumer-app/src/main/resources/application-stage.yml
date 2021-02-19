@@ -4,20 +4,10 @@ micronaut:
   server:
     host: ${backpack-elasticsearch-consumer-host:localhost}
     port: 8085
-
   metrics:
     binders:
       web:
         enabled: false # we are using our own binder via our custom micronaut-metrics lib
-
-lists:
-  metrics:
-    binders:
-      http:
-        enabled: true # we are using our own binder via our custom micronaut-metrics lib
-
-jackson:
-  property-naming-strategy: "SNAKE_CASE"
 
 filter:
   server:
@@ -33,67 +23,6 @@ filter:
       oauth-filter: 701
       oauth-key-filter: 700
 
-logging:
-  mdc:
-    enabled: true
-    keys:
-      - profile_id
-      - x-api-id
-
-  # resilience4j filter is not required but configuration is needed since elastic search code internally implements resilience
-resilience4j:
-  filter: false
-  circuit-breaker:
-    failure-rate-threshold: 50                        # failure rate threshold in percentage (default: 50)
-    wait-duration-secs-in-open-state: 10              # time cb waits before transitioning from open to half-open (default: 60s)
-    sliding-window-type: TIME_BASED                   # possible values TIME_BASED or COUNT_BASED (default: COUNT_BASED)
-    sliding-window-size: 100                          # seconds for TIME_BASED, request-count for COUNT_BASED (default: 100)
-    minimum-number-of-calls: 10                       # min calls required (per sliding window period) before cb calculates error rate (default: 10)
-    permitted-number-of-calls-in-half-open-state: 10  # min calls permitted when circuit breaker is half open
-
-backends:
-  primary:
-    circuit-breaker:
-      enabled: true
-      failure-rate-threshold: 50            # failure rate threshold in percentage
-      wait-duration-secs-in-open-state: 1   # time cb waits before transitioning from open to half-open
-      sliding-window-type: TIME_BASED       # possible values TIME_BASED or COUNT_BASED
-      sliding-window-size: 5                # seconds for TIME_BASED, request-count for COUNT_BASED
-      minimum-number-of-calls: 2            # min calls required (per sliding window period) before cb calculates error rate.
-      permitted-number-of-calls-in-half-open-state: 1 # Number of permitted calls when the CircuitBreaker is half open.
-  backup:
-    circuit-breaker:
-      enabled: true
-      failure-rate-threshold: 50            # failure rate threshold in percentage
-      wait-duration-secs-in-open-state: 1   # time cb waits before transitioning from open to half-open
-      sliding-window-type: TIME_BASED       # possible values TIME_BASED or COUNT_BASED
-      sliding-window-size: 5                # seconds for TIME_BASED, request-count for COUNT_BASED
-      minimum-number-of-calls: 2            # min calls required (per sliding window period) before cb calculates error rate.
-      permitted-number-of-calls-in-half-open-state: 1 # Number of permitted calls when the CircuitBreaker is half open.
-
-tracing:
-  zipkin:
-    enabled: false
-    excluded-paths: /health
-    b3-propagation-suppress: true
-    sample-rate-percent: 0.5
-    http:
-      url: "https://zipkinserver.dev.target.com"
-      messageMaxBytes: 50000
-    app:
-      name: backpackelasticsearch
-      env: stage
-      region: tdc
-
-components:
-  server:
-    list-authorization-filter:
-      enabled: false
-    sanitizing-filter:
-      enabled: false
-    registry-channel-subchannel-filter:
-      enabled: false
-
 msgbus:
   source: backpackelasticsearch
   dlq-source: backpackelasticsearch-dlq
@@ -102,10 +31,12 @@ msgbus:
       enabled: true
     producer:
       enabled: true
+      client-id: backpack-elasticsearch-msg-bus-producer
     dlqconsumer:
       enabled: true
     dlqproducer:
       enabled: true
+      client-id: backpack-elasticsearch-dlq-producer
     topic: registry-internal-data-bus-stage
     consumer-group: backpack-elasticsearch-data-bus-stage-consumer
     consumer-batch-size: 10
@@ -115,12 +46,31 @@ msgbus:
     dlq-max-event-retry-count: 2
     dlq-consumer-batch-size: 10
 
-endpoints:
-  health:
-    enabled: true
-    sensitive: false
-    elasticsearch:
-      rest.high.level.enabled: false # disable default elastic health indicator and use custom indicator instead
+kafka:
+  bootstrap:
+    servers: ${kafkaenv.servers}
+  ssl:
+    endpoint.identification.algorithm: ""# disable karka broker cert's hostname verification
+    keystore:
+      location: /lists-bus-keystore.jks
+      password: ${kafka-secret.keystore-password}
+    truststore:
+      location: /client-truststore.jks
+      password: ${kafka-secret.truststore-password}
+      type: PKCS12
+  security:
+    protocol: ssl
+  consumers:
+    backpack-elasticsearch-msg-bus-stage-consumer:
+      key:
+        deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value:
+        deserializer: org.apache.kafka.common.serialization.ByteArrayDeserializer
+    backpack-elasticsearch-dlq-stage-consumer:
+      key:
+        deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value:
+        deserializer: org.apache.kafka.common.serialization.ByteArrayDeserializer
 
 kafka-sources:
   allow:

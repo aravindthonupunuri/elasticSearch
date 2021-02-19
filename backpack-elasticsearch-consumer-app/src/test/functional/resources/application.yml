@@ -113,10 +113,12 @@ msgbus:
       enabled: true
     producer:
       enabled: true
+      client-id: backpack-elasticsearch-msg-bus-producer
     dlqconsumer:
       enabled: true
     dlqproducer:
       enabled: true
+      client-id: backpack-elasticsearch-dlq-producer
     topic: registry-internal-data-bus-stage
     consumer-group: backpack-elasticsearch-data-bus-consumer
     consumer-batch-size: 10

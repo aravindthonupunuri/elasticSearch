@@ -11,7 +11,7 @@ import com.tgt.backpackregistryclient.util.RegistryType
 import io.micronaut.http.HttpRequest
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.HttpStatus
-import io.micronaut.test.annotation.MicronautTest
+import io.micronaut.test.extensions.spock.annotation.MicronautTest
 import spock.lang.Stepwise
 import spock.lang.Unroll
 

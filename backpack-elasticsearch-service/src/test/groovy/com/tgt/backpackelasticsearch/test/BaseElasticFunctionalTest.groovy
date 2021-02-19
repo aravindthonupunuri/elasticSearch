@@ -1,6 +1,6 @@
 package com.tgt.backpackelasticsearch.test
 
-import com.tgt.backpackelasticsearch.transport.RegistryData
+
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import io.micronaut.http.HttpRequest

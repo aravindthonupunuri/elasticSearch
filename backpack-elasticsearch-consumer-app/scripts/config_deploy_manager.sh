@@ -71,7 +71,8 @@ app_private_key="$app_private_key_file" tap_api_token="$tap_api_token" $scriptDi
 
 #### Configuration deployment section ####
 
-# deploy application.yml
+# append app.yml from service folder to the main app.yml and deploy application.yml
+cat "$service_resources_location"/application-${envname}.yml >> "$resources_location"/application-${envname}.yml
 app_private_key="$app_private_key_file" tap_api_token="$tap_api_token" $scriptDir/deploy_tap_config.sh "$envname" configs "$resources_location"/application-${envname}.yml false
 
 # deploy log4j2.properties
@@ -79,8 +80,8 @@ app_private_key="$app_private_key_file" tap_api_token="$tap_api_token" $scriptDi
 
 # deploy Base64 encoded application-env-<region> files
 if [ -f "$resources_location"/application-env-ttc-${envname}.yml ]; then
-    app_private_key="$app_private_key_file" tap_api_token="$tap_api_token" $scriptDir/deploy_tap_config.sh "$envname" configs "$resources_location"/application-env-ttc-${envname}.yml true
+    app_private_key="$app_private_key_file" tap_api_token="$tap_api_token" $scriptDir/deploy_tap_config.sh "$envname" configs "$resources_location"/application-env-ttc-${envname}.yml false
 fi
 if [ -f "$resources_location"/application-env-tte-${envname}.yml ]; then
-    app_private_key="$app_private_key_file" tap_api_token="$tap_api_token" $scriptDir/deploy_tap_config.sh "$envname" configs "$resources_location"/application-env-tte-${envname}.yml true
+    app_private_key="$app_private_key_file" tap_api_token="$tap_api_token" $scriptDir/deploy_tap_config.sh "$envname" configs "$resources_location"/application-env-tte-${envname}.yml false
 fi

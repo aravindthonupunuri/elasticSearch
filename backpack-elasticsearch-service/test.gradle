@@ -32,11 +32,13 @@ test {
 }
 
 test {
+    environment "container", "true" // simulate TAP container
     useJUnitPlatform()
     dependsOn testUnit
 }
 
 testUnit {
+    environment "container", "true" // simulate TAP container
     useJUnitPlatform()
 }
 

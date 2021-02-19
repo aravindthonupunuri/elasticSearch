@@ -11,6 +11,7 @@ gitorg=Registry-Modernization
 gitrepo=backpack-elasticsearch
 resources_location=$scriptDir/../src/main/resources
 secret_resources_location=$resources_location/secrets
+service_resources_location=${scriptDir}/../../backpack-elasticsearch-service/src/main/resources
 data_folder=${scriptDir}/../../data
 
 DEV_ENVIRONMENT="dev"

@@ -96,7 +96,7 @@ encrypted_random_sym_key=`openssl rsautl -encrypt -inkey $pubkey_file -pubin -in
 # append encrypted_random_sym_key to output file
 echo " "
 log_msg "Appending random symmetric key to output file: $encrypted_data_outfile"
-echo " $encrypted_random_sym_key" >> $encrypted_data_outfile
+echo -n " $encrypted_random_sym_key" >> $encrypted_data_outfile
 
 # delete unencrypted  random private key file
 echo " "

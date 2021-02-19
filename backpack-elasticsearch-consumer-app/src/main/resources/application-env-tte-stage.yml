@@ -1,1 +1,2 @@
-a2Fma2FlbnY6CiAgc2VydmVyczoga2Fma2EtdHRlLWFwcC5kZXYudGFyZ2V0LmNvbTo5MDkzCmNhcnQ6CiAgY2xpZW50OgogICAgZ2NwLWxiLWhlYWRlcjogZWdnb19ncmFwZW51dHM=
+kafkaenv:
+  servers: kafka-tte-app.dev.target.com:9093

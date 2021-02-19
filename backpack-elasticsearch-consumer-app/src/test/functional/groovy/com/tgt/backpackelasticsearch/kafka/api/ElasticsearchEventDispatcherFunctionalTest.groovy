@@ -15,7 +15,7 @@ import com.tgt.lists.msgbus.ListsMessageBusProducer
 import com.tgt.lists.msgbus.event.EventHeaders
 import com.tgt.lists.msgbus.event.EventLifecycleNotificationProvider
 import io.micronaut.http.HttpStatus
-import io.micronaut.test.annotation.MicronautTest
+import io.micronaut.test.extensions.spock.annotation.MicronautTest
 import io.opentracing.Tracer
 import org.jetbrains.annotations.NotNull
 import spock.lang.Shared

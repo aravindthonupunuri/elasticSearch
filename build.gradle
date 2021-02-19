@@ -4,7 +4,7 @@ buildscript {
         maven { url "https://binrepo.target.com/artifactory/platform" }
     }
     dependencies {
-        classpath "com.target.platform:platform-connector-gradle:2.0.8"
+        classpath "com.target.platform:platform-connector-gradle:${tapPlatformConnectorVersion}"
     }
 }
 
@@ -34,6 +34,7 @@ allprojects {
         maven { url "https://jcenter.bintray.com" }
         maven { url 'https://repo.spring.io/milestone' }
         maven { url "https://packages.confluent.io/maven/" }
+        maven { url "https://binrepo.target.com/artifactory/TargetOSS" }
         maven { url "https://binrepo.target.com/artifactory/lists-v4" }
         maven { url "https://binrepo.target.com/artifactory/platform" }
         mavenLocal()
@@ -64,7 +65,7 @@ allprojects {
 
         implementation "io.micronaut.elasticsearch:micronaut-elasticsearch"
 
-        implementation "com.tgt.lists:lists-permissions-client:2.201.11"
+        implementation "com.tgt.lists:lists-permissions-client:2.231.0"
         implementation("com.tgt.backpackregistry:backpack-registry-client:2.201.108") {
             exclude group: 'com.tgt.lists', module: 'lists-components'
         }
@@ -72,21 +73,21 @@ allprojects {
             exclude group: 'com.tgt.lists', module: 'lists-components'
             exclude group: 'com.tgt.lists', module: 'atlas-client'
         }
-        implementation("com.tgt.lists:lists-components:2.201.15") {
+        implementation("com.tgt.lists:lists-components:2.231.2") {
             exclude group: 'com.tgt.lists.micronaut', module: 'micronaut-resilience4j'
         }
-        implementation("com.tgt.lists:atlas-client:2.201.69")
 
-        implementation "com.tgt.lists:lists-oauth:2.201.0"
-        implementation "com.tgt.lists.micronaut:micronaut-zipkin:2.201.0"
-        implementation "com.tgt.lists:lists-message-bus:2.201.1"
-        implementation "com.tgt.lists:lists-logging:2.201.0"
-        implementation "com.tgt.lists:platform-connector-micronaut:2.0.8.1"
+        implementation "com.tgt.lists:lists-oauth:2.231.0"
+        implementation "com.tgt.lists.micronaut:micronaut-zipkin:2.231.0"
+        implementation "com.tgt.lists:lists-message-bus:2.231.1"
+        implementation "com.tgt.lists:atlas-client:2.231.1"
+        implementation "com.tgt.lists:lists-logging:2.231.0"
+        implementation "com.target.oss:platform-connector-micronaut:${micronautTapPlatformConnectorVersion}"
         implementation "io.swagger.core.v3:swagger-annotations"
-        implementation "com.tgt.lists.micronaut:micronaut-metrics:2.201.0"
+        implementation "com.tgt.lists.micronaut:micronaut-metrics:2.231.0"
         implementation "io.micronaut.kotlin:micronaut-kotlin-runtime"
         implementation "io.micronaut:micronaut-runtime"
-        implementation "com.tgt.lists.micronaut:micronaut-elastic:2.201.0"
+        implementation "com.tgt.lists.micronaut:micronaut-elastic:2.231.0"
 
         kapt "io.micronaut.configuration:micronaut-openapi:1.5.0"
         kapt platform("io.micronaut:micronaut-bom:$micronautVersion")
@@ -95,8 +96,8 @@ allprojects {
         kaptTest platform("io.micronaut:micronaut-bom:$micronautVersion")
         kaptTest "io.micronaut:micronaut-inject-java"
 
-        runtime "com.fasterxml.jackson.core:jackson-databind:2.10.4"
-        runtime "com.fasterxml.jackson.module:jackson-module-kotlin:2.10.4"
+        runtime "com.fasterxml.jackson.core:jackson-databind:2.11.2"
+        implementation "com.fasterxml.jackson.module:jackson-module-kotlin:2.11.2"
 
         testImplementation platform("io.micronaut:micronaut-bom:$micronautVersion")
         testImplementation "io.micronaut:micronaut-inject-groovy:$micronautVersion"
@@ -106,7 +107,7 @@ allprojects {
         testImplementation "org.codehaus.groovy:groovy-json:3.0.5"
         testImplementation "io.micronaut.test:micronaut-test-spock"
         testImplementation "com.tgt.swaggerlib:swagger-sync:1.210.18"
-        testImplementation "com.tgt.lists.micronaut:micronaut-test:2.201.0"
+        testImplementation "com.tgt.lists.micronaut:micronaut-test:2.231.0"
         testImplementation("org.objenesis:objenesis:2.6")
         testImplementation 'io.micronaut.micrometer:micronaut-micrometer-registry-prometheus'
         testImplementation "org.testcontainers:spock:1.12.2"
@@ -118,6 +119,7 @@ allprojects {
 
     configurations.all {
         exclude group: "ch.qos.logback"
+        exclude group: 'com.tgt.lists', 'module': 'platform-connector-micronaut'
     }
 
     jar {

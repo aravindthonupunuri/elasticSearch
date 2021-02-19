@@ -13,6 +13,7 @@ import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.MockClock
 import io.micrometer.core.instrument.simple.SimpleConfig
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry
+import io.micronaut.context.annotation.Value
 import io.micronaut.http.client.RxHttpClient
 import io.micronaut.http.client.annotation.Client
 import io.micronaut.test.support.TestPropertyProvider
@@ -61,7 +62,7 @@ class BaseFunctionalTest extends Specification implements TestPropertyProvider {
 
     ListsMessageBusProducer newMockMsgbusKafkaProducerClient(EventLifecycleNotificationProvider eventNotificationsProvider) {
         MeterRegistry meterRegistry = new SimpleMeterRegistry(SimpleConfig.DEFAULT, new MockClock());
-        EventHeaderFactory eventHeaderFactory = new EventHeaderFactory(2, 5)
+        EventHeaderFactory eventHeaderFactory = new EventHeaderFactory(2, 5, "backpackelasticsearch-dlq")
         return new ListsMessageBusProducer("dummySrc", "dummyTopic", eventHeaderFactory, new MsgbusKafkaProducerClient() {
             @Override
             Mono<RecordMetadata> sendEvent(Object partitionKey, @NotNull Mono data, @NotNull byte[] eventId, @NotNull byte[] eventType,

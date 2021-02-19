@@ -12,7 +12,7 @@ import io.micronaut.http.HttpResponse
 import io.micronaut.http.HttpStatus
 import io.micronaut.http.client.exceptions.HttpClientResponseException
 import com.tgt.backpackregistryclient.util.RegistrySearchVisibility
-import io.micronaut.test.annotation.MicronautTest
+import io.micronaut.test.extensions.spock.annotation.MicronautTest
 import spock.lang.Stepwise
 import spock.lang.Unroll
 
