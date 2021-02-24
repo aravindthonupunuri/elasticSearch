@@ -74,5 +74,5 @@ kafka:
 
 kafka-sources:
   allow:
-    - backpack-registry
+    - backpack-registry-stage
     - backpackelasticsearch
