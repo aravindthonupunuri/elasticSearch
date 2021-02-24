@@ -31,17 +31,17 @@ msgbus:
       enabled: true
     producer:
       enabled: true
-      client-id: backpack-elasticsearch-msg-bus-producer
+      client-id: backpack-elasticsearch-consumer-data-bus-stage-producer
     dlqconsumer:
       enabled: true
     dlqproducer:
       enabled: true
-      client-id: backpack-elasticsearch-dlq-producer
+      client-id: backpack-elasticsearch-consumer-data-bus-stage-dlq-producer
     topic: registry-internal-data-bus-stage
     consumer-group: backpack-elasticsearch-data-bus-stage-consumer
     consumer-batch-size: 10
     dlq-topic: registry-internal-data-bus-stage-dlq
-    dlq-consumer-group: backpack-elasticsearch-data-bus-dlq-stage-consumer
+    dlq-consumer-group: backpack-elasticsearch-data-bus-stage-dlq-consumer
     dlq-event-retry-interval-secs: 1
     dlq-max-event-retry-count: 2
     dlq-consumer-batch-size: 10
@@ -61,12 +61,12 @@ kafka:
   security:
     protocol: ssl
   consumers:
-    backpack-elasticsearch-msg-bus-stage-consumer:
+    backpack-elasticsearch-data-bus-stage-consumer:
       key:
         deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value:
         deserializer: org.apache.kafka.common.serialization.ByteArrayDeserializer
-    backpack-elasticsearch-dlq-stage-consumer:
+    backpack-elasticsearch-data-bus-stage-dlq-consumer:
       key:
         deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value:

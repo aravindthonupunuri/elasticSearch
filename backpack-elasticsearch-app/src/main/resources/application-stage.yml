@@ -46,17 +46,17 @@ msgbus:
       enabled: false
     producer:
       enabled: false
-      client-id: backpack-elasticsearch-msg-bus-producer
+      client-id: backpack-elasticsearch-data-bus-stage-producer
     dlqconsumer:
       enabled: false
     dlqproducer:
       enabled: false
-      client-id: backpack-elasticsearch-dlq-producer
+      client-id: backpack-elasticsearch-data-bus-stage-dlq-producer
     topic: registry-internal-data-bus-stage
     consumer-group: backpack-elasticsearch-data-bus-stage-consumer
     consumer-batch-size: 10
     dlq-topic: registry-internal-data-bus-stage-dlq
-    dlq-consumer-group: backpack-elasticsearch-data-bus-dlq-stage-consumer
+    dlq-consumer-group: backpack-elasticsearch-data-bus-stage-dlq-consumer
     dlq-event-retry-interval-secs: 1
     dlq-max-event-retry-count: 2
     dlq-consumer-batch-size: 10

@@ -45,12 +45,12 @@ msgbus:
       enabled: false
     producer:
       enabled: false
-      client-id: backpack-elasticsearch-msg-bus-producer
+      client-id: backpack-elasticsearch-data-bus-dev-producer
     dlqconsumer:
       enabled: false
     dlqproducer:
       enabled: false
-      client-id: backpack-elasticsearch-dlq-producer
+      client-id: backpack-elasticsearch-data-bus-dev-dlq-producer
     topic: registry-internal-data-bus-dev
     consumer-group: backpack-elasticsearch-data-bus-dev-consumer
     consumer-batch-size: 10
