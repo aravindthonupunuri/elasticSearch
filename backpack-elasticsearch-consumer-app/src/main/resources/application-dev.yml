@@ -76,3 +76,5 @@ kafka-sources:
   allow:
     - backpack-registry
     - backpackelasticsearch
+    - backpackregistry-migration
+    - backpackregistry-migration-dlq
