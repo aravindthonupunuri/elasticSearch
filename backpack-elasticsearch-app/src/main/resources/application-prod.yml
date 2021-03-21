@@ -11,7 +11,7 @@ micronaut:
     services:
       permissions-api:
         urls:
-          - "https://listspermissions.dev.target.com"
+          - "https://listspermissions.dev.target.com" #TODO Need to check production list permissions endpoint
         connect-timeout: 300ms
         read-timeout: 300ms
         pool:
@@ -26,6 +26,7 @@ micronaut:
 filter:
   server:
     order:
+      mdc-filter: 50
       lists-brave-tracing-server-filter: 100
       list-authorization-filter: 200
       registry-channel-subchannel-filter: 400
@@ -43,16 +44,16 @@ msgbus:
       enabled: false
     producer:
       enabled: false
-      client-id: backpack-elasticsearch-data-bus-dev-producer
+      client-id: backpack-elasticsearch-data-bus-prod-producer
     dlqconsumer:
       enabled: false
     dlqproducer:
       enabled: false
-      client-id: backpack-elasticsearch-data-bus-dev-dlq-producer
+      client-id: backpack-elasticsearch-data-bus-prod-dlq-producer
 
 kafka:
   bootstrap:
-    servers: kafka-ttc-app.dev.target.com:9093
+    servers: ${kafkaenv.servers}
   ssl:
     endpoint.identification.algorithm: ""# disable karka broker cert's hostname verification
     keystore:

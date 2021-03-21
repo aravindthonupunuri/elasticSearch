@@ -1,0 +1,6 @@
+kafkaenv:
+  servers: kafka-ttc-app.prod.target.com:9093
+
+elastic-env:
+  primary: https://backpack-registry-prod-ttc-elasticsearch.target.com
+  backup: https://backpack-registry-prod-ttce-elasticsearch.target.com

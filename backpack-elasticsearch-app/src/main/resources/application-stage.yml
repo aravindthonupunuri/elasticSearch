@@ -39,8 +39,6 @@ filter:
       oauth-key-filter: 700
 
 msgbus:
-  source: backpackelasticsearch
-  dlq-source: backpackelasticsearch-dlq
   kafka:
     consumer:
       enabled: false
@@ -52,14 +50,6 @@ msgbus:
     dlqproducer:
       enabled: false
       client-id: backpack-elasticsearch-data-bus-stage-dlq-producer
-    topic: registry-internal-data-bus-stage
-    consumer-group: backpack-elasticsearch-data-bus-stage-consumer
-    consumer-batch-size: 10
-    dlq-topic: registry-internal-data-bus-stage-dlq
-    dlq-consumer-group: backpack-elasticsearch-data-bus-stage-dlq-consumer
-    dlq-event-retry-interval-secs: 1
-    dlq-max-event-retry-count: 2
-    dlq-consumer-batch-size: 10
 
 kafka:
   bootstrap:

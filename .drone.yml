@@ -61,6 +61,22 @@ pipeline:
       - 'tap_api_token=$TAP_API_TOKEN app_private_key=$BACKPACK_ELASTICSEARCH_APP_PRIVATE_KEY_STAGE ./backpack-elasticsearch-app/scripts/config_deploy_manager.sh ${DRONE_TAG}'
       - 'tap_api_token=$TAP_API_TOKEN app_private_key=$BACKPACK_ELASTICSEARCH_CONSUMER_APP_PRIVATE_KEY_STAGE ./backpack-elasticsearch-consumer-app/scripts/config_deploy_manager.sh ${DRONE_TAG}'
 
+  publish-config-backpack-elasticsearch-prod:
+    when:
+      event: tag
+      ref: 'refs/tags/conf.prod.backpackelasticsearch.*'
+      branch: master
+    image: 'docker.target.com/app/lists/alpine-bash-curl-ssl:1.0.5'
+    environment:
+      CICD_MODE: 'true'
+    secrets:
+      - TAP_API_TOKEN
+      - backpack_elasticsearch_app_private_key_prod
+      - backpack_elasticsearch_consumer_app_private_key_prod
+    commands:
+      - 'tap_api_token=$TAP_API_TOKEN app_private_key=$BACKPACK_ELASTICSEARCH_APP_PRIVATE_KEY_PROD ./backpack-elasticsearch-app/scripts/config_deploy_manager.sh ${DRONE_TAG}'
+      - 'tap_api_token=$TAP_API_TOKEN app_private_key=$BACKPACK_ELASTICSEARCH_CONSUMER_APP_PRIVATE_KEY_PROD ./backpack-elasticsearch-consumer-app/scripts/config_deploy_manager.sh ${DRONE_TAG}'
+
   build:
     when:
       event: [pull_request, push, tag]
@@ -126,6 +142,21 @@ pipeline:
       - {source: artifactory_username, target: plugin_username}
       - {source: artifactory_password, target: plugin_password}
 
+  publish-docker-backpack-elasticsearch-app-prod:
+    image: 'plugins/docker:latest'
+    group: prodimggroup
+    registry: docker.target.com
+    repo: docker.target.com/app/backpack-elasticsearch/backpack-elasticsearch-app
+    dockerfile: ./backpack-elasticsearch-app/Dockerfile
+    tags: 'prod.${DRONE_TAG:32}'
+    when:
+      event: tag
+      branch: master
+      ref: 'refs/tags/conf.prod.backpackelasticsearch.*'
+    secrets:
+      - { source: artifactory_username, target: plugin_username }
+      - { source: artifactory_password, target: plugin_password }
+
   publish-docker-backpack-elasticsearch-consumer-app-dev:
     image: plugins/docker
     environment:
@@ -161,6 +192,23 @@ pipeline:
       - {source: artifactory_username, target: plugin_username}
       - {source: artifactory_password, target: plugin_password}
 
+  publish-docker-backpack-elasticsearch-consumer-app-prod:
+    image: 'plugins/docker:latest'
+    environment:
+      CICD_MODE: 'true'
+    group: prodimggroup
+    registry: docker.target.com
+    repo: docker.target.com/app/backpack-elasticsearch/backpack-elasticsearch-consumer-app
+    dockerfile: ./backpack-elasticsearch-consumer-app/Dockerfile
+    tags: 'prod.${DRONE_TAG:32}'
+    when:
+      event: tag
+      branch: master
+      ref: 'refs/tags/conf.prod.backpackelasticsearch.*'
+    secrets:
+      - { source: artifactory_username, target: plugin_username }
+      - { source: artifactory_password, target: plugin_password }
+
 secrets:
   cache_s3_server:
     path: secret/shared/drone/prod-secrets/cache_s3_server
@@ -174,7 +222,11 @@ secrets:
     path: secret/repo/Registry-Modernization/backpack-elasticsearch/backpackelasticsearch-privkey-dev
   backpack_elasticsearch_app_private_key_stage:
     path: secret/repo/Registry-Modernization/backpack-elasticsearch/backpackelasticsearch-privkey-stage
+  backpack_elasticsearch_app_private_key_prod:
+    path: secret/repo/Registry-Modernization/backpack-elasticsearch/backpackelasticsearch-privkey-prod
   backpack_elasticsearch_consumer_app_private_key_dev:
     path: secret/repo/Registry-Modernization/backpack-elasticsearch/backpackelasticsearchconsumer-privkey-dev
   backpack_elasticsearch_consumer_app_private_key_stage:
     path: secret/repo/Registry-Modernization/backpack-elasticsearch/backpackelasticsearchconsumer-privkey-stage
+  backpack_elasticsearch_consumer_app_private_key_prod:
+    path: secret/repo/Registry-Modernization/backpack-elasticsearch/backpackelasticsearchconsumer-privkey-prod

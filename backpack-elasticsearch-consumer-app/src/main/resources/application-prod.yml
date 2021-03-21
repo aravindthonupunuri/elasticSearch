@@ -24,24 +24,24 @@ filter:
       oauth-key-filter: 700
 
 msgbus:
-  source: backpackelasticsearch-stage
-  dlq-source: backpackelasticsearch-dlq-stage
+  source: backpackelasticsearch-consumer-prod
+  dlq-source: backpackelasticsearch-consumer-dlq-prod
   kafka:
     consumer:
       enabled: true
     producer:
       enabled: true
-      client-id: backpack-elasticsearch-consumer-data-bus-stage-producer
+      client-id: backpack-elasticsearch-consumer-data-bus-prod-producer
     dlqconsumer:
       enabled: true
     dlqproducer:
       enabled: true
-      client-id: backpack-elasticsearch-consumer-data-bus-stage-dlq-producer
-    topic: registry-internal-data-bus-stage
-    consumer-group: backpack-elasticsearch-data-bus-stage-consumer
+      client-id: backpack-elasticsearch-consumer-data-bus-prod-dlq-producer
+    topic: registry-internal-data-bus-prod
+    consumer-group: backpack-elasticsearch-data-bus-prod-consumer
     consumer-batch-size: 50
-    dlq-topic: registry-internal-data-bus-stage-dlq
-    dlq-consumer-group: backpack-elasticsearch-data-bus-stage-dlq-consumer
+    dlq-topic: registry-internal-data-bus-prod-dlq
+    dlq-consumer-group: backpack-elasticsearch-data-bus-prod-dlq-consumer
     dlq-event-retry-interval-secs: 1
     dlq-max-event-retry-count: 2
     dlq-consumer-batch-size: 10
@@ -61,12 +61,12 @@ kafka:
   security:
     protocol: ssl
   consumers:
-    backpack-elasticsearch-data-bus-stage-consumer:
+    backpack-elasticsearch-data-bus-prod-consumer:
       key:
         deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value:
         deserializer: org.apache.kafka.common.serialization.ByteArrayDeserializer
-    backpack-elasticsearch-data-bus-stage-dlq-consumer:
+    backpack-elasticsearch-data-bus-prod-dlq-consumer:
       key:
         deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value:
@@ -74,7 +74,6 @@ kafka:
 
 kafka-sources:
   allow:
-    - backpack-registry-stage
-    - backpackelasticsearch-stage
-    - backpackelasticsearch-dlq-stage
-    - backpackregistry-migration-stage
+    - backpack-registry-prod
+    - backpackelasticsearch-consumer-dlq-prod
+    - backpackregistry-migration-prod

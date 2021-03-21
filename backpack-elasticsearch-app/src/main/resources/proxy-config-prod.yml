@@ -1,0 +1,43 @@
+version: 2
+server:
+  listen_address: localhost:8080
+environment: prod
+health:
+  proxy:
+   enabled: true
+   path: /proxyhealth
+api_name: backpack_elasticsearch-v1
+metrics:
+  push: true
+handlers:
+  key_validation:
+    environment: PROD
+  cors:
+    whitelist:
+      - https://editor.swagger.io
+    allow_any_target_domain: true
+    allow_credentials: true
+    allow_any_origin: true
+    allowed_headers:
+      - authorization
+      - member_id
+      - profile_id
+      - X-AUTH-NAME
+      - X-AUTH-ID
+      - X-API-KEY
+      - key
+      - Origin
+      - Content-Type
+      - accept
+      - accept-encoding
+      - accept-language
+      - origin
+      - referer
+      - sec-ch-ua
+      - sec-ch-ua-mobile
+      - sec-fetch-dest
+      - sec-fetch-mode
+      - sec-fetch-site
+      - user-agent
+      - cache-control
+      - pragma
