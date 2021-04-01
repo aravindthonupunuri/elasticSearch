@@ -75,5 +75,5 @@ kafka:
 kafka-sources:
   allow:
     - backpack-registry-prod
-    - backpackelasticsearch-consumer-dlq-prod
+    - backpackelasticsearch-prod
     - backpackregistry-migration-prod

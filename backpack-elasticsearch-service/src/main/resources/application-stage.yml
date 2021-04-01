@@ -101,8 +101,8 @@ esaas:
   nuidPassword: ${esaas.nuidPassword}
   use-fallback: true
   primary:
-    httpHosts: https://backpack-registry-stage-ttc-elasticsearch.target.com
+    httpHosts: https://dbaasprod-el-cbackpack-dev-1615965070660.dev.target.com
   backup:
-    httpHosts: https://backpack-registry-stage-ttce-elasticsearch.target.com
+    httpHosts: https://dbaasprod-el-ebackpack-dev-1615873822223.dev.target.com
   health:
     enabled: true # enable custom health indicator with two elastic clients
