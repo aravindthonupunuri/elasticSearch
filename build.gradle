@@ -79,7 +79,7 @@ allprojects {
 
         implementation "com.tgt.lists:lists-oauth:2.231.0"
         implementation "com.tgt.lists.micronaut:micronaut-zipkin:2.231.0"
-        implementation "com.tgt.lists:lists-message-bus:2.231.1"
+        implementation "com.tgt.lists:lists-message-bus:2.231.2"
         implementation "com.tgt.lists:atlas-client:2.231.1"
         implementation "com.tgt.lists:lists-logging:2.231.0"
         implementation "com.target.oss:platform-connector-micronaut:${micronautTapPlatformConnectorVersion}"
