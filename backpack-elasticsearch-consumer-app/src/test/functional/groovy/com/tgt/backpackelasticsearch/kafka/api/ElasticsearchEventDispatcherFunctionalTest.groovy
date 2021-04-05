@@ -76,8 +76,8 @@ class ElasticsearchEventDispatcherFunctionalTest extends BaseKafkaFunctionalTest
             new RegistryEventTO("Minneapolis", "Minnesota", "USA", LocalDate.now()), null, null, null, null, "organizationName", null, RegistrySearchVisibility.PUBLIC)
 
         def createRegistryEvent = new CreateListNotifyEvent(guestId, registryId, "REGISTRY", RegistryType.WEDDING.name(), "List title 1",
-            RegistryChannel.WEB.name(), RegistrySubChannel.TGTWEB.name(), LIST_STATE.ACTIVE, registryMetaData, LocalDate.now(),
-            null, null, null, null, null)
+            RegistryChannel.WEB.name(), RegistrySubChannel.TGTWEB.name(), "3991", null, null, LIST_STATE.ACTIVE, registryMetaData, LocalDate.now(),
+            null, null, null, null, null, null)
 
         testEventListener.preDispatchLambda = new PreDispatchLambda() {
             @Override
@@ -135,8 +135,8 @@ class ElasticsearchEventDispatcherFunctionalTest extends BaseKafkaFunctionalTest
                 null, null, "organizationName", null, RegistrySearchVisibility.PUBLIC)
 
         def updateRegistryEvent = new UpdateListNotifyEvent(guestId, registryId, "REGISTRY", RegistryType.WEDDING.name(), "List title - updated",
-                RegistryChannel.WEB.name(), RegistrySubChannel.TGTWEB.name(), LIST_STATE.ACTIVE, registryMetaData, LocalDate.now(),
-                "updated description", null, null, null, null)
+            RegistryChannel.WEB.name(), RegistrySubChannel.TGTWEB.name(), "3991", null, null, LIST_STATE.ACTIVE, registryMetaData, LocalDate.now(),
+            "updated description", null, null, null, null, null)
 
         testEventListener.preDispatchLambda = new PreDispatchLambda() {
             @Override
@@ -186,7 +186,9 @@ class ElasticsearchEventDispatcherFunctionalTest extends BaseKafkaFunctionalTest
     }
 
     def "Guest deletes registry - Consumer kicks in to consume the event and deletes registry data from elastic search"() {
-        def deleteRegistryEvent = new DeleteListNotifyEvent(guestId, registryId, "REGISTRY", "Testing Registry Event", null, null)
+        def deleteRegistryEvent = new DeleteListNotifyEvent(guestId, registryId, "REGISTRY", null, "List title - updated", null,
+            null, null, null, null, null, null, null, null,
+            null, null, null, null, null)
 
         testEventListener.preDispatchLambda = new PreDispatchLambda() {
             @Override
