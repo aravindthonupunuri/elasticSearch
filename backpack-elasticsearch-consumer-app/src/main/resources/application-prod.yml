@@ -30,7 +30,7 @@ msgbus:
     consumer:
       enabled: true
     producer:
-      enabled: true
+      enabled: false
       client-id: backpack-elasticsearch-consumer-data-bus-prod-producer
     dlqconsumer:
       enabled: true
@@ -71,6 +71,27 @@ kafka:
         deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value:
         deserializer: org.apache.kafka.common.serialization.ByteArrayDeserializer
+  producers:
+    backpack-elasticsearch-consumer-data-bus-prod-dlq-producer:
+      key:
+        serializer: org.apache.kafka.common.serialization.StringSerializer
+      value:
+        serializer: com.tgt.lists.msgbus.ListsJsonSerde
+      compression:
+        type: zstd
+
+      retries: 3
+      retry:
+        backoff:
+          ms: 1000
+      max:
+        in:
+          flight:
+            requests:
+              per:
+                connection: 1
+        block:
+          ms: 2000
 
 kafka-sources:
   allow:

@@ -5,6 +5,8 @@ micronaut:
     host: ${backpack-elasticsearch-app-host:localhost}
     port: 8081
     idle-timeout: 2000ms
+    netty:
+      max-header-size: 16384 # Handling RequestTooLarge headers - Default value (8192)
   http:
     services:
       permissions-api:
@@ -142,17 +144,4 @@ components:
       enabled: false
     registry-channel-subchannel-filter:
       base-uri: /registries_searches/v1
-
-msgbus:
-  source: backpackelasticsearch
-  dlq-source: backpackelasticsearch-dlq
-  kafka:
-    consumer:
-      enabled: false
-    producer:
-      enabled: false
-    dlqconsumer:
-      enabled: false
-    dlqproducer:
-      enabled: false
 

@@ -148,8 +148,14 @@ kafka:
       value:
         deserializer: org.apache.kafka.common.serialization.ByteArrayDeserializer
   producers:
-    # default is a Jackson based JSON serializer for key/value
-    backpack-elasticsearch-data-bus-producer:
+    backpack-elasticsearch-data-bus-dlq-producer:
+      key:
+        serializer: org.apache.kafka.common.serialization.StringSerializer
+      value:
+        serializer: com.tgt.lists.msgbus.ListsJsonSerde
+      compression:
+        type: zstd
+
       retries: 3
       retry:
         backoff:
@@ -162,7 +168,6 @@ kafka:
                 connection: 1
         block:
           ms: 2000
-
 msgbus:
   source: backpackelasticsearch
   dlq-source: backpackelasticsearch-dlq
@@ -170,7 +175,7 @@ msgbus:
     consumer:
       enabled: true
     producer:
-      enabled: true
+      enabled: false
     dlqconsumer:
       enabled: true
     dlqproducer:

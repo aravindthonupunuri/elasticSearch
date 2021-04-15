@@ -5,6 +5,8 @@ micronaut:
     host: ${backpack-elasticsearch-app-host:localhost}
     port: 8081
     idle-timeout: 2000ms
+    netty:
+      max-header-size: 16384 # Handling RequestTooLarge headers - Default value (8192)
   http:
     client.connect-ttl: 30m
     client.pool.acquire-timeout: 2000ms
@@ -36,31 +38,3 @@ filter:
       resilience-client-filter: 800
       oauth-filter: 701
       oauth-key-filter: 700
-
-msgbus:
-  kafka:
-    consumer:
-      enabled: false
-    producer:
-      enabled: false
-      client-id: backpack-elasticsearch-data-bus-dev-producer
-    dlqconsumer:
-      enabled: false
-    dlqproducer:
-      enabled: false
-      client-id: backpack-elasticsearch-data-bus-dev-dlq-producer
-
-kafka:
-  bootstrap:
-    servers: kafka-ttc-app.dev.target.com:9093
-  ssl:
-    endpoint.identification.algorithm: ""# disable karka broker cert's hostname verification
-    keystore:
-      location: /lists-bus-keystore.jks
-      password: ${kafka-secret.keystore-password}
-    truststore:
-      location: /client-truststore.jks
-      password: ${kafka-secret.truststore-password}
-      type: PKCS12
-  security:
-    protocol: ssl

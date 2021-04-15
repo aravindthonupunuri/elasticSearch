@@ -93,7 +93,7 @@ class ElasticsearchEventDispatcherFunctionalTest extends BaseKafkaFunctionalTest
         }
 
         when:
-        listsMessageBusProducer.sendMessage(createRegistryEvent.getEventType(), createRegistryEvent, registryId ).block()
+        listsMessageBusProducer.sendMessage(createRegistryEvent.getEventType(), createRegistryEvent, registryId.toString()).block()
 
         then:
         testEventListener.verifyEvents {consumerEvents, producerEvents, consumerStatusEvents ->
@@ -152,7 +152,7 @@ class ElasticsearchEventDispatcherFunctionalTest extends BaseKafkaFunctionalTest
         }
 
         when:
-        listsMessageBusProducer.sendMessage(updateRegistryEvent.getEventType(), updateRegistryEvent, registryId).block()
+        listsMessageBusProducer.sendMessage(updateRegistryEvent.getEventType(), updateRegistryEvent, registryId.toString()).block()
 
         then:
         testEventListener.verifyEvents {consumerEvents, producerEvents, consumerStatusEvents ->
@@ -204,7 +204,7 @@ class ElasticsearchEventDispatcherFunctionalTest extends BaseKafkaFunctionalTest
         }
 
         when:
-        listsMessageBusProducer.sendMessage(deleteRegistryEvent.getEventType(), deleteRegistryEvent, registryId ).block()
+        listsMessageBusProducer.sendMessage(deleteRegistryEvent.getEventType(), deleteRegistryEvent, registryId.toString()).block()
 
         then:
         testEventListener.verifyEvents {consumerEvents, producerEvents, consumerStatusEvents ->
