@@ -82,8 +82,10 @@ app_private_key="$app_private_key_file" tap_api_token="$tap_api_token" $scriptDi
 
 # deploy Base64 encoded application-env-<region> files
 if [ -f "$resources_location"/application-env-ttc-${envname}.yml ]; then
+    cat "$service_resources_location"/application-env-ttc-${envname}.yml >> "$resources_location"/application-env-ttc-${envname}.yml
     app_private_key="$app_private_key_file" tap_api_token="$tap_api_token" $scriptDir/deploy_tap_config.sh "$envname" configs "$resources_location"/application-env-ttc-${envname}.yml false
 fi
 if [ -f "$resources_location"/application-env-tte-${envname}.yml ]; then
+    cat "$service_resources_location"/application-env-tte-${envname}.yml >> "$resources_location"/application-env-tte-${envname}.yml
     app_private_key="$app_private_key_file" tap_api_token="$tap_api_token" $scriptDir/deploy_tap_config.sh "$envname" configs "$resources_location"/application-env-tte-${envname}.yml false
 fi

@@ -1,0 +1,4 @@
+# service level datacenter specific placeholders
+elastic-env:
+  primary: https://backpack-registry-prod-ttce-elasticsearch.target.com
+  backup: https://backpack-registry-prod-ttc-elasticsearch.target.com

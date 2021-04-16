@@ -114,7 +114,7 @@ class GetRegistryService(
     private fun queryElastic(indexRequest: SearchRequest?): (RestHighLevelClient, ListenerArgs<SearchResponse>) -> Unit {
         return { client: RestHighLevelClient, listenerArgs: ListenerArgs<SearchResponse> ->
             client.searchAsync(indexRequest, RequestOptions.DEFAULT,
-                ElasticCallExecutor.listenerToSink(elasticCallExecutor, listenerArgs, "searchRegistry", "/$registryIndex/_doc"))
+                ElasticCallExecutor.listenerToSink(elasticCallExecutor, listenerArgs, "searchRegistry", "/$registryIndex/_doc", client))
         }
     }
 }

@@ -4,6 +4,7 @@ import com.tgt.swagger_sync.ApiSpec
 import com.tgt.swagger_sync.OpenApi3ExtParser
 import com.tgt.swagger_sync.OpenApi3Parser
 import com.tgt.swagger_sync.SpecComparator
+import com.tgt.swagger_sync.SpecVersionComparator
 import spock.lang.Specification
 
 class ApiSpecTest extends Specification {
@@ -34,5 +35,16 @@ class ApiSpecTest extends Specification {
 
         then:
         specComparator.match()
+    }
+
+    def "test spec version comparison with git master"() {
+        given:
+        SpecVersionComparator specVersionComparator = new SpecVersionComparator("backpack-elasticsearch-app", staticSpecRelativePath)
+
+        when:
+        def result = specVersionComparator.match()
+
+        then:
+        result
     }
 }

@@ -51,7 +51,7 @@ class UpdateRegistryService(
     private fun updateToElasticsearch(indexRequest: UpdateRequest?): (RestHighLevelClient, ListenerArgs<UpdateResponse>) -> Unit {
         return { client: RestHighLevelClient, listenerArgs: ListenerArgs<UpdateResponse> ->
             client.updateAsync(indexRequest, RequestOptions.DEFAULT,
-                ElasticCallExecutor.listenerToSink(elasticCallExecutor, listenerArgs, "updateRegistry", "/$registryIndex/_doc"))
+                ElasticCallExecutor.listenerToSink(elasticCallExecutor, listenerArgs, "updateRegistry", "/$registryIndex/_doc", client))
         }
     }
 }

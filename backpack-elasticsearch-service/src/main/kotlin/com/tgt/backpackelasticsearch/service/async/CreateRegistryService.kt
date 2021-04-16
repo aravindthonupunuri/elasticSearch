@@ -50,7 +50,7 @@ class CreateRegistryService(
     private fun saveToElasticsearch(indexRequest: IndexRequest?): (RestHighLevelClient, ListenerArgs<IndexResponse>) -> Unit {
         return { client: RestHighLevelClient, listenerArgs: ListenerArgs<IndexResponse> ->
             client.indexAsync(indexRequest, RequestOptions.DEFAULT,
-                ElasticCallExecutor.listenerToSink(elasticCallExecutor, listenerArgs, "saveRegistry", "/$registryIndex/_doc"))
+                ElasticCallExecutor.listenerToSink(elasticCallExecutor, listenerArgs, "saveRegistry", "/$registryIndex/_doc", client))
         }
     }
 }

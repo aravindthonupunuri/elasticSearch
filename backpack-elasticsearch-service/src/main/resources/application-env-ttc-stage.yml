@@ -1,0 +1,4 @@
+# service level datacenter specific placeholders
+elastic-env:
+  primary: https://dbaasprod-el-cbackpack-dev-1615965070660.dev.target.com
+  backup: https://dbaasprod-el-ebackpack-dev-1615873822223.dev.target.com

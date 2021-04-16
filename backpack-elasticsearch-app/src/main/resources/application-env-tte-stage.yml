@@ -1,2 +1,2 @@
-kafkaenv:
-  servers: kafka-tte-app.dev.target.com:9093
+# empty app specific properties, may get populated in future
+

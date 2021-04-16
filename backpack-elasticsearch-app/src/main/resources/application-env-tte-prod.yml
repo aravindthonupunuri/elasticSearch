@@ -1,6 +1,2 @@
-kafkaenv:
-  servers: kafka-tte-app.prod.target.com:9093
+# empty app specific properties, may get populated in future
 
-elastic-env:
-  primary: https://backpack-registry-prod-ttce-elasticsearch.target.com
-  backup: https://backpack-registry-prod-ttc-elasticsearch.target.com

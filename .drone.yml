@@ -88,6 +88,9 @@ pipeline:
       KAFKA_BOOTSTRAP_SERVERS: 'kafka:9092'
       ELASTIC_URL: http://elasticsearch:9200
     commands:
+      - mkdir -p masterspec
+      - git clone https://git.target.com/Registry-Modernization/backpack-elasticsearch --branch master --single-branch masterspec
+      - export GIT_MASTER_SPEC_PATH=`pwd`/masterspec
       - './gradlew build distTar'
 
   rebuild_cache:

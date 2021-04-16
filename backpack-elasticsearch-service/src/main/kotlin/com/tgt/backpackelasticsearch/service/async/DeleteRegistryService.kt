@@ -42,7 +42,7 @@ class DeleteRegistryService(
     private fun deleteFromElasticsearch(indexRequest: DeleteRequest?): (RestHighLevelClient, ListenerArgs<DeleteResponse>) -> Unit {
         return { client: RestHighLevelClient, listenerArgs: ListenerArgs<DeleteResponse> ->
             client.deleteAsync(indexRequest, RequestOptions.DEFAULT,
-                ElasticCallExecutor.listenerToSink(elasticCallExecutor, listenerArgs, "deleteRegistry", "/$registryIndex/_doc"))
+                ElasticCallExecutor.listenerToSink(elasticCallExecutor, listenerArgs, "deleteRegistry", "/$registryIndex/_doc", client))
         }
     }
 }

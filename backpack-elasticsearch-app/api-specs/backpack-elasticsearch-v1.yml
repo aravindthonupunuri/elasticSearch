@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  version: 1.0.7
+  version: 1.0.8
   title: registries_searches-v1
   description: Api to search gift registries
 x-api-definition:
@@ -184,16 +184,10 @@ paths:
                   $ref: '#/components/schemas/RegistryData'
         '400':
           description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error400'
         '404':
           description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error404'
+        '500':
+          description: Unknown Error
 
 servers:
   - url: 'https://api.target.com/registries_searches/v1'
@@ -202,60 +196,59 @@ components:
     RegistryData:
       type: object
       properties:
-        registryId:
+        registry_id:
           type: string
           format: uuid
           nullable: true
-        registryTitle:
+        registry_title:
           type: string
           nullable: true
-        registryType:
+        registry_type:
           $ref: '#/components/schemas/RegistryType'
-        registryStatus:
+        registry_status:
           $ref: '#/components/schemas/RegistryStatus'
-        searchVisibility:
+        search_visibility:
           $ref: '#/components/schemas/RegistrySearchVisibility'
-        registrantFirstName:
+        registrant_first_name:
           type: string
           nullable: true
-        registrantLastName:
+        registrant_last_name:
           type: string
           nullable: true
-        coregistrantFirstName:
+        coregistrant_first_name:
           type: string
           nullable: true
-        coregistrantLastName:
+        coregistrant_last_name:
           type: string
           nullable: true
-        organizationName:
+        organization_name:
           type: string
           nullable: true
-        eventCity:
+        event_city:
           type: string
           nullable: true
-        eventState:
+        event_state:
           type: string
           nullable: true
-        eventCountry:
+        event_country:
           type: string
           nullable: true
-        eventDate:
+        event_date:
           type: string
           format: date
           nullable: true
-        imageUrl:
+        image_url:
           type: string
           nullable: true
-        imageId:
+        image_id:
           type: string
           nullable: true
-        imageDimension:
+        image_dimension:
           type: string
           nullable: true
-        imageUrlParams:
+        image_url_params:
           type: string
           nullable: true
-
     RegistryType:
       type: string
       enum:
@@ -263,13 +256,16 @@ components:
         - WEDDING
         - CHARITY
         - CUSTOM
-
     RegistryStatus:
       type: string
       enum:
         - ACTIVE
         - INACTIVE
-
+    RegistrySearchVisibility:
+      type: string
+      enum:
+        - PUBLIC
+        - PRIVATE
     RegistryChannel:
       type: string
       enum:
@@ -293,37 +289,14 @@ components:
         - SPARTAR
         - EGIFT
         - XO
-
     RegistrySearchSortFieldGroup:
       type: string
       enum:
         - NAME
         - EVENT_DATE
         - LOCATION
-
     SortOrder:
       type: string
       enum:
         - ASC
         - DESC
-
-    RegistrySearchVisibility:
-      type: string
-      enum:
-        - PUBLIC
-        - PRIVATE
-
-    Error400:
-      type: object
-      properties:
-        message:
-          type: string
-          description: Invalid Request
-          example: Bad Request
-    Error404:
-      type: object
-      properties:
-        message:
-          type: string
-          description: URL requested is invalid or the resource requested does not exist
-          example: Not Found

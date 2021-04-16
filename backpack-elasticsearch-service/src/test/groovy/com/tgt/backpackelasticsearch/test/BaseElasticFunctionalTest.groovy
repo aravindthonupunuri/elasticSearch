@@ -41,7 +41,7 @@ class BaseElasticFunctionalTest extends BaseFunctionalTest implements TestProper
     }
 
     @Shared
-    ElasticsearchContainer elasticsearchContainer
+    static ElasticsearchContainer elasticsearchContainer
 
     static String elasticUrl
 
@@ -54,9 +54,11 @@ class BaseElasticFunctionalTest extends BaseFunctionalTest implements TestProper
         elasticUrl = System.getenv("ELASTIC_URL")
 
         if(elasticUrl == null) {
-            elasticsearchContainer =
-                new ElasticsearchContainer("docker.elastic.co/elasticsearch/elasticsearch:7.6.2")
-            elasticsearchContainer.start()
+            if (elasticsearchContainer == null) {
+                elasticsearchContainer =
+                    new ElasticsearchContainer("docker.elastic.co/elasticsearch/elasticsearch:7.6.2")
+                elasticsearchContainer.start()
+            }
             def mappedPort = elasticsearchContainer.getMappedPort(9200)
             elasticUrl = "http://localhost:${mappedPort}"
         }
