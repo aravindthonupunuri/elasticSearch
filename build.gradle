@@ -79,7 +79,7 @@ allprojects {
 
         implementation "com.tgt.lists:lists-oauth:2.231.0"
         implementation "com.tgt.lists.micronaut:micronaut-zipkin:2.231.0"
-        implementation "com.tgt.lists:lists-message-bus:2.231.3"
+        implementation "com.tgt.lists:lists-message-bus:2.231.4"
         implementation "com.tgt.lists:atlas-client:2.231.12"
         implementation "com.tgt.lists:lists-logging:2.231.0"
         implementation "com.target.oss:platform-connector-micronaut:${micronautTapPlatformConnectorVersion}"
@@ -115,6 +115,7 @@ allprojects {
         testImplementation "org.testcontainers:kafka:1.14.3"
         testImplementation "cglib:cglib:3.3.0"
         testImplementation group: 'io.opentracing', name: 'opentracing-mock', version: '0.33.0'
+        testImplementation "com.tgt.lists:grafana-builder:2.231.19"
     }
 
     configurations.all {
