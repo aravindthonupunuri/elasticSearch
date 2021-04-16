@@ -36,7 +36,7 @@ class SearchRegistryPaginationFunctionalTest extends BaseElasticFunctionalTest {
     @Unroll
     def "test create new list with name "() {
         given:
-        RegistryData registryRequest = new RegistryData(UUID.randomUUID(), "interesting title", registryType, registryStatus, searchVisibility, registrantFirst, registrantLast, coregistrantFirst, coregistrantLast, organizationName, "MSP", "MN", "USA", LocalDate.now())
+        RegistryData registryRequest = new RegistryData(UUID.randomUUID(), "interesting title", registryType, registryStatus, searchVisibility, registrantFirst, registrantLast, coregistrantFirst, coregistrantLast, organizationName, "MSP", "MN", "USA", LocalDate.now(), null, null, null, null)
 
         when:
         def response = createRegistryService.saveRegistry(registryRequest).block()

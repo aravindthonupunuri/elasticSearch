@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  version: 1.0.6
+  version: 1.0.7
   title: registries_searches-v1
   description: Api to search gift registries
 x-api-definition:
@@ -242,6 +242,18 @@ components:
         eventDate:
           type: string
           format: date
+          nullable: true
+        imageUrl:
+          type: string
+          nullable: true
+        imageId:
+          type: string
+          nullable: true
+        imageDimension:
+          type: string
+          nullable: true
+        imageUrlParams:
+          type: string
           nullable: true
 
     RegistryType:

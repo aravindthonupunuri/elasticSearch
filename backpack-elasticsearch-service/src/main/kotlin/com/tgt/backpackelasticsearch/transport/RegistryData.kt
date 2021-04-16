@@ -45,5 +45,13 @@ data class RegistryData(
     @JsonSerialize(using = LocalDateSerializer::class)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     @JsonProperty("event_date")
-    val eventDate: LocalDate? = null
+    val eventDate: LocalDate? = null,
+    @JsonProperty("image_url")
+    val imageUrl: String? = null,
+    @JsonProperty("image_id")
+    val imageId: String? = null,
+    @JsonProperty("image_dimension")
+    val imageDimension: String? = null,
+    @JsonProperty("image_url_params")
+    val imageUrlParams: String? = null
 )

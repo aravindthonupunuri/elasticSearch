@@ -102,6 +102,18 @@
                         "type":"keyword"
                     }
                 }
+            },
+            "image_url":{
+                "type":"text"
+            },
+            "image_id":{
+                "type":"text"
+            },
+            "image_dimension":{
+                "type":"text"
+            },
+            "image_url_params":{
+                "type":"text"
             }
         }
     },

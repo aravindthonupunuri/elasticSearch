@@ -37,7 +37,7 @@ class SearchRegistrySortingFunctionalTest extends BaseElasticFunctionalTest {
         given:
         RegistryData registryRequest = new RegistryData(UUID.randomUUID(), "interesting title", RegistryType.WEDDING,
             RegistryStatus.@ACTIVE, RegistrySearchVisibility.@PUBLIC, registrantFirst, registrantLast, coregistrantFirst,
-            coregistrantLast, eventState, "city" , state, "USA", eventDate)
+            coregistrantLast, eventState, "city" , state, "USA", eventDate, null, null, null, null)
 
         when:
         def response = createRegistryService.saveRegistry(registryRequest).block()
@@ -226,7 +226,7 @@ class SearchRegistrySortingFunctionalTest extends BaseElasticFunctionalTest {
         given:
         RegistryData registryRequest = new RegistryData(UUID.randomUUID(), "interesting title", RegistryType.WEDDING,
             RegistryStatus.@ACTIVE, RegistrySearchVisibility.@PUBLIC, registrantFirst, registrantLast, coregistrantFirst,
-            coregistrantLast, eventState, "city" , state, "USA", eventDate)
+            coregistrantLast, eventState, "city" , state, "USA", eventDate, null, null, null, null)
 
         when:
         def response = createRegistryService.saveRegistry(registryRequest).block()

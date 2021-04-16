@@ -58,7 +58,7 @@ class SearchRegistryByNameFunctionalTest extends BaseElasticFunctionalTest {
     @Unroll
     def "test create new list with name "() {
         given:
-        RegistryData registryRequest = new RegistryData(UUID.randomUUID(), "interesting title", registryType, registryStatus, searchVisibility, registrantFirst, registrantLast, coregistrantFirst, coregistrantLast, organizationName, "MSP", state, "USA", eventDate)
+        RegistryData registryRequest = new RegistryData(UUID.randomUUID(), "interesting title", registryType, registryStatus, searchVisibility, registrantFirst, registrantLast, coregistrantFirst, coregistrantLast, organizationName, "MSP", state, "USA", eventDate, "https://test-image-url", "1234-imageid", "0.20,0.10,0.60,0.80", "Target/ugc/206673282.tif")
 
         when:
         def response = createRegistryService.saveRegistry(registryRequest).block()
@@ -101,6 +101,10 @@ class SearchRegistryByNameFunctionalTest extends BaseElasticFunctionalTest {
         then:
         actualStatus == HttpStatus.OK
         actual.size() == 3
+        actual.first().imageUrl == "https://test-image-url"
+        actual.first().imageId == "1234-imageid"
+        actual.first().imageDimension == "0.20,0.10,0.60,0.80"
+        actual.first().imageUrlParams == "Target/ugc/206673282.tif"
     }
 
     def "test get registry by partial first, last name - valid request"() {
@@ -286,5 +290,42 @@ class SearchRegistryByNameFunctionalTest extends BaseElasticFunctionalTest {
         actualStatus == HttpStatus.OK
         actual.size() == 2
         actual.first().eventState == "MN"
+    }
+
+    def "test add new registry without image params to es and verify search response"() {
+        given:
+        RegistryData registryRequest = new RegistryData(UUID.randomUUID(), "no image title", RegistryType.@BABY,
+                RegistryStatus.@ACTIVE, RegistrySearchVisibility.@PUBLIC, "abc", "xyz",
+                "def", "uvw", "organization1",
+                "MSP", "MN", "USA", LocalDate.of(2021, 02, 01),
+                null, null, null, null)
+
+        when:
+        def response = createRegistryService.saveRegistry(registryRequest).block()
+
+        then:
+        def actualStatus = response.v1()
+        actualStatus != null
+
+        and:
+        def refreshResponse = refresh()
+
+        then:
+        refreshResponse.status() == HttpStatus.OK
+
+        and:
+        String guestId = "1236"
+        def url = uri + "?first_name=abc&last_name=xyz&channel=WEB&sub_channel=TGTWEB"
+        HttpResponse<RegistryData[]> searchResponse = client.toBlocking()
+                .exchange(HttpRequest.GET(url)
+                        .headers (getHeaders(guestId)), RegistryData[])
+
+        def searchStatus = searchResponse.status()
+        def actual = searchResponse.body()
+
+        then:
+        searchStatus == HttpStatus.OK
+        actual.size() == 1
+        actual.first().imageUrl == null
     }
 }

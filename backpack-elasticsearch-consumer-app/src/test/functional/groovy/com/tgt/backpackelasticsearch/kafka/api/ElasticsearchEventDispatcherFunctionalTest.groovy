@@ -5,6 +5,8 @@ import com.tgt.backpackelasticsearch.test.BaseKafkaFunctionalTest
 import com.tgt.backpackelasticsearch.test.PreDispatchLambda
 import com.tgt.backpackelasticsearch.test.util.RegistryDataProvider
 import com.tgt.backpackregistryclient.transport.RegistryEventTO
+import com.tgt.backpackregistryclient.transport.RegistryImageInfoTO
+import com.tgt.backpackregistryclient.transport.RegistryImageMetaDataTO
 import com.tgt.backpackregistryclient.transport.RegistryRecipientTO
 import com.tgt.backpackregistryclient.util.*
 import com.tgt.lists.atlas.api.type.LIST_STATE
@@ -73,7 +75,7 @@ class ElasticsearchEventDispatcherFunctionalTest extends BaseKafkaFunctionalTest
         def registryMetaData = registryDataProvider.getRegistryMetaDataMap(UUID.randomUUID(), "alternate_id",false, false, null,
             [new RegistryRecipientTO(RecipientType.REGISTRANT, RecipientRole.GROOM, "1234First", "1234Last"),
              new RegistryRecipientTO(RecipientType.COREGISTRANT,RecipientRole.BRIDE, "1234First", "1234Last")],
-            new RegistryEventTO("Minneapolis", "Minnesota", "USA", LocalDate.now()), null, null, null, null, "organizationName", null, RegistrySearchVisibility.PUBLIC)
+            new RegistryEventTO("Minneapolis", "Minnesota", "USA", LocalDate.now()), null, null, new RegistryImageMetaDataTO(new RegistryImageInfoTO("https://s7w2p1.scene7.com/is/image/", "1234", "0.20,0.10,0.60,0.80", "Target/ugc/206673282.tif")), null, "organizationName", null, RegistrySearchVisibility.PUBLIC)
 
         def createRegistryEvent = new CreateListNotifyEvent(guestId, registryId, "REGISTRY", RegistryType.WEDDING.name(), "List title 1",
             RegistryChannel.WEB.name(), RegistrySubChannel.TGTWEB.name(), "3991", null, null, LIST_STATE.ACTIVE, registryMetaData, LocalDate.now(),
@@ -125,6 +127,10 @@ class ElasticsearchEventDispatcherFunctionalTest extends BaseKafkaFunctionalTest
 
         assert response.size() == 1
         assert response.get(0).registryId == registryId
+        assert response.get(0).imageUrl == "https://s7w2p1.scene7.com/is/image/"
+        assert response.get(0).imageId == "1234"
+        assert response.get(0).imageDimension == "0.20,0.10,0.60,0.80"
+        assert response.get(0).imageUrlParams == "Target/ugc/206673282.tif"
     }
 
     def "Guest updates registry - Consumer kicks in to consume the event and updates registry data in elastic search"() {
@@ -132,7 +138,7 @@ class ElasticsearchEventDispatcherFunctionalTest extends BaseKafkaFunctionalTest
                 [new RegistryRecipientTO(RecipientType.REGISTRANT, RecipientRole.GROOM, "1234First", "1234Last"),
                  new RegistryRecipientTO(RecipientType.COREGISTRANT,RecipientRole.BRIDE, "1234First", "1234Last")],
                 new RegistryEventTO("Minneapolis", "Minnesota", "USA", LocalDate.now()), null, null,
-                null, null, "organizationName", null, RegistrySearchVisibility.PUBLIC)
+                new RegistryImageMetaDataTO(new RegistryImageInfoTO("https://test-updated-url/", "1234", "0.20,0.10,0.60", "Target/ugc/206673282.tif")), null, "organizationName", null, RegistrySearchVisibility.PUBLIC)
 
         def updateRegistryEvent = new UpdateListNotifyEvent(guestId, registryId, "REGISTRY", RegistryType.WEDDING.name(), "List title - updated",
             RegistryChannel.WEB.name(), RegistrySubChannel.TGTWEB.name(), "3991", null, null, LIST_STATE.ACTIVE, registryMetaData, LocalDate.now(),
@@ -183,6 +189,7 @@ class ElasticsearchEventDispatcherFunctionalTest extends BaseKafkaFunctionalTest
         assert response.size() == 1
         assert response.get(0).registryId == registryId
         assert response.get(0).registryTitle == "List title - updated"
+        assert response.get(0).imageUrl == "https://test-updated-url/"
     }
 
     def "Guest deletes registry - Consumer kicks in to consume the event and deletes registry data from elastic search"() {

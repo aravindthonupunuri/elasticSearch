@@ -49,7 +49,11 @@ class CreateRegistryNotifyEventHandler(
             eventCity = registryMetaData?.event?.city,
             eventState = registryMetaData?.event?.state,
             eventCountry = registryMetaData?.event?.country,
-            eventDate = registryMetaData?.event?.eventDate
+            eventDate = registryMetaData?.event?.eventDate,
+            imageUrl = registryMetaData?.imageMetaData?.profileImage?.imageUrl,
+            imageId = registryMetaData?.imageMetaData?.profileImage?.imageId,
+            imageDimension = registryMetaData?.imageMetaData?.profileImage?.dimension,
+            imageUrlParams = registryMetaData?.imageMetaData?.profileImage?.imageUrlParams
         ))
             .map { EventProcessingResult(true, eventHeaders, createRegistryNotifyEvent) }
             .onErrorResume {
