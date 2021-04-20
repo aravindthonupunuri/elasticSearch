@@ -26,3 +26,7 @@ filter:
       resilience-client-filter: 800
       oauth-filter: 701
       oauth-key-filter: 700
+
+kafka:
+  health:
+    enabled: false
