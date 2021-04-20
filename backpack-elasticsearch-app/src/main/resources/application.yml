@@ -7,16 +7,6 @@ micronaut:
     idle-timeout: 2000ms
     netty:
       max-header-size: 16384 # Handling RequestTooLarge headers - Default value (8192)
-  http:
-    services:
-      permissions-api:
-        urls:
-          - ${permissions-api-base-url}
-          connect-timeout: 300ms
-          read-timeout: 300ms
-          pool:
-            enabled: true
-            max-connections: 5
 
   metrics:
     binders:

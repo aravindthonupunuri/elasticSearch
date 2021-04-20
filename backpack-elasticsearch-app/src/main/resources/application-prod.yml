@@ -7,19 +7,7 @@ micronaut:
     idle-timeout: 2000ms
     netty:
       max-header-size: 16384 # Handling RequestTooLarge headers - Default value (8192)
-  http:
-    client.connect-ttl: 30m
-    client.pool.acquire-timeout: 2000ms
-    services:
-      permissions-api:
-        urls:
-          - "https://listspermissions.dev.target.com" #TODO Need to check production list permissions endpoint
-        connect-timeout: 300ms
-        read-timeout: 300ms
-        pool:
-          enabled: true
-          max-connections: 128
-          max-pending-acquires: 50
+
   metrics:
     binders:
       web:
