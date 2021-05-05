@@ -3,6 +3,7 @@ package com.tgt.backpackelasticsearch.api
 import com.tgt.backpackelasticsearch.service.GetRegistryService
 import com.tgt.backpackelasticsearch.service.async.CreateRegistryService
 import com.tgt.backpackelasticsearch.test.BaseElasticFunctionalTest
+import com.tgt.backpackelasticsearch.transport.PaginatedRegistryData
 import com.tgt.backpackelasticsearch.transport.RegistryData
 import com.tgt.backpackelasticsearch.util.BackpackElasticsearchConstants
 import com.tgt.backpackregistryclient.util.RegistrySearchVisibility
@@ -11,7 +12,6 @@ import com.tgt.backpackregistryclient.util.RegistryType
 import io.micronaut.http.HttpRequest
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.HttpStatus
-import io.micronaut.http.client.exceptions.HttpClientResponseException
 import io.micronaut.test.extensions.spock.annotation.MicronautTest
 import spock.lang.Stepwise
 import spock.lang.Unroll
@@ -77,16 +77,19 @@ class SearchRegistryPaginationFunctionalTest extends BaseElasticFunctionalTest {
         refreshResponse.status() == HttpStatus.OK
 
         when:
-        HttpResponse<RegistryData[]> listResponse = client.toBlocking()
+        HttpResponse<PaginatedRegistryData> listResponse = client.toBlocking()
             .exchange(HttpRequest.GET(url)
-                .headers (getHeaders(guestId)), RegistryData[])
+            .headers(getHeaders(guestId)), PaginatedRegistryData)
 
         def actualStatus = listResponse.status()
-        def actual = listResponse.body()
+        def actual = listResponse.body().registryDataList
 
         then:
         actualStatus == HttpStatus.OK
         actual.size() == 5
+        listResponse.body().currentPage == 0
+        listResponse.body().pageSize == 5
+        listResponse.body().totalRecords == 5
         actual[0].organizationName == "organization1"
         actual[1].organizationName == "organization2"
         actual[2].organizationName == "organization3"
@@ -106,16 +109,19 @@ class SearchRegistryPaginationFunctionalTest extends BaseElasticFunctionalTest {
         refreshResponse.status() == HttpStatus.OK
 
         when:
-        HttpResponse<RegistryData[]> listResponse = client.toBlocking()
+        HttpResponse<PaginatedRegistryData> listResponse = client.toBlocking()
             .exchange(HttpRequest.GET(url)
-                .headers (getHeaders(guestId)), RegistryData[])
+                .headers (getHeaders(guestId)), PaginatedRegistryData)
 
         def actualStatus = listResponse.status()
-        def actual = listResponse.body()
+        def actual = listResponse.body().registryDataList
 
         then:
         actualStatus == HttpStatus.OK
         actual.size() == 5
+        listResponse.body().currentPage == 1
+        listResponse.body().pageSize == 5
+        listResponse.body().totalRecords == 5
         actual[0].organizationName == "organization6"
         actual[1].organizationName == "organization7"
         actual[2].organizationName == "organization8"
@@ -135,16 +141,19 @@ class SearchRegistryPaginationFunctionalTest extends BaseElasticFunctionalTest {
         refreshResponse.status() == HttpStatus.OK
 
         when:
-        HttpResponse<RegistryData[]> listResponse = client.toBlocking()
+        HttpResponse<PaginatedRegistryData> listResponse = client.toBlocking()
             .exchange(HttpRequest.GET(url)
-                .headers (getHeaders(guestId)), RegistryData[])
+                .headers (getHeaders(guestId)), PaginatedRegistryData)
 
         def actualStatus = listResponse.status()
-        def actual = listResponse.body()
+        def actual = listResponse.body().registryDataList
 
         then:
         actualStatus == HttpStatus.OK
         actual.size() == 5
+        listResponse.body().currentPage == 2
+        listResponse.body().pageSize == 5
+        listResponse.body().totalRecords == 5
         actual[0].organizationName == "organization11"
         actual[1].organizationName == "organization12"
         actual[2].organizationName == "organization13"
@@ -164,15 +173,18 @@ class SearchRegistryPaginationFunctionalTest extends BaseElasticFunctionalTest {
         refreshResponse.status() == HttpStatus.OK
 
         when:
-        HttpResponse<RegistryData[]> listResponse = client.toBlocking()
+        HttpResponse<PaginatedRegistryData> listResponse = client.toBlocking()
             .exchange(HttpRequest.GET(url)
-                .headers (getHeaders(guestId)), RegistryData[])
+                .headers (getHeaders(guestId)), PaginatedRegistryData)
 
         def actualStatus = listResponse.status()
-        def actual = listResponse.body()
+        def actual = listResponse.body().registryDataList
 
         then:
         actualStatus == HttpStatus.OK
         actual.size() == 15
+        listResponse.body().currentPage == 0
+        listResponse.body().pageSize == 0
+        listResponse.body().totalRecords == 15
     }
 }

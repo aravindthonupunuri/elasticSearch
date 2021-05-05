@@ -1,6 +1,7 @@
 package com.tgt.backpackelasticsearch.api.controller
 
 import com.tgt.backpackelasticsearch.service.GetRegistryService
+import com.tgt.backpackelasticsearch.transport.PaginatedRegistryData
 import com.tgt.backpackelasticsearch.transport.RegistryData
 import com.tgt.backpackelasticsearch.transport.RegistrySearchSortFieldGroup
 import com.tgt.backpackelasticsearch.util.BackpackElasticsearchConstants.ELASTIC_SEARCH_BASEPATH
@@ -43,19 +44,26 @@ class BackpackElasticsearchController(
         @QueryValue("sort_order") sortOrderBy: SortOrder? = SortOrder.ASC,
         @QueryValue("page") page: Int?,
         @QueryValue("page_size") pageSize: Int?
-    ): Mono<List<RegistryData>> {
-        // TODO Sort field and order are yet to be implemented
+    ): Mono<PaginatedRegistryData> {
         return getRegistryService.findRegistry(
-            recipientFirstName = firstName,
-            recipientLastName = lastName,
-            organizationName = organizationName,
-            registryType = registryType,
-            state = state,
-            minimumDate = minDate,
-            maximumDate = maxDate,
-            sortFieldBy = sortFieldBy,
-            sortOrderBy = sortOrderBy,
-            page = page,
-            pageSize = pageSize)
+                recipientFirstName = firstName,
+                recipientLastName = lastName,
+                organizationName = organizationName,
+                registryType = registryType,
+                state = state,
+                minimumDate = minDate,
+                maximumDate = maxDate,
+                sortFieldBy = sortFieldBy,
+                sortOrderBy = sortOrderBy,
+                page = page,
+                pageSize = pageSize
+            ).map {
+                PaginatedRegistryData(
+                    registryDataList = it,
+                    totalRecords = it.size,
+                    currentPage = page,
+                    pageSize = pageSize
+                )
+            }
     }
 }

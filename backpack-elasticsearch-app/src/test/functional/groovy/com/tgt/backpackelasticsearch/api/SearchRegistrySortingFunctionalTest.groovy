@@ -3,6 +3,7 @@ package com.tgt.backpackelasticsearch.api
 import com.tgt.backpackelasticsearch.service.GetRegistryService
 import com.tgt.backpackelasticsearch.service.async.CreateRegistryService
 import com.tgt.backpackelasticsearch.test.BaseElasticFunctionalTest
+import com.tgt.backpackelasticsearch.transport.PaginatedRegistryData
 import com.tgt.backpackelasticsearch.transport.RegistryData
 import com.tgt.backpackelasticsearch.util.BackpackElasticsearchConstants
 import com.tgt.backpackregistryclient.util.RegistrySearchVisibility
@@ -48,21 +49,21 @@ class SearchRegistrySortingFunctionalTest extends BaseElasticFunctionalTest {
 
         where:
         state    | registrantFirst    |   registrantLast  |   coregistrantFirst   |   coregistrantLast | eventState  | eventDate
-         "MN"    | "first name"       |   "last name"     |   "co first"         |    "co last"       |  "organization1"  | LocalDate.now().plusDays(14)
-         "TX"    | "first name"       |   "last name"     |   "co first"         |    "co last"       |  "organization2"  | LocalDate.now().plusDays(13)
-         "CA"    | "first name"       |   "last name"     |   "co first"        |    "co last"       |  "organization3"  | LocalDate.now().plusDays(9)
-         "DE"    | "first name"       |   "last name"     |   "co first"         |    "co last"       |  "organization4"  | LocalDate.now().plusDays(12)
-         "FL"    | "first name"       |   "last name"     |   "co first"         |    "co last"       |  "organization5"  | LocalDate.now().plusDays(8)
-         "WI"    | "first name"       |   "last name"     |   "co first"         |    "co last"       |  "organization6"  | LocalDate.now().plusDays(3)
-         "UT"    | "first name"       |   "last name"     |   "co first"         |    "co last"       |  "organization7"  | LocalDate.now().plusDays(15)
-         "OH"    | "first name"       |   "last name"     |   "co first"         |    "co last"       |  "organization8"  | LocalDate.now().plusDays(4)
-         "MO"    | "first name"       |   "last name"     |   "co first"         |    "co last"       |  "organization9"  | LocalDate.now().plusDays(11)
-         "MT"    | "first name"       |   "last name"     |   "co first"         |    "co last"       |  "organization10" | LocalDate.now().plusDays(5)
-         "IA"    | "first name"       |   "last name"     |   "co first"         |    "co last"       |  "organization11" | LocalDate.now().plusDays(1)
-         "KY"    | "first name"       |   "last name"     |   "co first"         |    "co last"       |  "organization12" | LocalDate.now().plusDays(2)
-         "LA"    | "first name"       |   "last name"     |   "co first"         |    "co last"       |  "organization13" | LocalDate.now().plusDays(10)
-         "NJ"    | "first name"       |   "last name"     |   "co first"         |    "co last"       |  "organization14" | LocalDate.now().plusDays(6)
-         "GA"    | "first name"       |   "last name"     |   "co first"         |    "co last"       |  "organization15" | LocalDate.now().plusDays(7)
+         "MN"    | "first name"       |   "last name"     |   "co first"         |    "co last"       |  "organization1"  | LocalDate.of(2021, 01, 01)
+         "TX"    | "first name"       |   "last name"     |   "co first"         |    "co last"       |  "organization2"  | LocalDate.of(2021, 02, 01)
+         "CA"    | "first name"       |   "last name"     |   "co first"         |    "co last"       |  "organization3"  | LocalDate.of(2021, 03, 01)
+         "DE"    | "first name"       |   "last name"     |   "co first"         |    "co last"       |  "organization4"  | LocalDate.of(2021, 04, 01)
+         "FL"    | "first name"       |   "last name"     |   "co first"         |    "co last"       |  "organization5"  | LocalDate.of(2021, 05, 01)
+         "WI"    | "first name"       |   "last name"     |   "co first"         |    "co last"       |  "organization6"  | LocalDate.of(2020, 01, 01)
+         "UT"    | "first name"       |   "last name"     |   "co first"         |    "co last"       |  "organization7"  | LocalDate.of(2020, 02, 01)
+         "OH"    | "first name"       |   "last name"     |   "co first"         |    "co last"       |  "organization8"  | LocalDate.of(2020, 03, 01)
+         "MO"    | "first name"       |   "last name"     |   "co first"         |    "co last"       |  "organization9"  | LocalDate.of(2020, 04, 01)
+         "MT"    | "first name"       |   "last name"     |   "co first"         |    "co last"       |  "organization10" | LocalDate.of(2020, 05, 01)
+         "IA"    | "first name"       |   "last name"     |   "co first"         |    "co last"       |  "organization11" | LocalDate.of(2020, 06, 01)
+         "KY"    | "first name"       |   "last name"     |   "co first"         |    "co last"       |  "organization12" | LocalDate.of(2020, 07, 01)
+         "LA"    | "first name"       |   "last name"     |   "co first"         |    "co last"       |  "organization13" | LocalDate.of(2020, 07, 30)
+         "NJ"    | "first name"       |   "last name"     |   "co first"         |    "co last"       |  "organization14" | LocalDate.of(2020, 07, 29)
+         "GA"    | "first name"       |   "last name"     |   "co first"         |    "co last"       |  "organization15" | LocalDate.of(2020, 07, 28)
     }
 
     def "test sort based on field location and order asc"() {
@@ -77,12 +78,12 @@ class SearchRegistrySortingFunctionalTest extends BaseElasticFunctionalTest {
         refreshResponse.status() == HttpStatus.OK
 
         when:
-        HttpResponse<RegistryData[]> listResponse = client.toBlocking()
+        HttpResponse<PaginatedRegistryData> listResponse = client.toBlocking()
             .exchange(HttpRequest.GET(url)
-                .headers (getHeaders(guestId)), RegistryData[])
+                .headers (getHeaders(guestId)), PaginatedRegistryData)
 
         def actualStatus = listResponse.status()
-        def actual = listResponse.body()
+        def actual = listResponse.body().registryDataList
 
         then:
         actualStatus == HttpStatus.OK
@@ -116,12 +117,12 @@ class SearchRegistrySortingFunctionalTest extends BaseElasticFunctionalTest {
         refreshResponse.status() == HttpStatus.OK
 
         when:
-        HttpResponse<RegistryData[]> listResponse = client.toBlocking()
+        HttpResponse<PaginatedRegistryData> listResponse = client.toBlocking()
             .exchange(HttpRequest.GET(url)
-                .headers (getHeaders(guestId)), RegistryData[])
+                .headers (getHeaders(guestId)), PaginatedRegistryData)
 
         def actualStatus = listResponse.status()
-        def actual = listResponse.body()
+        def actual = listResponse.body().registryDataList
 
         then:
         actualStatus == HttpStatus.OK
@@ -155,31 +156,31 @@ class SearchRegistrySortingFunctionalTest extends BaseElasticFunctionalTest {
         refreshResponse.status() == HttpStatus.OK
 
         when:
-        HttpResponse<RegistryData[]> listResponse = client.toBlocking()
+        HttpResponse<PaginatedRegistryData> listResponse = client.toBlocking()
             .exchange(HttpRequest.GET(url)
-                .headers (getHeaders(guestId)), RegistryData[])
+                .headers (getHeaders(guestId)), PaginatedRegistryData)
 
         def actualStatus = listResponse.status()
-        def actual = listResponse.body()
+        def actual = listResponse.body().registryDataList
 
         then:
         actualStatus == HttpStatus.OK
         actual.size() == 15
-        actual[0].organizationName == "organization11"
-        actual[1].organizationName == "organization12"
-        actual[2].organizationName == "organization6"
-        actual[3].organizationName == "organization8"
+        actual[0].organizationName == "organization6"
+        actual[1].organizationName == "organization7"
+        actual[2].organizationName == "organization8"
+        actual[3].organizationName == "organization9"
         actual[4].organizationName == "organization10"
-        actual[5].organizationName == "organization14"
-        actual[6].organizationName == "organization15"
-        actual[7].organizationName == "organization5"
-        actual[8].organizationName == "organization3"
+        actual[5].organizationName == "organization11"
+        actual[6].organizationName == "organization12"
+        actual[7].organizationName == "organization15"
+        actual[8].organizationName == "organization14"
         actual[9].organizationName == "organization13"
-        actual[10].organizationName == "organization9"
-        actual[11].organizationName == "organization4"
-        actual[12].organizationName == "organization2"
-        actual[13].organizationName == "organization1"
-        actual[14].organizationName == "organization7"
+        actual[10].organizationName == "organization1"
+        actual[11].organizationName == "organization2"
+        actual[12].organizationName == "organization3"
+        actual[13].organizationName == "organization4"
+        actual[14].organizationName == "organization5"
     }
 
     def "test sort based on field event_date and order desc"() {
@@ -194,31 +195,31 @@ class SearchRegistrySortingFunctionalTest extends BaseElasticFunctionalTest {
         refreshResponse.status() == HttpStatus.OK
 
         when:
-        HttpResponse<RegistryData[]> listResponse = client.toBlocking()
+        HttpResponse<PaginatedRegistryData> listResponse = client.toBlocking()
             .exchange(HttpRequest.GET(url)
-                .headers (getHeaders(guestId)), RegistryData[])
+                .headers (getHeaders(guestId)), PaginatedRegistryData)
 
         def actualStatus = listResponse.status()
-        def actual = listResponse.body()
+        def actual = listResponse.body().registryDataList
 
         then:
         actualStatus == HttpStatus.OK
         actual.size() == 15
-        actual[0].organizationName == "organization7"
-        actual[1].organizationName == "organization1"
-        actual[2].organizationName == "organization2"
-        actual[3].organizationName == "organization4"
-        actual[4].organizationName == "organization9"
+        actual[0].organizationName == "organization5"
+        actual[1].organizationName == "organization4"
+        actual[2].organizationName == "organization3"
+        actual[3].organizationName == "organization2"
+        actual[4].organizationName == "organization1"
         actual[5].organizationName == "organization13"
-        actual[6].organizationName == "organization3"
-        actual[7].organizationName == "organization5"
-        actual[8].organizationName == "organization15"
-        actual[9].organizationName == "organization14"
+        actual[6].organizationName == "organization14"
+        actual[7].organizationName == "organization15"
+        actual[8].organizationName == "organization12"
+        actual[9].organizationName == "organization11"
         actual[10].organizationName == "organization10"
-        actual[11].organizationName == "organization8"
-        actual[12].organizationName == "organization6"
-        actual[13].organizationName == "organization12"
-        actual[14].organizationName == "organization11"
+        actual[11].organizationName == "organization9"
+        actual[12].organizationName == "organization8"
+        actual[13].organizationName == "organization7"
+        actual[14].organizationName == "organization6"
     }
 
     @Unroll
@@ -255,12 +256,12 @@ class SearchRegistrySortingFunctionalTest extends BaseElasticFunctionalTest {
         refreshResponse.status() == HttpStatus.OK
 
         when:
-        HttpResponse<RegistryData[]> listResponse = client.toBlocking()
+        HttpResponse<PaginatedRegistryData> listResponse = client.toBlocking()
             .exchange(HttpRequest.GET(url)
-                .headers (getHeaders(guestId)), RegistryData[])
+                .headers (getHeaders(guestId)), PaginatedRegistryData)
 
         def actualStatus = listResponse.status()
-        def actual = listResponse.body()
+        def actual = listResponse.body().registryDataList
 
         then:
         actualStatus == HttpStatus.OK
@@ -284,12 +285,12 @@ class SearchRegistrySortingFunctionalTest extends BaseElasticFunctionalTest {
         refreshResponse.status() == HttpStatus.OK
 
         when:
-        HttpResponse<RegistryData[]> listResponse = client.toBlocking()
+        HttpResponse<PaginatedRegistryData> listResponse = client.toBlocking()
             .exchange(HttpRequest.GET(url)
-                .headers (getHeaders(guestId)), RegistryData[])
+                .headers (getHeaders(guestId)), PaginatedRegistryData)
 
         def actualStatus = listResponse.status()
-        def actual = listResponse.body()
+        def actual = listResponse.body().registryDataList
 
         then:
         actualStatus == HttpStatus.OK

@@ -3,6 +3,7 @@ package com.tgt.backpackelasticsearch.api
 import com.tgt.backpackelasticsearch.service.GetRegistryService
 import com.tgt.backpackelasticsearch.service.async.CreateRegistryService
 import com.tgt.backpackelasticsearch.test.BaseElasticFunctionalTest
+import com.tgt.backpackelasticsearch.transport.PaginatedRegistryData
 import com.tgt.backpackelasticsearch.transport.RegistryData
 import com.tgt.backpackelasticsearch.util.BackpackElasticsearchConstants
 import com.tgt.backpackregistryclient.util.RegistryStatus
@@ -91,12 +92,12 @@ class SearchRegistryByNameFunctionalTest extends BaseElasticFunctionalTest {
         refreshResponse.status() == HttpStatus.OK
 
         when:
-        HttpResponse<RegistryData[]> listResponse = client.toBlocking()
+        HttpResponse<PaginatedRegistryData> listResponse = client.toBlocking()
             .exchange(HttpRequest.GET(url)
-                .headers (getHeaders(guestId)), RegistryData[])
+                .headers (getHeaders(guestId)), PaginatedRegistryData)
 
         def actualStatus = listResponse.status()
-        def actual = listResponse.body()
+        def actual = listResponse.body().registryDataList
 
         then:
         actualStatus == HttpStatus.OK
@@ -119,12 +120,12 @@ class SearchRegistryByNameFunctionalTest extends BaseElasticFunctionalTest {
         refreshResponse.status() == HttpStatus.OK
 
         when:
-        HttpResponse<RegistryData[]> listResponse = client.toBlocking()
+        HttpResponse<PaginatedRegistryData> listResponse = client.toBlocking()
             .exchange(HttpRequest.GET(url)
-                .headers (getHeaders(guestId)), RegistryData[])
+                .headers (getHeaders(guestId)), PaginatedRegistryData)
 
         def actualStatus = listResponse.status()
-        def actual = listResponse.body()
+        def actual = listResponse.body().registryDataList
 
         then:
         actualStatus == HttpStatus.OK
@@ -137,12 +138,12 @@ class SearchRegistryByNameFunctionalTest extends BaseElasticFunctionalTest {
         def url = uri + "?first_name=co&organization_name=organization5&registry_type=BABY&channel=WEB&sub_channel=TGTWEB"
 
         when:
-        HttpResponse<RegistryData[]> listResponse = client.toBlocking()
+        HttpResponse<PaginatedRegistryData> listResponse = client.toBlocking()
             .exchange(HttpRequest.GET(url)
-                .headers (getHeaders(guestId)), RegistryData[])
+                .headers (getHeaders(guestId)), PaginatedRegistryData)
 
         def actualStatus = listResponse.status()
-        def actual = listResponse.body()
+        def actual = listResponse.body().registryDataList
 
         then:
         actualStatus == HttpStatus.OK
@@ -157,12 +158,12 @@ class SearchRegistryByNameFunctionalTest extends BaseElasticFunctionalTest {
         def url = uri + "?first_name=co&last_name=last&organization_name=organization1&channel=WEB&sub_channel=TGTWEB"
 
         when:
-        HttpResponse<RegistryData[]> listResponse = client.toBlocking()
+        HttpResponse<PaginatedRegistryData> listResponse = client.toBlocking()
             .exchange(HttpRequest.GET(url)
-                .headers (getHeaders(guestId)), RegistryData[])
+                .headers (getHeaders(guestId)), PaginatedRegistryData)
 
         def actualStatus = listResponse.status()
-        def actual = listResponse.body()
+        def actual = listResponse.body().registryDataList
 
         then:
         actualStatus == HttpStatus.OK
@@ -176,7 +177,7 @@ class SearchRegistryByNameFunctionalTest extends BaseElasticFunctionalTest {
         def url = uri + "?first_name=co&last_name=last&organization_name=organization1&sub_channel=TGTWEB"
 
         when:
-        client.toBlocking().exchange(HttpRequest.GET(url).headers (getHeaders(guestId)), RegistryData[])
+        client.toBlocking().exchange(HttpRequest.GET(url).headers (getHeaders(guestId)), PaginatedRegistryData)
 
         then:
         def error = thrown(HttpClientResponseException)
@@ -189,12 +190,12 @@ class SearchRegistryByNameFunctionalTest extends BaseElasticFunctionalTest {
         def url = uri + "?first_name=kbnch&last_name=sdfklkxcn&channel=WEB&sub_channel=TGTWEB"
 
         when:
-        HttpResponse<RegistryData[]> listResponse = client.toBlocking()
+        HttpResponse<PaginatedRegistryData> listResponse = client.toBlocking()
                 .exchange(HttpRequest.GET(url)
-                        .headers (getHeaders(guestId)), RegistryData[])
+                        .headers (getHeaders(guestId)), PaginatedRegistryData)
 
         def actualStatus = listResponse.status()
-        def actual = listResponse.body()
+        def actual = listResponse.body().registryDataList
 
         then:
         actualStatus == HttpStatus.OK
@@ -207,12 +208,12 @@ class SearchRegistryByNameFunctionalTest extends BaseElasticFunctionalTest {
         def url = uri + "?first_name=funny&last_name=seri&channel=WEB&sub_channel=TGTWEB"
 
         when:
-        HttpResponse<RegistryData[]> listResponse = client.toBlocking()
+        HttpResponse<PaginatedRegistryData> listResponse = client.toBlocking()
                 .exchange(HttpRequest.GET(url)
-                        .headers (getHeaders(guestId)), RegistryData[])
+                        .headers (getHeaders(guestId)), PaginatedRegistryData)
 
         def actualStatus = listResponse.status()
-        def actual = listResponse.body()
+        def actual = listResponse.body().registryDataList
 
         then:
         actualStatus == HttpStatus.OK
@@ -225,12 +226,12 @@ class SearchRegistryByNameFunctionalTest extends BaseElasticFunctionalTest {
         def url = uri + "?first_name=co&last_name=last&channel=WEB&sub_channel=TGTWEB&min_date=2020-12-01"
 
         when:
-        HttpResponse<RegistryData[]> listResponse = client.toBlocking()
+        HttpResponse<PaginatedRegistryData> listResponse = client.toBlocking()
                 .exchange(HttpRequest.GET(url)
-                        .headers (getHeaders(guestId)), RegistryData[])
+                        .headers (getHeaders(guestId)), PaginatedRegistryData)
 
         def actualStatus = listResponse.status()
-        def actual = listResponse.body()
+        def actual = listResponse.body().registryDataList
 
         then:
         actualStatus == HttpStatus.OK
@@ -243,12 +244,12 @@ class SearchRegistryByNameFunctionalTest extends BaseElasticFunctionalTest {
         def url = uri + "?first_name=co&last_name=last&channel=WEB&sub_channel=TGTWEB&max_date=2022-12-01"
 
         when:
-        HttpResponse<RegistryData[]> listResponse = client.toBlocking()
+        HttpResponse<PaginatedRegistryData> listResponse = client.toBlocking()
                 .exchange(HttpRequest.GET(url)
-                        .headers (getHeaders(guestId)), RegistryData[])
+                        .headers (getHeaders(guestId)), PaginatedRegistryData)
 
         def actualStatus = listResponse.status()
-        def actual = listResponse.body()
+        def actual = listResponse.body().registryDataList
 
         then:
         actualStatus == HttpStatus.OK
@@ -261,12 +262,12 @@ class SearchRegistryByNameFunctionalTest extends BaseElasticFunctionalTest {
         def url = uri + "?first_name=co&last_name=last&channel=WEB&sub_channel=TGTWEB&min_date=2020-12-01&max_date=2021-12-01"
 
         when:
-        HttpResponse<RegistryData[]> listResponse = client.toBlocking()
+        HttpResponse<PaginatedRegistryData> listResponse = client.toBlocking()
                 .exchange(HttpRequest.GET(url.toString())
-                        .headers (getHeaders(guestId)), RegistryData[])
+                        .headers (getHeaders(guestId)), PaginatedRegistryData)
 
         def actualStatus = listResponse.status()
-        def actual = listResponse.body()
+        def actual = listResponse.body().registryDataList
 
         then:
         actualStatus == HttpStatus.OK
@@ -279,12 +280,12 @@ class SearchRegistryByNameFunctionalTest extends BaseElasticFunctionalTest {
         def url = uri + "?first_name=co&last_name=last&channel=WEB&sub_channel=TGTWEB&state=MN"
 
         when:
-        HttpResponse<RegistryData[]> listResponse = client.toBlocking()
+        HttpResponse<PaginatedRegistryData> listResponse = client.toBlocking()
                 .exchange(HttpRequest.GET(url)
-                        .headers (getHeaders(guestId)), RegistryData[])
+                        .headers (getHeaders(guestId)), PaginatedRegistryData)
 
         def actualStatus = listResponse.status()
-        def actual = listResponse.body()
+        def actual = listResponse.body().registryDataList
 
         then:
         actualStatus == HttpStatus.OK
@@ -316,12 +317,12 @@ class SearchRegistryByNameFunctionalTest extends BaseElasticFunctionalTest {
         and:
         String guestId = "1236"
         def url = uri + "?first_name=abc&last_name=xyz&channel=WEB&sub_channel=TGTWEB"
-        HttpResponse<RegistryData[]> searchResponse = client.toBlocking()
+        HttpResponse<PaginatedRegistryData> searchResponse = client.toBlocking()
                 .exchange(HttpRequest.GET(url)
-                        .headers (getHeaders(guestId)), RegistryData[])
+                        .headers (getHeaders(guestId)), PaginatedRegistryData)
 
         def searchStatus = searchResponse.status()
-        def actual = searchResponse.body()
+        def actual = searchResponse.body().registryDataList
 
         then:
         searchStatus == HttpStatus.OK
