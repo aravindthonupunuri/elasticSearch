@@ -42,8 +42,8 @@ class BackpackElasticsearchController(
         @QueryValue("max_date") @Format("yyyy-MM-dd") maxDate: LocalDate?,
         @QueryValue("sort_field") sortFieldBy: RegistrySearchSortFieldGroup? = RegistrySearchSortFieldGroup.NAME,
         @QueryValue("sort_order") sortOrderBy: SortOrder? = SortOrder.ASC,
-        @QueryValue("page") page: Int?,
-        @QueryValue("page_size") pageSize: Int?
+        @QueryValue("page", defaultValue = "0") page: Int? = 0,
+        @QueryValue("page_size", defaultValue = "28") pageSize: Int? = 28
     ): Mono<PaginatedRegistryData> {
         return getRegistryService.findRegistry(
                 recipientFirstName = firstName,

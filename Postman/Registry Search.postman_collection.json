@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "a5343c15-a1bc-4876-9782-17cc770f103c",
+		"_postman_id": "ebba2613-2085-4333-8a6a-29ee5dd20dbf",
 		"name": "Registry Search",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -32,7 +32,7 @@
 					}
 				],
 				"url": {
-					"raw": "{{search-host}}?first_name=Father&last_name=last&channel=MOBILE&sub_channel=TGTWEB&organization_name=organization1&registry_type=BABY&state=MN&min_date=2021-12-01&max_date=2022-12-01",
+					"raw": "{{search-host}}?first_name=Father&last_name=last&channel=WEB&sub_channel=TGTWEB&organization_name=organization1&registry_type=BABY&state=MN&min_date=2021-12-01&max_date=2022-12-01&page=1&page_size=3",
 					"host": [
 						"{{search-host}}"
 					],
@@ -47,32 +47,40 @@
 						},
 						{
 							"key": "channel",
-							"value": "MOBILE"
+							"value": "WEB"
 						},
 						{
 							"key": "sub_channel",
 							"value": "TGTWEB"
 						},
-                        {
-                            "key": "organization_name",
-                            "value": "organization1"
-                        },
-                        {
-                            "key": "registry_type",
-                            "value": "BABY"
-                        },
-                        {
-                            "key": "state",
-                            "value": "MN"
-                        },
-                        {
-                            "key": "min_date",
-                            "value": "2021-12-01"
-                        },
-                        {
-                            "key": "max_date",
-                            "value": "2022-12-01"
-                        }
+						{
+							"key": "organization_name",
+							"value": "organization1"
+						},
+						{
+							"key": "registry_type",
+							"value": "BABY"
+						},
+						{
+							"key": "state",
+							"value": "MN"
+						},
+						{
+							"key": "min_date",
+							"value": "2021-12-01"
+						},
+						{
+							"key": "max_date",
+							"value": "2022-12-01"
+						},
+						{
+							"key": "page",
+							"value": "1"
+						},
+						{
+							"key": "page_size",
+							"value": "3"
+						}
 					]
 				}
 			},

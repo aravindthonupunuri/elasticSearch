@@ -184,7 +184,7 @@ class SearchRegistryPaginationFunctionalTest extends BaseElasticFunctionalTest {
         actualStatus == HttpStatus.OK
         actual.size() == 15
         listResponse.body().currentPage == 0
-        listResponse.body().pageSize == 0
+        listResponse.body().pageSize == 28
         listResponse.body().totalRecords == 15
     }
 }
