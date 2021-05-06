@@ -2,7 +2,6 @@ package com.tgt.backpackelasticsearch.api.controller
 
 import com.tgt.backpackelasticsearch.service.GetRegistryService
 import com.tgt.backpackelasticsearch.transport.PaginatedRegistryData
-import com.tgt.backpackelasticsearch.transport.RegistryData
 import com.tgt.backpackelasticsearch.transport.RegistrySearchSortFieldGroup
 import com.tgt.backpackelasticsearch.util.BackpackElasticsearchConstants.ELASTIC_SEARCH_BASEPATH
 import com.tgt.backpackregistryclient.util.RegistryChannel
@@ -11,7 +10,6 @@ import com.tgt.backpackregistryclient.util.RegistryType
 import io.micronaut.core.convert.format.Format
 import io.micronaut.http.HttpStatus
 import io.micronaut.http.annotation.*
-import io.swagger.v3.oas.annotations.media.ArraySchema
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -24,11 +22,10 @@ import javax.inject.Inject
 class BackpackElasticsearchController(
     @Inject val getRegistryService: GetRegistryService
 ) {
-
     @Get("/")
     @Status(HttpStatus.OK)
-    @ApiResponse(
-        content = [Content(mediaType = "application/json", array = ArraySchema(schema = Schema(implementation = RegistryData::class)))]
+    @ApiResponse(responseCode = "200", description = "Success",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = PaginatedRegistryData::class))]
     )
     fun searchRegistryByFirstSecondName(
         @QueryValue("first_name") firstName: String?,
@@ -56,14 +53,6 @@ class BackpackElasticsearchController(
                 sortFieldBy = sortFieldBy,
                 sortOrderBy = sortOrderBy,
                 page = page,
-                pageSize = pageSize
-            ).map {
-                PaginatedRegistryData(
-                    registryDataList = it,
-                    totalRecords = it.size,
-                    currentPage = page,
-                    pageSize = pageSize
-                )
-            }
+                pageSize = pageSize)
     }
 }

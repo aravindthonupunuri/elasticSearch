@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  version: 1.0.8
+  version: 1.0.9
   title: registries_searches-v1
   description: Api to search gift registries
 x-api-definition:
@@ -179,9 +179,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/RegistryData'
+                $ref: '#/components/schemas/PaginatedRegistryData'
         '400':
           description: Bad Request
         '404':
@@ -193,6 +191,22 @@ servers:
   - url: 'https://api.target.com/registries_searches/v1'
 components:
   schemas:
+    PaginatedRegistryData:
+      type: object
+      properties:
+        registry_data_list:
+          type: array
+          items:
+            $ref: '#/components/schemas/RegistryData'
+        total_records:
+          type: integer
+          format: int64
+        current_page:
+          type: integer
+          format: int32
+        page_size:
+          type: integer
+          format: int32
     RegistryData:
       type: object
       properties:

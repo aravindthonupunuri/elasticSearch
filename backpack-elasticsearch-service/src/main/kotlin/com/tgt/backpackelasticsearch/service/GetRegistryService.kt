@@ -2,6 +2,7 @@ package com.tgt.backpackelasticsearch.service
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import com.tgt.backpackelasticsearch.transport.PaginatedRegistryData
 import com.tgt.backpackelasticsearch.transport.RegistryData
 import com.tgt.backpackelasticsearch.transport.RegistrySearchSortFieldGroup
 import com.tgt.backpackregistryclient.util.RegistryType
@@ -16,9 +17,7 @@ import org.elasticsearch.action.search.SearchResponse
 import org.elasticsearch.client.RequestOptions
 import org.elasticsearch.client.RestHighLevelClient
 import org.elasticsearch.common.unit.TimeValue
-import org.elasticsearch.index.query.BoolQueryBuilder
-import org.elasticsearch.index.query.QueryStringQueryBuilder
-import org.elasticsearch.index.query.RangeQueryBuilder
+import org.elasticsearch.index.query.*
 import org.elasticsearch.search.builder.SearchSourceBuilder
 import org.elasticsearch.search.sort.SortBuilders
 import org.elasticsearch.search.sort.SortOrder
@@ -36,6 +35,10 @@ class GetRegistryService(
 
     val mapper = jacksonObjectMapper()
 
+    companion object {
+        const val DEFAULT_PAGE_SIZE = 100
+    }
+
     fun findRegistry(
         recipientFirstName: String?,
         recipientLastName: String?,
@@ -48,7 +51,7 @@ class GetRegistryService(
         sortOrderBy: SortOrder?,
         page: Int?,
         pageSize: Int?
-    ): Mono<List<RegistryData>> {
+    ): Mono<PaginatedRegistryData> {
         if (organizationName.isNullOrEmpty() && (recipientFirstName.isNullOrEmpty() || recipientLastName.isNullOrEmpty())) {
             throw BadRequestException(ErrorCode(BaseErrorCodes.BAD_REQUEST_ERROR_CODE, listOf("Missing required field first name and last name or organization")))
         }
@@ -61,25 +64,24 @@ class GetRegistryService(
             // Do note its AND condition, so both first as well last has to be in either of 4 names
             ?: fullName
 
-        val query = "$identifier AND (registry_status=ACTIVE) AND (search_visibility=PUBLIC)"
+        val query = "$identifier AND (registry_status:ACTIVE) AND (registry_visibility:PUBLIC)"
 
-        val registryQuery = if (registryType != null) "$query AND (registry_type=$registryType)" else query
+        val registryQuery = if (registryType != null) "$query AND (registry_type:$registryType)" else query
 
-        val stateQuery = if (state != null) "$registryQuery AND (event_state=$state)" else registryQuery
+        val stateQuery = if (state != null) "$registryQuery AND (event_state:\"$state\")" else registryQuery
 
-        val queryStringQueryBuilder = QueryStringQueryBuilder(stateQuery)
-                .defaultField("*")
+        val queryStringQueryBuilder = QueryStringQueryBuilder(stateQuery).defaultField("*")
 
         val rangeQueryBuilder = RangeQueryBuilder("event_date").from(minimumDate).to(maximumDate)
 
         val boolQueryBuilder = BoolQueryBuilder().must(queryStringQueryBuilder).must(rangeQueryBuilder)
 
-        val finalPageSize = pageSize ?: 9999
+        val finalPageSize = pageSize ?: DEFAULT_PAGE_SIZE
         val from = if (page == null || page == 0) {
             0
         } else {
-            if (page * finalPageSize > 9999) {
-                9999
+            if (page * finalPageSize > DEFAULT_PAGE_SIZE) {
+                DEFAULT_PAGE_SIZE
             } else {
                 page * finalPageSize
             }
@@ -107,7 +109,13 @@ class GetRegistryService(
                     val registry = mapper.readValue<RegistryData>(it.sourceAsString)
                     registry
                 }
-                registries
+
+                PaginatedRegistryData(
+                    registryDataList = registries,
+                    totalRecords = hits.totalHits?.value,
+                    currentPage = page,
+                    pageSize = pageSize
+                )
             }
     }
 

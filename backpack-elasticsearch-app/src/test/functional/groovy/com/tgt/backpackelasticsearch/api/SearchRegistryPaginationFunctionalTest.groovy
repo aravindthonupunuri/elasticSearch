@@ -89,7 +89,7 @@ class SearchRegistryPaginationFunctionalTest extends BaseElasticFunctionalTest {
         actual.size() == 5
         listResponse.body().currentPage == 0
         listResponse.body().pageSize == 5
-        listResponse.body().totalRecords == 5
+        listResponse.body().totalRecords == 15
         actual[0].organizationName == "organization1"
         actual[1].organizationName == "organization2"
         actual[2].organizationName == "organization3"
@@ -121,7 +121,7 @@ class SearchRegistryPaginationFunctionalTest extends BaseElasticFunctionalTest {
         actual.size() == 5
         listResponse.body().currentPage == 1
         listResponse.body().pageSize == 5
-        listResponse.body().totalRecords == 5
+        listResponse.body().totalRecords == 15
         actual[0].organizationName == "organization6"
         actual[1].organizationName == "organization7"
         actual[2].organizationName == "organization8"
@@ -153,7 +153,7 @@ class SearchRegistryPaginationFunctionalTest extends BaseElasticFunctionalTest {
         actual.size() == 5
         listResponse.body().currentPage == 2
         listResponse.body().pageSize == 5
-        listResponse.body().totalRecords == 5
+        listResponse.body().totalRecords == 15
         actual[0].organizationName == "organization11"
         actual[1].organizationName == "organization12"
         actual[2].organizationName == "organization13"

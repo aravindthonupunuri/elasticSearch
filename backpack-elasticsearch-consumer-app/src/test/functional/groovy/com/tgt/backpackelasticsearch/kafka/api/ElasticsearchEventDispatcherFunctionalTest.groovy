@@ -121,16 +121,18 @@ class ElasticsearchEventDispatcherFunctionalTest extends BaseKafkaFunctionalTest
         //test if registry is persisted
         when:
         def response = getRegistryService.findRegistry("1234First", "1234Last", null, null, null, null, null, null, null, null, null).block()
+        def responseList = response.registryDataList
 
         then:
-        !response.isEmpty()
+        response != null
+        !responseList.isEmpty()
 
-        assert response.size() == 1
-        assert response.get(0).registryId == registryId
-        assert response.get(0).imageUrl == "https://s7w2p1.scene7.com/is/image/"
-        assert response.get(0).imageId == "1234"
-        assert response.get(0).imageDimension == "0.20,0.10,0.60,0.80"
-        assert response.get(0).imageUrlParams == "Target/ugc/206673282.tif"
+        assert responseList.size() == 1
+        assert responseList.get(0).registryId == registryId
+        assert responseList.get(0).imageUrl == "https://s7w2p1.scene7.com/is/image/"
+        assert responseList.get(0).imageId == "1234"
+        assert responseList.get(0).imageDimension == "0.20,0.10,0.60,0.80"
+        assert responseList.get(0).imageUrlParams == "Target/ugc/206673282.tif"
     }
 
     def "Guest updates registry - Consumer kicks in to consume the event and updates registry data in elastic search"() {
@@ -182,14 +184,15 @@ class ElasticsearchEventDispatcherFunctionalTest extends BaseKafkaFunctionalTest
         //test if registry is persisted
         when:
         def response = getRegistryService.findRegistry("1234First", "1234Last", null, null, null, null, null, null, null, null, null).block()
+        def responseList = response.registryDataList
 
         then:
-        !response.isEmpty()
+        !responseList.isEmpty()
 
-        assert response.size() == 1
-        assert response.get(0).registryId == registryId
-        assert response.get(0).registryTitle == "List title - updated"
-        assert response.get(0).imageUrl == "https://test-updated-url/"
+        assert responseList.size() == 1
+        assert responseList.get(0).registryId == registryId
+        assert responseList.get(0).registryTitle == "List title - updated"
+        assert responseList.get(0).imageUrl == "https://test-updated-url/"
     }
 
     def "Guest deletes registry - Consumer kicks in to consume the event and deletes registry data from elastic search"() {
@@ -242,7 +245,7 @@ class ElasticsearchEventDispatcherFunctionalTest extends BaseKafkaFunctionalTest
         def response = getRegistryService.findRegistry("1234First", "1234Last", null, null, null, null, null, null, null, null, null).block()
 
         then:
-        response.isEmpty()
+        response.registryDataList.isEmpty()
     }
 }
 
