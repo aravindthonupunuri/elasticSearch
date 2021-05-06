@@ -72,7 +72,7 @@ allprojects {
             exclude group: 'com.tgt.lists', module: 'lists-components'
             exclude group: 'com.tgt.lists', module: 'atlas-client'
         }
-        implementation("com.tgt.lists:lists-components:2.231.6") {
+        implementation("com.tgt.lists:lists-components:2.231.7") {
             exclude group: 'com.tgt.lists.micronaut', module: 'micronaut-resilience4j'
         }
 

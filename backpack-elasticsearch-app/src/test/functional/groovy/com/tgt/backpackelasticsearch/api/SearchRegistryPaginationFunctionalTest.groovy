@@ -12,6 +12,7 @@ import com.tgt.backpackregistryclient.util.RegistryType
 import io.micronaut.http.HttpRequest
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.HttpStatus
+import io.micronaut.http.client.exceptions.HttpClientResponseException
 import io.micronaut.test.extensions.spock.annotation.MicronautTest
 import spock.lang.Stepwise
 import spock.lang.Unroll
@@ -65,10 +66,10 @@ class SearchRegistryPaginationFunctionalTest extends BaseElasticFunctionalTest {
 
     }
 
-    def "test get registry with page 0 and size 5"() {
+    def "test get registry with page 1 and size 5"() {
         given:
         String guestId = "1236"
-        def url = uri + "?first_name=first&last_name=last&channel=WEB&sub_channel=TGTWEB&page=0&page_size=5"
+        def url = uri + "?first_name=first&last_name=last&channel=WEB&sub_channel=TGTWEB&page=1&page_size=5"
 
         when:
         def refreshResponse = refresh()
@@ -87,7 +88,7 @@ class SearchRegistryPaginationFunctionalTest extends BaseElasticFunctionalTest {
         then:
         actualStatus == HttpStatus.OK
         actual.size() == 5
-        listResponse.body().currentPage == 0
+        listResponse.body().currentPage == 1
         listResponse.body().pageSize == 5
         listResponse.body().totalRecords == 15
         actual[0].organizationName == "organization1"
@@ -95,38 +96,6 @@ class SearchRegistryPaginationFunctionalTest extends BaseElasticFunctionalTest {
         actual[2].organizationName == "organization3"
         actual[3].organizationName == "organization4"
         actual[4].organizationName == "organization5"
-    }
-
-    def "test get registry with page 1 and size 5"() {
-        given:
-        String guestId = "1236"
-        def url = uri + "?first_name=first&last_name=last&channel=WEB&sub_channel=TGTWEB&page=1&page_size=5"
-
-        when:
-        def refreshResponse = refresh()
-
-        then:
-        refreshResponse.status() == HttpStatus.OK
-
-        when:
-        HttpResponse<PaginatedRegistryData> listResponse = client.toBlocking()
-            .exchange(HttpRequest.GET(url)
-                .headers (getHeaders(guestId)), PaginatedRegistryData)
-
-        def actualStatus = listResponse.status()
-        def actual = listResponse.body().registryDataList
-
-        then:
-        actualStatus == HttpStatus.OK
-        actual.size() == 5
-        listResponse.body().currentPage == 1
-        listResponse.body().pageSize == 5
-        listResponse.body().totalRecords == 15
-        actual[0].organizationName == "organization6"
-        actual[1].organizationName == "organization7"
-        actual[2].organizationName == "organization8"
-        actual[3].organizationName == "organization9"
-        actual[4].organizationName == "organization10"
     }
 
     def "test get registry with page 2 and size 5"() {
@@ -152,6 +121,38 @@ class SearchRegistryPaginationFunctionalTest extends BaseElasticFunctionalTest {
         actualStatus == HttpStatus.OK
         actual.size() == 5
         listResponse.body().currentPage == 2
+        listResponse.body().pageSize == 5
+        listResponse.body().totalRecords == 15
+        actual[0].organizationName == "organization6"
+        actual[1].organizationName == "organization7"
+        actual[2].organizationName == "organization8"
+        actual[3].organizationName == "organization9"
+        actual[4].organizationName == "organization10"
+    }
+
+    def "test get registry with page 3 and size 5"() {
+        given:
+        String guestId = "1236"
+        def url = uri + "?first_name=first&last_name=last&channel=WEB&sub_channel=TGTWEB&page=3&page_size=5"
+
+        when:
+        def refreshResponse = refresh()
+
+        then:
+        refreshResponse.status() == HttpStatus.OK
+
+        when:
+        HttpResponse<PaginatedRegistryData> listResponse = client.toBlocking()
+            .exchange(HttpRequest.GET(url)
+                .headers (getHeaders(guestId)), PaginatedRegistryData)
+
+        def actualStatus = listResponse.status()
+        def actual = listResponse.body().registryDataList
+
+        then:
+        actualStatus == HttpStatus.OK
+        actual.size() == 5
+        listResponse.body().currentPage == 3
         listResponse.body().pageSize == 5
         listResponse.body().totalRecords == 15
         actual[0].organizationName == "organization11"
@@ -183,8 +184,23 @@ class SearchRegistryPaginationFunctionalTest extends BaseElasticFunctionalTest {
         then:
         actualStatus == HttpStatus.OK
         actual.size() == 15
-        listResponse.body().currentPage == 0
+        listResponse.body().currentPage == 1
         listResponse.body().pageSize == 28
         listResponse.body().totalRecords == 15
+    }
+
+    def "test get registry with 0 page - bad request"() {
+        given:
+        String guestId = "1236"
+        def url = uri + "?first_name=first&last_name=last&channel=WEB&sub_channel=TGTWEB&page=0"
+
+        when:
+        client.toBlocking()
+            .exchange(HttpRequest.GET(url)
+                .headers (getHeaders(guestId)), PaginatedRegistryData)
+
+        then:
+        def error = thrown(HttpClientResponseException)
+        error.status == HttpStatus.BAD_REQUEST
     }
 }

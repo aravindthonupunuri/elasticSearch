@@ -37,6 +37,11 @@ class GetRegistryService(
 
     companion object {
         const val DEFAULT_PAGE_SIZE = 100
+        const val REGISTRY_STATUS_FIELD = "registry_status"
+        const val REGISTRY_VISIBILITY_FIELD = "registry_visibility"
+        const val REGISTRY_TYPE_FIELD = "registry_type"
+        const val REGISTRY_EVENT_STATE_FIELD = "event_state"
+        const val REGISTRY_EVENT_DATE_KEYWORD = "event_date.keyword"
     }
 
     fun findRegistry(
@@ -64,26 +69,28 @@ class GetRegistryService(
             // Do note its AND condition, so both first as well last has to be in either of 4 names
             ?: fullName
 
-        val query = "$identifier AND (registry_status:ACTIVE) AND (registry_visibility:PUBLIC)"
+        val query = "$identifier AND ($REGISTRY_STATUS_FIELD:ACTIVE) AND ($REGISTRY_VISIBILITY_FIELD:PUBLIC)"
 
-        val registryQuery = if (registryType != null) "$query AND (registry_type:$registryType)" else query
+        val registryQuery = if (registryType != null) "$query AND ($REGISTRY_TYPE_FIELD:$registryType)" else query
 
-        val stateQuery = if (state != null) "$registryQuery AND (event_state:\"$state\")" else registryQuery
+        val stateQuery = if (state != null) "$registryQuery AND ($REGISTRY_EVENT_STATE_FIELD:\"$state\")" else registryQuery
 
         val queryStringQueryBuilder = QueryStringQueryBuilder(stateQuery).defaultField("*")
 
-        val rangeQueryBuilder = RangeQueryBuilder("event_date").from(minimumDate).to(maximumDate)
+        val rangeQueryBuilder = RangeQueryBuilder(REGISTRY_EVENT_DATE_KEYWORD)
+        rangeQueryBuilder.gte(minimumDate)
+        rangeQueryBuilder.lte(maximumDate)
 
-        val boolQueryBuilder = BoolQueryBuilder().must(queryStringQueryBuilder).must(rangeQueryBuilder)
+        val boolQueryBuilder = BoolQueryBuilder().must(rangeQueryBuilder).must(queryStringQueryBuilder)
 
         val finalPageSize = pageSize ?: DEFAULT_PAGE_SIZE
-        val from = if (page == null || page == 0) {
+        val from = if (page == null || page == 1) {
             0
         } else {
-            if (page * finalPageSize > DEFAULT_PAGE_SIZE) {
+            if ((page - 1) * finalPageSize > DEFAULT_PAGE_SIZE) {
                 DEFAULT_PAGE_SIZE
             } else {
-                page * finalPageSize
+                (page - 1) * finalPageSize
             }
         }
 

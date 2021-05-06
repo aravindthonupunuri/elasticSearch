@@ -7,6 +7,9 @@ import com.tgt.backpackelasticsearch.util.BackpackElasticsearchConstants.ELASTIC
 import com.tgt.backpackregistryclient.util.RegistryChannel
 import com.tgt.backpackregistryclient.util.RegistrySubChannel
 import com.tgt.backpackregistryclient.util.RegistryType
+import com.tgt.lists.common.components.exception.BadRequestException
+import com.tgt.lists.common.components.exception.BaseErrorCodes
+import com.tgt.lists.common.components.exception.ErrorCode
 import io.micronaut.core.convert.format.Format
 import io.micronaut.http.HttpStatus
 import io.micronaut.http.annotation.*
@@ -39,9 +42,10 @@ class BackpackElasticsearchController(
         @QueryValue("max_date") @Format("yyyy-MM-dd") maxDate: LocalDate?,
         @QueryValue("sort_field") sortFieldBy: RegistrySearchSortFieldGroup? = RegistrySearchSortFieldGroup.NAME,
         @QueryValue("sort_order") sortOrderBy: SortOrder? = SortOrder.ASC,
-        @QueryValue("page", defaultValue = "0") page: Int? = 0,
+        @QueryValue("page", defaultValue = "1") page: Int? = 1,
         @QueryValue("page_size", defaultValue = "28") pageSize: Int? = 28
     ): Mono<PaginatedRegistryData> {
+        if (page == 0) throw BadRequestException(ErrorCode(BaseErrorCodes.BAD_REQUEST_ERROR_CODE, listOf("page number cannot be 0")))
         return getRegistryService.findRegistry(
                 recipientFirstName = firstName,
                 recipientLastName = lastName,
