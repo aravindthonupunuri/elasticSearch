@@ -1,9 +1,7 @@
 package com.tgt.grafana_builder
 
-import spock.lang.Ignore
 import spock.lang.Specification
 
-@Ignore
 class GrafanaBuilderElasticSearchConsumerUnitTest extends Specification {
 
     def "build backpack-elasticsearch-consumer-app grafana dashboard"() {
@@ -45,8 +43,8 @@ class GrafanaBuilderElasticSearchConsumerUnitTest extends Specification {
                 prodEnvironment: new GrafanaBuilderConfig.KafkaConsumerEnvironment(
                     topic: "registry-internal-data-bus-prod",
                     consumerGroup: "backpack-elasticsearch-data-bus-prod-consumer",
-                    ttcCluster: "ost-ttc-prod-app'",
-                    tteCluster: "ost-ttce-prod-app'"
+                    ttcCluster: "ost-ttc-prod-app",
+                    tteCluster: "ost-ttce-prod-app"
                 )
             ),
             new GrafanaBuilderConfig.KafkaConsumer(
@@ -68,8 +66,8 @@ class GrafanaBuilderElasticSearchConsumerUnitTest extends Specification {
                 prodEnvironment: new GrafanaBuilderConfig.KafkaConsumerEnvironment(
                     topic: "registry-internal-data-bus-prod-dlq",
                     consumerGroup: "backpack-elasticsearch-data-bus-prod-dlq-consumer",
-                    ttcCluster: "ost-ttc-prod-app'",
-                    tteCluster: "ost-ttce-prod-app'"
+                    ttcCluster: "ost-ttc-prod-app",
+                    tteCluster: "ost-ttce-prod-app"
                 )
             )
         ]

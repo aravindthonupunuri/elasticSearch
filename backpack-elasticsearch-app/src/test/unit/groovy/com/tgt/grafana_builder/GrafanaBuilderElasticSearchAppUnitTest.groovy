@@ -1,11 +1,7 @@
 package com.tgt.grafana_builder
 
-import com.tgt.grafana_builder.GrafanaBuilder
-import com.tgt.grafana_builder.GrafanaBuilderConfig
-import spock.lang.Ignore
 import spock.lang.Specification
 
-@Ignore
 class GrafanaBuilderElasticSearchAppUnitTest extends Specification {
 
     def "build backpack-elasticsearch-app grafana dashboard"() {
