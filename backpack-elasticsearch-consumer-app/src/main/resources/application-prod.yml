@@ -97,4 +97,3 @@ kafka-sources:
   allow:
     - backpack-registry-prod
     - backpackelasticsearch-prod
-    - backpackregistry-migration-prod
