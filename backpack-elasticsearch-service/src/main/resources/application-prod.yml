@@ -54,15 +54,15 @@ backends:
 
 tracing:
   zipkin:
-    enabled: false
+    enabled: true
     excluded-paths: /health
     b3-propagation-suppress: true
-    sample-rate-percent: 0.5
+    sample-rate-percent: 0.1
     kafka:
-      bootstrap-servers: tracing-kafka-broker.service.tgt-pe-prod-ttc.consul.c-prod.ost.cloud.target.internal:9092
+      bootstrap-servers: tracing-kafka-broker.service.tgt-pe-prod-us-central1.consul.c-prod.gcp.cloud.target.internal:9092
       topic: tracing-zipkin-common
     app:
-      name: backpackelasticsearch
+      name: backpackregistry
       env: prod
       region: tdc
 
