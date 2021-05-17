@@ -146,19 +146,20 @@ pipeline:
       - {source: artifactory_password, target: plugin_password}
 
   publish-docker-backpack-elasticsearch-app-prod:
-    image: 'plugins/docker:latest'
-    group: prodimggroup
-    registry: docker.target.com
-    repo: docker.target.com/app/backpack-elasticsearch/backpack-elasticsearch-app
-    dockerfile: ./backpack-elasticsearch-app/Dockerfile
-    tags: 'prod.${DRONE_TAG:32}'
+    image: 'docker.target.com/drone/docker-promotion:1'
+    environment:
+      CICD_MODE: 'true'
+    source_repo: docker.target.com/app/backpack-elasticsearch/backpack-elasticsearch-app
+    source_tag: 'rc.${DRONE_TAG:32}'
+    target_repo: docker.target.com/app/backpack-elasticsearch/backpack-elasticsearch-app
+    target_tags: 'prod.${DRONE_TAG:32}'
     when:
       event: tag
       branch: master
       ref: 'refs/tags/conf.prod.backpackelasticsearch.*'
     secrets:
-      - { source: artifactory_username, target: plugin_username }
-      - { source: artifactory_password, target: plugin_password }
+      - { source: artifactory_username, target: registry_username }
+      - { source: artifactory_password, target: registry_password }
 
   publish-docker-backpack-elasticsearch-consumer-app-dev:
     image: plugins/docker
@@ -196,21 +197,20 @@ pipeline:
       - {source: artifactory_password, target: plugin_password}
 
   publish-docker-backpack-elasticsearch-consumer-app-prod:
-    image: 'plugins/docker:latest'
+    image: 'docker.target.com/drone/docker-promotion:1'
     environment:
       CICD_MODE: 'true'
-    group: prodimggroup
-    registry: docker.target.com
-    repo: docker.target.com/app/backpack-elasticsearch/backpack-elasticsearch-consumer-app
-    dockerfile: ./backpack-elasticsearch-consumer-app/Dockerfile
-    tags: 'prod.${DRONE_TAG:32}'
+    source_repo: docker.target.com/app/backpack-elasticsearch/backpack-elasticsearch-consumer-app
+    source_tag: 'rc.${DRONE_TAG:32}'
+    target_repo: docker.target.com/app/backpack-elasticsearch/backpack-elasticsearch-consumer-app
+    target_tags: 'prod.${DRONE_TAG:32}'
     when:
       event: tag
       branch: master
       ref: 'refs/tags/conf.prod.backpackelasticsearch.*'
     secrets:
-      - { source: artifactory_username, target: plugin_username }
-      - { source: artifactory_password, target: plugin_password }
+      - { source: artifactory_username, target: registry_username }
+      - { source: artifactory_password, target: registry_password }
 
 secrets:
   cache_s3_server:
