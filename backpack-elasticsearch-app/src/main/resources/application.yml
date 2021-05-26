@@ -78,7 +78,6 @@ api:
     client-secret: ${id2-client-secret}
     nuid-username: ${id2-nuid-username}
     nuid-password: ${id2-nuid-password}
-    id2-refresh-mins: ${id2-refresh-minutes}
     excluded-paths: "/store_item_placements/v1/,/lists/v2,/redsky_aggregations/v1/"
 
 api-key: "fda12ff92c2e0e04412bab909732bd2367970263"

@@ -84,7 +84,6 @@ api:
     client-secret: ${api-auth.id2-client-secret}
     nuid-username: ${api-auth.id2-nuid-username}
     nuid-password: ${api-auth.id2-nuid-password}
-    id2-refresh-mins: 10
     excluded-paths: ""
 
 elasticsearch:

@@ -47,7 +47,6 @@ api:
     client-secret: ${id2-client-secret}
     nuid-username: ${id2-nuid-username}
     nuid-password: ${id2-nuid-password}
-    id2-refresh-mins: ${id2-refresh-minutes}
 
 elasticsearch:
   index: ${esaas-index}
