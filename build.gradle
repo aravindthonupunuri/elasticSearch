@@ -65,7 +65,7 @@ allprojects {
 
         implementation "io.micronaut.elasticsearch:micronaut-elasticsearch"
 
-        implementation("com.tgt.backpackregistry:backpack-registry-client:2.231.60") {
+        implementation("com.tgt.backpackregistry:backpack-registry-client:2.231.62") {
             exclude group: 'com.tgt.lists', module: 'lists-components'
         }
         implementation("com.tgt.backpackregistry:backpack-registry-components:2.231.0") {
@@ -80,7 +80,7 @@ allprojects {
         implementation "com.tgt.lists.micronaut:micronaut-zipkin:2.231.0"
         implementation "com.tgt.lists:lists-message-bus:2.231.5"
         implementation "com.tgt.lists:atlas-client:2.231.16"
-        implementation "com.tgt.lists:lists-logging:2.231.0"
+        implementation "com.tgt.lists:lists-logging:2.231.3"
         implementation "com.target.oss:platform-connector-micronaut:${micronautTapPlatformConnectorVersion}"
         implementation "io.swagger.core.v3:swagger-annotations"
         implementation "com.tgt.lists.micronaut:micronaut-metrics:2.231.3"
