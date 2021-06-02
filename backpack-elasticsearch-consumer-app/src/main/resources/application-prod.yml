@@ -67,6 +67,7 @@ kafka:
       value:
         deserializer: org.apache.kafka.common.serialization.ByteArrayDeserializer
     backpack-elasticsearch-data-bus-prod-dlq-consumer:
+      max.poll.interval.ms: 10980000 # 3.05 hours, bring down post data migration
       key:
         deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value:
